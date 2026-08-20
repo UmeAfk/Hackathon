@@ -1,44 +1,6 @@
-# ARCHVIZ HACKATHON — Design Loud, Render Honest
+# Hackthon # 
 
-A real-time ArchViz competition platform built with modular vanilla web technologies, split-flap flip countdowns, modal pipelines, and a retro-brutalist design system.
-
----
-
-## Project Structure
-
-
-Hackathon/
-├── index.html            # Main HTML document (~280 lines)
-├── .gitignore            # Git ignore configuration
-├── README.md             # Project documentation
-├── public/               # Static assets & icons
-│   ├── favicon.ico
-│   ├── icon.png
-│   └── icons.svg
-├── css/                  # Modular CSS architecture (< 250 lines/file)
-│   ├── style.css         # Master stylesheet importing all partials
-│   ├── base.css          # Color tokens, resets, typography, wrap
-│   ├── buttons.css       # Brutalist button styles, hover & press effects
-│   ├── theme.css         # Dark/light theme definitions & floating toggle
-│   ├── hero.css          # Hero typography, marquee ticker, closed banner
-│   ├── countdown.css     # Split-flap flip clock digit animation
-│   ├── sections.css      # FAQ accordion, rules grid, help card, footer
-│   ├── modals.css        # Modal backdrops, fields, forms, success cards
-│   ├── submission.css    # Model download cards, 2-step submit dropzone
-│   ├── debug.css         # Floating phase switch pill & toast alerts
-│   └── responsive.css    # Responsive breakpoints (<480px, <760px, <960px)
-└── js/                   # Modular ES6 JavaScript architecture (< 270 lines/file)
-    ├── main.js           # Bootstrap entry point coordinating modules
-    ├── marquee.js        # Dynamic loop marquee banner
-    ├── theme.js          # Dark / Light theme toggle & localStorage persistence
-    ├── flipClock.js      # Split-flap digit animation engine
-    ├── phaseEngine.js    # 4-Phase challenge lifecycle (0 to 3) & timers
-    ├── modalCore.js      # Modal transition animations & confetti burst
-    ├── modals.js         # Register, Model download, Brief & Help dialogs
-    ├── submitModal.js    # 2-Step project archive submission & dropzone
-    ├── scrollReveal.js   # IntersectionObserver scroll effects & FAQ accordion
-    └── utils.js          # Toast notifications & file size formatters
-```
+A real-time ArchViz competition platform built with modular vanilla web technologies, split-flap flip countdowns, modal pipelines, and a retro-brutalist design system. Design Loud, Render Honest
 
 ---
 

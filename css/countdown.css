@@ -1,142 +1,259 @@
 /* ==========================================================================
    FLIP CLOCK & COUNTDOWN
-   Single whole-card flip — no split seam, no horizontal divider line.
+   True split-flap animation — every digit is built from a static top/bottom
+   half plus two animated "leaf" halves that fold along a shared centre seam,
+   like a Solari departure board. No single-card tipping, no split-second
+   flash, no seam mismatch.
    ========================================================================== */
 
 .countdown-block {
   display: inline-flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
+  gap: 18px;
+  margin-top: 44px;
 }
 
 .countdown-label {
   font-family: "JetBrains Mono", monospace;
   font-size: 12px;
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   color: var(--text-soft);
 }
 
 .countdown {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 14px;
 }
 
-/* ── Cell (the bordered box) ───────────────────────────────────────────── */
+/* ── Cell (bordered box per unit: days / hrs / min / sec) ──────────────── */
 .c-cell {
   display: flex;
   flex-direction: column;
   align-items: center;
   background: var(--surface);
   border: 3px solid var(--border);
-  border-radius: var(--radius);
-  box-shadow: 4px 4px 0 0 var(--shadow-color);
-  padding: 14px 16px;
-  min-width: 76px;
+  border-radius: var(--radius-lg);
+  box-shadow: 5px 5px 0 0 var(--shadow-color);
+  padding: 18px 18px 16px;
+  min-width: 92px;
 }
 
 .countdown-sm .c-cell {
-  min-width: 62px;
-  padding: 10px 12px;
+  min-width: 68px;
+  padding: 12px 12px 11px;
+  border-radius: var(--radius);
+  box-shadow: 3px 3px 0 0 var(--shadow-color);
 }
 
 .c-unit {
   font-family: "JetBrains Mono", monospace;
-  font-size: 10px;
-  letter-spacing: 0.08em;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--text-soft);
-  margin-top: 6px;
+  margin-top: 10px;
+}
+
+.countdown-sm .c-unit {
+  font-size: 9px;
+  margin-top: 7px;
 }
 
 .c-sep {
   font-family: "JetBrains Mono", monospace;
-  font-size: 22px;
+  font-size: 26px;
   font-weight: 700;
-  color: var(--text-soft);
+  color: var(--border);
+  opacity: 0.35;
+  align-self: flex-start;
+  margin-top: 20px;
 }
 
-/* ── Flip clock container ──────────────────────────────────────────────── */
+.countdown-sm .c-sep {
+  font-size: 18px;
+  margin-top: 12px;
+}
+
+/* ── Flip clock — two digit cards per unit, edge-to-edge ────────────────── */
 .flip-clock {
   display: flex;
   align-items: center;
-  gap: 3px;
+  gap: 2px;
 }
 
-/* ── Single digit card ─────────────────────────────────────────────────── */
+/* ── One digit card ───────────────────────────────────────────────────── */
 .flip-card {
-  --card-w: 28px;
-  --card-h: 44px;
-  --font-sz: 32px;
+  --cw: 36px;
+  /* card width  */
+  --ch: 56px;
+  /* card height */
+  --fsz: 38px;
+  /* digit font  */
+  --flip-t: 300ms;
   position: relative;
-  width: var(--card-w);
-  height: var(--card-h);
-  perspective: 320px;
+  width: var(--cw);
+  height: var(--ch);
+  perspective: 900px;
+  perspective-origin: 50% 50%;
+  border-radius: 4px;
+  overflow: hidden;
 }
 
 .countdown-sm .flip-card {
-  --card-w: 22px;
-  --card-h: 34px;
-  --font-sz: 24px;
+  --cw: 24px;
+  --ch: 38px;
+  --fsz: 25px;
+  --flip-t: 260ms;
 }
 
-/* The 3D scene that rotates */
-.flip-card-inner {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  transform-style: preserve-3d;
-  transform-origin: center center;
-}
-
-/* Front & back faces share the same visual style */
-.flip-face {
+/* ── Static halves (ground truth — always correct, no animation) ────────── */
+.flip-half,
+.flip-leaf {
   position: absolute;
-  inset: 0;
+  left: 0;
+  width: 100%;
+  height: 50%;
+  overflow: hidden;
+  background: var(--surface);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.flip-top,
+.flip-front {
+  top: 0;
+}
+
+.flip-bottom,
+.flip-back {
+  bottom: 0;
+}
+
+/* Subtle two-tone shading so each half reads as its own hinged panel */
+.flip-bottom,
+.flip-back {
+  background: linear-gradient(rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.05)), var(--surface);
+}
+
+/* ── Digit glyph — double-height, clipped by its half's overflow ────────── */
+.flip-digit-text {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 200%;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--surface);
-  border-radius: 5px;
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-  /* subtle inner shadow for depth — no horizontal line */
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.12),
-    inset 0 -1px 0 rgba(0,0,0,0.08);
-}
-
-.flip-face span {
   font-family: "JetBrains Mono", monospace;
-  font-size: var(--font-sz);
+  font-size: var(--fsz);
   font-weight: 700;
-  line-height: 1;
   color: var(--tomato);
-  /* prevent any text-rendering shifts */
   font-variant-numeric: tabular-nums;
   -webkit-font-smoothing: antialiased;
+  user-select: none;
 }
 
-/* Back face starts rotated 180deg so it's hidden at rest */
+.flip-top .flip-digit-text,
+.flip-front .flip-digit-text {
+  top: 0;
+}
+
+.flip-bottom .flip-digit-text,
+.flip-back .flip-digit-text {
+  top: -100%;
+}
+
+/* ── Animated leaves sit above the static halves ──────────────────────── */
+.flip-leaf {
+  z-index: 2;
+}
+
+.flip-front {
+  transform: rotateX(0deg);
+  transform-origin: 50% 100%;
+  /* pivot on the seam (its own bottom edge) */
+}
+
 .flip-back {
-  transform: rotateX(180deg);
+  transform: rotateX(-90deg);
+  /* folded away, out of sight at rest */
+  transform-origin: 50% 0%;
+  /* pivot on the seam (its own top edge) */
+  z-index: 3;
 }
 
-/* ── The flip animation ────────────────────────────────────────────────── */
-@keyframes cardFlip {
-  0%   { transform: rotateX(0deg); }
-  100% { transform: rotateX(-180deg); }
+/* Soft contact shadow near the fold, sells the paper-thin leaf */
+.flip-front::after,
+.flip-back::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
 }
 
-.flip-card-inner.flipping {
-  animation: cardFlip 0.38s cubic-bezier(0.45, 0, 0.55, 1) forwards;
+.flip-front::after {
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.16), transparent 65%);
 }
 
-/* Reduced-motion: instant swap, no animation */
+.flip-back::after {
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.14), transparent 65%);
+}
+
+/* ── Centre seam line — the hinge every split-flap board has ────────────── */
+.flip-seam {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(50% - 1px);
+  height: 2px;
+  background: var(--shadow-color);
+  opacity: 0.18;
+  z-index: 4;
+  pointer-events: none;
+}
+
+/* ── Phase 1: old top folds forward, away, edge-on ──────────────────────── */
+@keyframes flipFrontDown {
+  from {
+    transform: rotateX(0deg);
+  }
+
+  to {
+    transform: rotateX(90deg);
+  }
+}
+
+/* ── Phase 2: new bottom unfolds down, settling flat ────────────────────── */
+@keyframes flipBackDown {
+  from {
+    transform: rotateX(-90deg);
+  }
+
+  to {
+    transform: rotateX(0deg);
+  }
+}
+
+.flip-front.is-flipping {
+  animation: flipFrontDown var(--flip-t) cubic-bezier(0.5, 0, 0.85, 0.35) forwards;
+  z-index: 5;
+  /* rides above everything while it falls away */
+}
+
+.flip-back.is-flipping {
+  animation: flipBackDown var(--flip-t) cubic-bezier(0.15, 0.65, 0.5, 1) forwards;
+  z-index: 5;
+}
+
+/* ── Reduced-motion: instant swap ─────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
-  .flip-card-inner.flipping {
+
+  .flip-front.is-flipping,
+  .flip-back.is-flipping {
     animation: none !important;
   }
 }

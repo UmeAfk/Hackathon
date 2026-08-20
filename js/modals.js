@@ -16,11 +16,24 @@ export function initModals() {
   const regFormError = document.getElementById('regFormError');
   const registerClose = document.getElementById('registerClose');
   const registerDoneBtn = document.getElementById('registerDoneBtn');
+  const regAge = document.getElementById('regAge');
+  const regTerms = document.getElementById('regTerms');
+  const btnSubmitRegister = document.getElementById('btnSubmitRegister');
+
+  function updateRegisterButtonState() {
+    if (btnSubmitRegister) {
+      btnSubmitRegister.disabled = !(regAge?.checked && regTerms?.checked);
+    }
+  }
+
+  if (regAge) regAge.addEventListener('change', updateRegisterButtonState);
+  if (regTerms) regTerms.addEventListener('change', updateRegisterButtonState);
 
   document.querySelectorAll('.js-open-register').forEach(btn => {
     btn.addEventListener('click', () => {
       if (registerFormView) registerFormView.hidden = false;
       if (registerSuccessView) registerSuccessView.hidden = true;
+      updateRegisterButtonState();
       openModal(registerBackdrop, registerModal);
     });
   });
@@ -37,8 +50,11 @@ export function initModals() {
   if (registerForm) {
     registerForm.addEventListener('submit', (e) => {
       e.preventDefault();
-      if (!registerForm.checkValidity()) {
-        if (regFormError) regFormError.textContent = 'Fill in all three fields to continue.';
+      const ageCheck = document.getElementById('regAge');
+      const termsCheck = document.getElementById('regTerms');
+
+      if (!registerForm.checkValidity() || (ageCheck && !ageCheck.checked) || (termsCheck && !termsCheck.checked)) {
+        if (regFormError) regFormError.textContent = 'Please fill all fields and check both required confirmations.';
         registerForm.reportValidity();
         return;
       }
@@ -52,6 +68,8 @@ export function initModals() {
       localStorage.setItem('av-registered-name', name);
       localStorage.setItem('av-registered-phone', phone);
       localStorage.setItem('av-registered-email', email);
+      localStorage.setItem('av-registered-age-confirmed', '1');
+      localStorage.setItem('av-registered-terms-accepted', '1');
       localStorage.setItem('av-registered-at', Date.now().toString());
 
       const now = Date.now();

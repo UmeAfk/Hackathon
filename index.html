@@ -1,48 +1,109 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ARCHVIZ HACKATHON — Register, Build, Ship</title>
-  <meta name="description" content="A real-time ArchViz challenge. Register, wait for the drop, build your hero shot, submit before the clock runs out.">
+  <meta name="description"
+    content="A real-time ArchViz challenge. Register, wait for the drop, build your hero shot, submit before the clock runs out.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500;700&display=swap"
+    rel="stylesheet">
   <link rel="icon" type="image/x-icon" href="public/favicon.ico">
   <link rel="icon" type="image/png" href="public/icon.png">
   <link rel="apple-touch-icon" href="public/icon.png">
   <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
   <!-- ============================= SVG ICON SPRITE ============================= -->
   <svg width="0" height="0" style="position:absolute" aria-hidden="true" xmlns:xlink="http://www.w3.org/1999/xlink">
     <defs>
-      <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.5" /><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1" /></symbol>
-      <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5Z" /></symbol>
-      <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" /></symbol>
-      <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" /></symbol>
-      <symbol id="i-check" viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6" /></symbol>
-      <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3.5 2" /></symbol>
-      <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" /></symbol>
-      <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 6a1 1 0 0 1 1-1h5l2 2h9a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6Z" /></symbol>
-      <symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="1" /><circle cx="8.5" cy="9.5" r="1.5" /><path d="M21 16l-5.5-5.5L9 17" /></symbol>
-      <symbol id="i-video" viewBox="0 0 24 24"><rect x="3" y="5" width="13" height="14" rx="1" /><path d="M16 9.5l5-3v11l-5-3" /></symbol>
-      <symbol id="i-exe" viewBox="0 0 24 24"><path d="M6 3h9l4 4v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z" /><path d="M14 3v5h5" /><path d="M8 16l1.5-4L11 16M13 12v4M13 12h1.5a1.2 1.2 0 0 1 0 2.4H13" /></symbol>
-      <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="1" /><path d="M3 6l9 7 9-7" /></symbol>
-      <symbol id="i-whatsapp" viewBox="0 0 24 24"><path d="M6 18l-1.4 4L9 20.5A9 9 0 1 0 3 12a9 9 0 0 0 1.6 5.1L6 18Z" /><path d="M8.5 9c0-.5.4-1 1-1h.6c.3 0 .6.2.7.5l.6 1.6c.1.3 0 .6-.2.8l-.6.6c.4.9 1.2 1.7 2.1 2.1l.6-.6c.2-.2.5-.3.8-.2l1.6.6c.3.1.5.4.5.7v.6c0 .6-.5 1-1 1-3.6 0-6.5-2.9-6.5-6.5Z" /></symbol>
-      <symbol id="i-file" viewBox="0 0 24 24"><path d="M6 3h9l4 4v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z" /><path d="M14 3v5h5" /></symbol>
-      <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2M6 7l1 13a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-13" /></symbol>
-      <symbol id="i-cube" viewBox="0 0 24 24"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9L12 3Z" /><path d="M12 3v9M12 12l8-4.5M12 12l-8-4.5" /></symbol>
-      <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" /></symbol>
-      <symbol id="i-edit" viewBox="0 0 24 24"><path d="M11 4H4a1 1 0 0 0-1 1v15a1 1 0 0 0 1 1h15a1 1 0 0 0 1-1v-7" /><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5Z" /></symbol>
-      <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v12M7 11l5 5 5-5" /><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" /></symbol>
+      <symbol id="i-sun" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="4.5" />
+        <path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1" />
+      </symbol>
+      <symbol id="i-moon" viewBox="0 0 24 24">
+        <path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5Z" />
+      </symbol>
+      <symbol id="i-arrow" viewBox="0 0 24 24">
+        <path d="M5 12h14M13 6l6 6-6 6" />
+      </symbol>
+      <symbol id="i-close" viewBox="0 0 24 24">
+        <path d="M6 6l12 12M18 6L6 18" />
+      </symbol>
+      <symbol id="i-check" viewBox="0 0 24 24">
+        <path d="M4 12.5l5 5L20 6" />
+      </symbol>
+      <symbol id="i-clock" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="9" />
+        <path d="M12 7v5l3.5 2" />
+      </symbol>
+      <symbol id="i-upload" viewBox="0 0 24 24">
+        <path d="M12 16V4M7 9l5-5 5 5M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
+      </symbol>
+      <symbol id="i-folder" viewBox="0 0 24 24">
+        <path d="M3 6a1 1 0 0 1 1-1h5l2 2h9a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6Z" />
+      </symbol>
+      <symbol id="i-image" viewBox="0 0 24 24">
+        <rect x="3" y="4" width="18" height="16" rx="1" />
+        <circle cx="8.5" cy="9.5" r="1.5" />
+        <path d="M21 16l-5.5-5.5L9 17" />
+      </symbol>
+      <symbol id="i-video" viewBox="0 0 24 24">
+        <rect x="3" y="5" width="13" height="14" rx="1" />
+        <path d="M16 9.5l5-3v11l-5-3" />
+      </symbol>
+      <symbol id="i-exe" viewBox="0 0 24 24">
+        <path d="M6 3h9l4 4v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z" />
+        <path d="M14 3v5h5" />
+        <path d="M8 16l1.5-4L11 16M13 12v4M13 12h1.5a1.2 1.2 0 0 1 0 2.4H13" />
+      </symbol>
+      <symbol id="i-mail" viewBox="0 0 24 24">
+        <rect x="3" y="5" width="18" height="14" rx="1" />
+        <path d="M3 6l9 7 9-7" />
+      </symbol>
+      <symbol id="i-whatsapp" viewBox="0 0 24 24">
+        <path d="M6 18l-1.4 4L9 20.5A9 9 0 1 0 3 12a9 9 0 0 0 1.6 5.1L6 18Z" />
+        <path
+          d="M8.5 9c0-.5.4-1 1-1h.6c.3 0 .6.2.7.5l.6 1.6c.1.3 0 .6-.2.8l-.6.6c.4.9 1.2 1.7 2.1 2.1l.6-.6c.2-.2.5-.3.8-.2l1.6.6c.3.1.5.4.5.7v.6c0 .6-.5 1-1 1-3.6 0-6.5-2.9-6.5-6.5Z" />
+      </symbol>
+      <symbol id="i-file" viewBox="0 0 24 24">
+        <path d="M6 3h9l4 4v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z" />
+        <path d="M14 3v5h5" />
+      </symbol>
+      <symbol id="i-trash" viewBox="0 0 24 24">
+        <path d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2M6 7l1 13a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-13" />
+      </symbol>
+      <symbol id="i-cube" viewBox="0 0 24 24">
+        <path d="M12 3l8 4.5v9L12 21l-8-4.5v-9L12 3Z" />
+        <path d="M12 3v9M12 12l8-4.5M12 12l-8-4.5" />
+      </symbol>
+      <symbol id="i-plus" viewBox="0 0 24 24">
+        <path d="M12 5v14M5 12h14" />
+      </symbol>
+      <symbol id="i-edit" viewBox="0 0 24 24">
+        <path d="M11 4H4a1 1 0 0 0-1 1v15a1 1 0 0 0 1 1h15a1 1 0 0 0 1-1v-7" />
+        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5Z" />
+      </symbol>
+      <symbol id="i-download" viewBox="0 0 24 24">
+        <path d="M12 4v12M7 11l5 5 5-5" />
+        <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
+      </symbol>
     </defs>
   </svg>
 
   <!-- ============================= THEME TOGGLE ============================= -->
   <button class="theme-toggle theme-toggle-float" id="themeToggle" aria-label="Toggle color theme">
-    <svg class="icon-sun"><use href="#i-sun" xlink:href="#i-sun" /></svg>
-    <svg class="icon-moon"><use href="#i-moon" xlink:href="#i-moon" /></svg>
+    <svg class="icon-sun">
+      <use href="#i-sun" xlink:href="#i-sun" />
+    </svg>
+    <svg class="icon-moon">
+      <use href="#i-moon" xlink:href="#i-moon" />
+    </svg>
   </button>
 
   <main id="top">
@@ -53,34 +114,56 @@
         <h1 class="display">Design loud.<br>Render <span class="hl">honest.</span></h1>
         <p class="hero-sub">One building. One brief. Whatever you make of it.</p>
         <div class="hero-ctas" id="heroCtas">
-          <button class="btn btn-primary btn-lg js-open-register" id="heroRegisterBtn">Register Now <svg><use href="#i-arrow" xlink:href="#i-arrow" /></svg></button>
+          <button class="btn btn-primary btn-lg js-open-register" id="heroRegisterBtn">Register Now <svg>
+              <use href="#i-arrow" xlink:href="#i-arrow" />
+            </svg></button>
           <a href="#faq" class="btn btn-ghost btn-lg" id="heroTimelineBtn">FAQ & Details</a>
         </div>
         <div class="countdown-block" id="countdownBlock" style="display: none;">
           <p class="countdown-label" id="countdownLabel">[ TASK DROPS IN ]</p>
           <div class="countdown" id="countdown">
-            <div class="c-cell"><div class="flip-clock" id="cd-d" data-value="00"></div><span class="c-unit">days</span></div>
+            <div class="c-cell">
+              <div class="flip-clock" id="cd-d" data-value="00"></div><span class="c-unit">days</span>
+            </div>
             <div class="c-sep">:</div>
-            <div class="c-cell"><div class="flip-clock" id="cd-h" data-value="00"></div><span class="c-unit">hrs</span></div>
+            <div class="c-cell">
+              <div class="flip-clock" id="cd-h" data-value="00"></div><span class="c-unit">hrs</span>
+            </div>
             <div class="c-sep">:</div>
-            <div class="c-cell"><div class="flip-clock" id="cd-m" data-value="00"></div><span class="c-unit">min</span></div>
+            <div class="c-cell">
+              <div class="flip-clock" id="cd-m" data-value="00"></div><span class="c-unit">min</span>
+            </div>
             <div class="c-sep">:</div>
-            <div class="c-cell"><div class="flip-clock" id="cd-s" data-value="00"></div><span class="c-unit">sec</span></div>
+            <div class="c-cell">
+              <div class="flip-clock" id="cd-s" data-value="00"></div><span class="c-unit">sec</span>
+            </div>
           </div>
           <div class="live-cta-row" id="liveCtaRow" style="display: none;">
-            <button class="btn btn-outline btn-lg js-open-model-modal" id="btnOpenModelModal">Download <svg><use href="#i-download" xlink:href="#i-download" /></svg></button>
-            <button class="btn btn-primary btn-lg js-open-submit-modal" id="cardEarlySubmitBtn">Submit <svg><use href="#i-upload" xlink:href="#i-upload" /></svg></button>
-            <button class="btn btn-ghost btn-lg js-open-brief-modal" id="btnOpenBriefModal" title="Share Design Brief"><svg><use href="#i-edit" xlink:href="#i-edit" /></svg></button>
+            <button class="btn btn-outline btn-lg js-open-model-modal" id="btnOpenModelModal">Download <svg>
+                <use href="#i-download" xlink:href="#i-download" />
+              </svg></button>
+            <button class="btn btn-primary btn-lg js-open-submit-modal" id="cardEarlySubmitBtn">Submit <svg>
+                <use href="#i-upload" xlink:href="#i-upload" />
+              </svg></button>
+            <button class="btn btn-ghost btn-lg js-open-brief-modal" id="btnOpenBriefModal"
+              title="Share Design Brief"><svg>
+                <use href="#i-edit" xlink:href="#i-edit" />
+              </svg></button>
           </div>
         </div>
         <div class="closed-hero-card" id="heroClosedCard" style="display: none;">
           <h3>Challenge Has Finished!</h3>
-          <p>The submission window is officially closed. A huge thank you to all participants who built and submitted their scenes! Our jury is actively evaluating all submissions.</p>
-          <span class="closed-jury-badge"><svg style="width:14px;height:14px;"><use href="#i-clock" /></svg> Jury evaluation in progress</span>
+          <p>The submission window is officially closed. A huge thank you to all participants who built and submitted
+            their scenes! Our jury is actively evaluating all submissions.</p>
+          <span class="closed-jury-badge"><svg style="width:14px;height:14px;">
+              <use href="#i-clock" />
+            </svg> Jury evaluation in progress</span>
         </div>
       </div>
     </section>
-    <div class="marquee"><div class="marquee-track" id="marqueeTrack"></div></div>
+    <div class="marquee">
+      <div class="marquee-track" id="marqueeTrack"></div>
+    </div>
     <!-- FAQ -->
     <section class="section" id="faq">
       <div class="wrap">
@@ -89,28 +172,55 @@
         <div class="faq-layout">
           <div class="accordion" id="accordion">
             <div class="acc-item">
-              <button class="acc-trigger" aria-expanded="false"><span>What software can I actually use?</span><svg class="acc-icon"><use href="#i-plus" xlink:href="#i-plus" /></svg></button>
-              <div class="acc-panel"><p>Unreal Engine 5 or Twinmotion.</p></div>
+              <button class="acc-trigger" aria-expanded="false"><span>What software can I actually use?</span><svg
+                  class="acc-icon">
+                  <use href="#i-plus" xlink:href="#i-plus" />
+                </svg></button>
+              <div class="acc-panel">
+                <p>Unreal Engine 5 or Twinmotion.</p>
+              </div>
             </div>
             <div class="acc-item">
-              <button class="acc-trigger" aria-expanded="false"><span>Do I need interactivity or a walkthrough?</span><svg class="acc-icon"><use href="#i-plus" xlink:href="#i-plus" /></svg></button>
-              <div class="acc-panel"><p>No — it's a bonus, not a requirement. A strong static hero shot competes just fine.</p></div>
+              <button class="acc-trigger" aria-expanded="false"><span>Do I need interactivity or a
+                  walkthrough?</span><svg class="acc-icon">
+                  <use href="#i-plus" xlink:href="#i-plus" />
+                </svg></button>
+              <div class="acc-panel">
+                <p>No — it's a bonus, not a requirement. A strong static hero shot competes just fine.</p>
+              </div>
             </div>
             <div class="acc-item">
-              <button class="acc-trigger" aria-expanded="false"><span>When exactly do I get the model?</span><svg class="acc-icon"><use href="#i-plus" xlink:href="#i-plus" /></svg></button>
-              <div class="acc-panel"><p>The second the countdown hits zero. Everyone gets it simultaneously.</p></div>
+              <button class="acc-trigger" aria-expanded="false"><span>When exactly do I get the model?</span><svg
+                  class="acc-icon">
+                  <use href="#i-plus" xlink:href="#i-plus" />
+                </svg></button>
+              <div class="acc-panel">
+                <p>The second the countdown hits zero. Everyone gets it simultaneously.</p>
+              </div>
             </div>
             <div class="acc-item">
-              <button class="acc-trigger" aria-expanded="false"><span>How long do I have to submit?</span><svg class="acc-icon"><use href="#i-plus" xlink:href="#i-plus" /></svg></button>
-              <div class="acc-panel"><p>4 days from release. There's a live countdown on the challenge section once it drops.</p></div>
+              <button class="acc-trigger" aria-expanded="false"><span>How long do I have to submit?</span><svg
+                  class="acc-icon">
+                  <use href="#i-plus" xlink:href="#i-plus" />
+                </svg></button>
+              <div class="acc-panel">
+                <p>4 days from release. There's a live countdown on the challenge section once it drops.</p>
+              </div>
             </div>
             <div class="acc-item">
-              <button class="acc-trigger" aria-expanded="false"><span>What do I actually upload?</span><svg class="acc-icon"><use href="#i-plus" xlink:href="#i-plus" /></svg></button>
-              <div class="acc-panel"><p>A packaged zip archive containing your Renders, optional EXE build, and Video walkthrough.</p></div>
+              <button class="acc-trigger" aria-expanded="false"><span>What do I actually upload?</span><svg
+                  class="acc-icon">
+                  <use href="#i-plus" xlink:href="#i-plus" />
+                </svg></button>
+              <div class="acc-panel">
+                <p>A packaged zip archive containing your Renders, optional EXE build, and Video walkthrough.</p>
+              </div>
             </div>
           </div>
           <div class="help-card">
-            <svg><use href="#i-mail" xlink:href="#i-mail" /></svg>
+            <svg>
+              <use href="#i-mail" xlink:href="#i-mail" />
+            </svg>
             <h3>Still stuck?</h3>
             <p>Reach the organizers directly — email or WhatsApp, whichever's faster for you.</p>
             <button class="btn btn-primary btn-sm js-open-help">Need Help</button>
@@ -124,34 +234,65 @@
         <p class="eyebrow">[ 02 — THE RULES ]</p>
         <h2 class="h2">Six things to not get<br>disqualified over.</h2>
         <div class="rules-grid">
-          <div class="rule-card"><span class="rule-num">01</span><p>The supplied model is your primary asset — don't swap the building.</p></div>
-          <div class="rule-card"><span class="rule-num">02</span><p>Final render must come from Unreal Engine 5 or Twinmotion. No exceptions.</p></div>
-          <div class="rule-card"><span class="rule-num">03</span><p>Scene dressing (plants, people, furniture, HDRIs) from third parties is fine.</p></div>
-          <div class="rule-card"><span class="rule-num">04</span><p>Your submission has to be your own work, built for this challenge.</p></div>
-          <div class="rule-card"><span class="rule-num">05</span><p>Deadline is a deadline. Late or corrupted files may be disqualified.</p></div>
-          <div class="rule-card"><span class="rule-num">06</span><p>Keep your project file — organizers may ask for proof of process.</p></div>
+          <div class="rule-card"><span class="rule-num">01</span>
+            <p>The supplied model is your primary asset — don't swap the building.</p>
+          </div>
+          <div class="rule-card"><span class="rule-num">02</span>
+            <p>Final render must come from Unreal Engine 5 or Twinmotion. No exceptions.</p>
+          </div>
+          <div class="rule-card"><span class="rule-num">03</span>
+            <p>Scene dressing (plants, people, furniture, HDRIs) from third parties is fine.</p>
+          </div>
+          <div class="rule-card"><span class="rule-num">04</span>
+            <p>Your submission has to be your own work, built for this challenge.</p>
+          </div>
+          <div class="rule-card"><span class="rule-num">05</span>
+            <p>Deadline is a deadline. Late or corrupted files may be disqualified.</p>
+          </div>
+          <div class="rule-card"><span class="rule-num">06</span>
+            <p>Keep your project file — organizers may ask for proof of process.</p>
+          </div>
         </div>
       </div>
     </section>
   </main>
-  <footer class="footer"><div class="wrap footer-inner" style="justify-content:center;text-align:center;"><p class="footer-credit">Built with 💙 Made by <a href="https://venusapp.in/" target="_blank" rel="noopener noreferrer" class="footer-credit-link">Veil</a></p></div></footer>
+  <!-- <footer class="footer">
+    <div class="wrap footer-inner">
+      <p class="footer-credit">Built with 💙 Made by <a href="https://venusapp.in/" target="_blank"
+          rel="noopener noreferrer" class="footer-credit-link">Veil</a></p>
+    </div>
+  </footer> -->
   <!-- MODAL: REGISTER -->
   <div class="modal-backdrop" id="registerBackdrop">
     <div class="modal" id="registerModal" role="dialog" aria-modal="true" aria-labelledby="registerTitle">
-      <button class="modal-close" id="registerClose" aria-label="Close"><svg><use href="#i-close" xlink:href="#i-close" /></svg></button>
+      <button class="modal-close" id="registerClose" aria-label="Close"><svg>
+          <use href="#i-close" xlink:href="#i-close" />
+        </svg></button>
       <div class="modal-view" id="registerFormView">
         <p class="tag">[ REGISTRATION ]</p>
         <h3 id="registerTitle" class="h3">Lock in your spot.</h3>
         <form id="registerForm" novalidate>
-          <div class="field"><label for="regName">Full name</label><input type="text" id="regName" name="regName" required placeholder="Rushikesh Ingale"></div>
-          <div class="field"><label for="regPhone">Mobile number</label><input type="tel" id="regPhone" name="regPhone" required placeholder="+91 7815646884"></div>
-          <div class="field"><label for="regEmail">Email address</label><input type="email" id="regEmail" name="regEmail" required placeholder="rushikesh@gmail.com"></div>
-          <button type="submit" class="btn btn-primary btn-wide btn-lg">Register</button>
+          <div class="field"><label for="regName">Full name</label><input type="text" id="regName" name="regName"
+              required placeholder="Rushikesh Ingale"></div>
+          <div class="field"><label for="regPhone">Mobile number</label><input type="tel" id="regPhone" name="regPhone"
+              required placeholder="+91 7815646884"></div>
+          <div class="field"><label for="regEmail">Email address</label><input type="email" id="regEmail"
+              name="regEmail" required placeholder="rushikesh@gmail.com"></div>
+          <div class="reg-checks">
+            <label class="check-label" for="regAge"><input type="checkbox" id="regAge" name="regAge" required><span>I
+                confirm that I am below 35 years old.</span></label>
+            <label class="check-label" for="regTerms"><input type="checkbox" id="regTerms" name="regTerms"
+                required><span>I accept the terms &amp; competition policy.</span></label>
+          </div>
+          <button type="submit" class="btn btn-primary btn-wide btn-lg" id="btnSubmitRegister"
+            disabled>Register</button>
           <p class="field-error" id="regFormError"></p>
         </form>
       </div>
       <div class="modal-view modal-view-success" id="registerSuccessView" hidden>
-        <div class="success-badge" id="successBadge"><svg><use href="#i-check" xlink:href="#i-check" /></svg></div>
+        <div class="success-badge" id="successBadge"><svg>
+            <use href="#i-check" xlink:href="#i-check" />
+          </svg></div>
         <h3 class="h3">You're in, <span id="successName">friend</span>.</h3>
         <p class="modal-sub">Confirmation's on its way to your inbox. We'll ping you when challenge drops.</p>
         <button class="btn btn-primary btn-wide" id="registerDoneBtn">Done</button>
@@ -161,15 +302,21 @@
   <!-- MODAL: NEED HELP -->
   <div class="modal-backdrop" id="helpBackdrop">
     <div class="modal modal-help" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
-      <button class="modal-close" id="helpClose" aria-label="Close"><svg><use href="#i-close" xlink:href="#i-close" /></svg></button>
+      <button class="modal-close" id="helpClose" aria-label="Close"><svg>
+          <use href="#i-close" xlink:href="#i-close" />
+        </svg></button>
       <p class="tag">[ NEED HELP ]</p>
       <h3 id="helpTitle" class="h3">Ask us directly.</h3>
       <p class="modal-sub">Drop us an email — we'll get back to you quickly.</p>
       <div class="help-options">
         <a href="mailto:hello@archviz-hackathon.studio?subject=Quick%20question" class="help-option">
-          <svg><use href="#i-mail" xlink:href="#i-mail" /></svg>
+          <svg>
+            <use href="#i-mail" xlink:href="#i-mail" />
+          </svg>
           <div><strong>Email</strong><span>test@vkarch.com</span></div>
-          <svg class="help-arrow"><use href="#i-arrow" xlink:href="#i-arrow" /></svg>
+          <svg class="help-arrow">
+            <use href="#i-arrow" xlink:href="#i-arrow" />
+          </svg>
         </a>
       </div>
     </div>
@@ -177,22 +324,42 @@
   <!-- MODAL: DOWNLOAD MODEL -->
   <div class="modal-backdrop" id="modelBackdrop">
     <div class="modal modal-lg" id="modelModal" role="dialog" aria-modal="true" aria-labelledby="modelModalTitle">
-      <button class="modal-close" id="modelClose" aria-label="Close"><svg><use href="#i-close" xlink:href="#i-close" /></svg></button>
+      <button class="modal-close" id="modelClose" aria-label="Close"><svg>
+          <use href="#i-close" xlink:href="#i-close" />
+        </svg></button>
       <p class="tag">[ ASSET DROP ]</p>
       <h3 id="modelModalTitle" class="h3">Download Base Model</h3>
       <p class="modal-sub">Clean geometry ready for Unreal Engine 5 or Twinmotion:</p>
       <div class="format-options">
         <div class="format-card">
-          <div class="format-info"><div class="format-title"><svg style="width:18px;height:18px;color:var(--tomato);"><use href="#i-cube" /></svg> .FBX Format <span class="format-badge">UE5 / Twinmotion</span></div><span class="format-sub">Autodesk Filmbox with hierarchies · 48 MB</span></div>
-          <button class="btn btn-primary btn-sm js-trigger-download" data-filename="ArchViz_Base_Building_v1.0.fbx">Download .fbx</button>
+          <div class="format-info">
+            <div class="format-title"><svg style="width:18px;height:18px;color:var(--tomato);">
+                <use href="#i-cube" />
+              </svg> .FBX Format <span class="format-badge">UE5 / Twinmotion</span></div><span
+              class="format-sub">Autodesk Filmbox with hierarchies · 48 MB</span>
+          </div>
+          <button class="btn btn-primary btn-sm js-trigger-download"
+            data-filename="ArchViz_Base_Building_v1.0.fbx">Download .fbx</button>
         </div>
         <div class="format-card">
-          <div class="format-info"><div class="format-title"><svg style="width:18px;height:18px;color:var(--mustard);"><use href="#i-cube" /></svg> .OBJ Format <span class="format-badge" style="background:var(--olive);">Universal</span></div><span class="format-sub">Wavefront Quad mesh with MTL companion · 52 MB</span></div>
-          <button class="btn btn-outline btn-sm js-trigger-download" data-filename="ArchViz_Base_Building_v1.0.obj">Download .obj</button>
+          <div class="format-info">
+            <div class="format-title"><svg style="width:18px;height:18px;color:var(--mustard);">
+                <use href="#i-cube" />
+              </svg> .OBJ Format <span class="format-badge" style="background:var(--olive);">Universal</span></div><span
+              class="format-sub">Wavefront Quad mesh with MTL companion · 52 MB</span>
+          </div>
+          <button class="btn btn-outline btn-sm js-trigger-download"
+            data-filename="ArchViz_Base_Building_v1.0.obj">Download .obj</button>
         </div>
         <div class="format-card">
-          <div class="format-info"><div class="format-title"><svg style="width:18px;height:18px;color:var(--rust);"><use href="#i-cube" /></svg> .GLTF / .GLB Format <span class="format-badge" style="background:var(--rust);">Real-time</span></div><span class="format-sub">Binary glTF with PBR texture set · 36 MB</span></div>
-          <button class="btn btn-outline btn-sm js-trigger-download" data-filename="ArchViz_Base_Building_v1.0.glb">Download .gltf</button>
+          <div class="format-info">
+            <div class="format-title"><svg style="width:18px;height:18px;color:var(--rust);">
+                <use href="#i-cube" />
+              </svg> .GLTF / .GLB Format <span class="format-badge" style="background:var(--rust);">Real-time</span>
+            </div><span class="format-sub">Binary glTF with PBR texture set · 36 MB</span>
+          </div>
+          <button class="btn btn-outline btn-sm js-trigger-download"
+            data-filename="ArchViz_Base_Building_v1.0.glb">Download .gltf</button>
         </div>
       </div>
     </div>
@@ -200,24 +367,31 @@
   <!-- MODAL: DESIGN BRIEF -->
   <div class="modal-backdrop" id="briefModalBackdrop">
     <div class="modal modal-lg" id="briefModal" role="dialog" aria-modal="true" aria-labelledby="briefModalTitle">
-      <button class="modal-close" id="briefClose" aria-label="Close"><svg><use href="#i-close" xlink:href="#i-close" /></svg></button>
+      <button class="modal-close" id="briefClose" aria-label="Close"><svg>
+          <use href="#i-close" xlink:href="#i-close" />
+        </svg></button>
       <div class="modal-view" id="briefFormView">
         <p class="tag">[ CREATIVE DIRECTION ]</p>
         <h3 id="briefModalTitle" class="h3">Share Your Design Brief <span style="color: var(--tomato);">*</span></h3>
         <p class="modal-sub">Tell us what you plan to build (~100 words).</p>
         <form id="briefForm" novalidate>
           <div class="field">
-            <textarea id="briefText" name="briefText" required rows="5" placeholder="e.g. A moody dusk scene during rain with warm interior lighting contrasting wet asphalt reflections..."></textarea>
-            <div style="display: flex; justify-content: space-between; font-size: 11.5px; color: var(--text-soft); margin-top: 6px; font-family: 'JetBrains Mono', monospace;">
+            <textarea id="briefText" name="briefText" required rows="5"
+              placeholder="e.g. A moody dusk scene during rain with warm interior lighting contrasting wet asphalt reflections..."></textarea>
+            <div class="field-meta">
               <span>One-time submission</span><span id="briefWordCount">0 words</span>
             </div>
           </div>
-          <button type="submit" class="btn btn-primary btn-wide btn-lg" id="btnSubmitBrief" disabled>Send Brief <svg><use href="#i-arrow" /></svg></button>
+          <button type="submit" class="btn btn-primary btn-wide btn-lg" id="btnSubmitBrief" disabled>Send Brief <svg>
+              <use href="#i-arrow" />
+            </svg></button>
           <p class="field-error" id="briefFormError"></p>
         </form>
       </div>
       <div class="modal-view modal-view-success" id="briefSuccessView" hidden>
-        <div class="success-badge" id="briefSuccessBadge"><svg><use href="#i-check" xlink:href="#i-check" /></svg></div>
+        <div class="success-badge" id="briefSuccessBadge"><svg>
+            <use href="#i-check" xlink:href="#i-check" />
+          </svg></div>
         <h3 class="h3">Design Brief Received!</h3>
         <p class="modal-sub">Your creative thoughts have been recorded. You can now build and render your scene.</p>
         <button class="btn btn-primary btn-wide" id="briefDoneBtn">Done</button>
@@ -227,7 +401,9 @@
   <!-- MODAL: SUBMIT PROJECT ZIP -->
   <div class="modal-backdrop" id="submitModalBackdrop">
     <div class="modal modal-lg" id="submitModal" role="dialog" aria-modal="true" aria-labelledby="submitModalTitle">
-      <button class="modal-close" id="submitModalClose" aria-label="Close"><svg><use href="#i-close" xlink:href="#i-close" /></svg></button>
+      <button class="modal-close" id="submitModalClose" aria-label="Close"><svg>
+          <use href="#i-close" xlink:href="#i-close" />
+        </svg></button>
       <!-- STEP 1: GUIDELINES -->
       <div class="modal-view" id="submitModalGuidelinesView">
         <p class="tag">[ STEP 1 OF 2 — GUIDELINES ]</p>
@@ -235,22 +411,33 @@
         <p class="modal-sub">Review essential requirements before uploading:</p>
         <div class="submit-guidelines-box">
           <ul class="submit-guidelines-list">
-            <li><strong>Folder Structure:</strong> Archive must include <code>renders/</code>, <code>video/</code>, and optional <code>exe/</code>.</li>
+            <li><strong>Folder Structure:</strong> Archive must have proper folders for <code>renders</code>,
+              <code>walkthrough</code>, and
+              <code>exe</code>.
+            </li>
             <li><strong>Engine Policy:</strong> Final output rendered in Unreal Engine 5 or Twinmotion.</li>
-            <li><strong>AI Policy:</strong> Generative AI tools must be disclosed on next step.</li>
-            <li><strong>Proof of Process:</strong> Keep raw project files on drive for verification.</li>
+            <li><strong>AI Policy:</strong> Use of AI tools must be disclosed if there any.</li>
+            <li><strong>Proof of Process:</strong> Keep raw project files on your pc or lapton for future verification.
+            </li>
           </ul>
         </div>
-        <label class="check-label" style="margin-top: 20px;"><input type="checkbox" id="confirmGuidelinesCheck"><span>I have prepared my files and agree to the submission guidelines.</span></label>
-        <button type="button" class="btn btn-primary btn-wide btn-lg" id="btnContinueToUpload" disabled>Continue to Upload <svg><use href="#i-arrow" /></svg></button>
+        <label class="check-label"><input type="checkbox" id="confirmGuidelinesCheck"><span>I have prepared my files and
+            agree to the submission guidelines.</span></label>
+        <button type="button" class="btn btn-primary btn-wide btn-lg" id="btnContinueToUpload" disabled>Continue to
+          Upload <svg>
+            <use href="#i-arrow" />
+          </svg></button>
       </div>
       <!-- STEP 2: UPLOAD -->
       <div class="modal-view" id="submitModalFormView" hidden>
         <p class="tag">[ STEP 2 OF 2 — UPLOAD ]</p>
         <h3 class="h3">Upload your archive</h3>
         <form id="quickSubmitForm" novalidate>
-          <div class="field"><label for="submitUploaderName">Your Full Name *</label><input type="text" id="submitUploaderName" name="submitUploaderName" required placeholder="Jordan Vega" autocomplete="name"></div>
-          <div class="field"><label for="submitUploaderEmail">Email Address *</label><input type="email" id="submitUploaderEmail" name="submitUploaderEmail" required placeholder="jordan@studio.com"></div>
+          <div class="field"><label for="submitUploaderName">Your Full Name *</label><input type="text"
+              id="submitUploaderName" name="submitUploaderName" required placeholder="Jordan Vega" autocomplete="name">
+          </div>
+          <div class="field"><label for="submitUploaderEmail">Email Address *</label><input type="email"
+              id="submitUploaderEmail" name="submitUploaderEmail" required placeholder="jordan@studio.com"></div>
           <div class="field">
             <label for="submitAiUsage">Generative AI Pipeline Disclosure *</label>
             <select id="submitAiUsage" class="select-field" required>
@@ -262,25 +449,33 @@
           <div class="field">
             <label>Project Archive (.zip / .rar / .7z) *</label>
             <div class="zip-dropzone" id="zipDropzone" tabindex="0" role="button" aria-label="Upload Project Zip">
-              <svg><use href="#i-upload" xlink:href="#i-upload" /></svg>
+              <svg>
+                <use href="#i-upload" xlink:href="#i-upload" />
+              </svg>
               <p><strong>Drag & drop your .zip file here</strong> or <span class="dz-browse">browse files</span></p>
               <input type="file" id="zipFileInput" accept=".zip,.rar,.7z,.tar,.gz" hidden>
             </div>
             <div class="zip-file-card" id="zipFileCard" style="display: none;">
               <span id="zipFileName">project.zip · 185 MB</span>
-              <button type="button" id="btnRemoveZip" aria-label="Remove zip file"><svg><use href="#i-trash" /></svg></button>
+              <button type="button" id="btnRemoveZip" aria-label="Remove zip file"><svg>
+                  <use href="#i-trash" />
+                </svg></button>
             </div>
           </div>
-          <div style="display: flex; gap: 12px; margin-top: 10px;">
-            <button type="button" class="btn btn-outline" id="btnBackToGuidelines" style="flex: 0.4;">← Back</button>
-            <button type="submit" class="btn btn-primary btn-lg" id="btnQuickSubmit" style="flex: 1;" disabled>Submit Entry <svg><use href="#i-arrow" /></svg></button>
+          <div class="modal-btn-row">
+            <button type="button" class="btn btn-outline" id="btnBackToGuidelines">← Back</button>
+            <button type="submit" class="btn btn-primary btn-lg" id="btnQuickSubmit" disabled>Submit Entry <svg>
+                <use href="#i-arrow" />
+              </svg></button>
           </div>
           <p class="field-error" id="quickSubmitError"></p>
         </form>
       </div>
       <!-- STEP 3: SUCCESS -->
       <div class="modal-view modal-view-success" id="submitModalSuccessView" hidden>
-        <div class="success-badge" id="submitSuccessBadge"><svg><use href="#i-check" xlink:href="#i-check" /></svg></div>
+        <div class="success-badge" id="submitSuccessBadge"><svg>
+            <use href="#i-check" xlink:href="#i-check" />
+          </svg></div>
         <h3 class="h3">Submission Received, <span id="submitSuccessAuthor">friend</span>!</h3>
         <p class="modal-sub">Your project archive was received and logged. Verification receipt sent to your email.</p>
         <button class="btn btn-primary btn-wide" id="submitModalDoneBtn">Done</button>
@@ -288,10 +483,12 @@
     </div>
   </div>
   <!-- DEBUG -->
-  <div class="debug-pill" id="debugPill" title="Press Q or click to cycle phase"><span class="debug-pill-key">Q</span><span id="debugPillText">Phase 0: Register</span></div>
+  <div class="debug-pill" id="debugPill" title="Press Q or click to cycle phase"><span
+      class="debug-pill-key">Q</span><span id="debugPillText">Phase 0: Register</span></div>
   <div class="debug-toast" id="debugToast" role="status" aria-live="polite"></div>
   <!-- JS Modules -->
   <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.2/lib/anime.min.js"></script>
   <script type="module" src="js/main.js"></script>
 </body>
+
 </html>
