@@ -1,0 +1,51 @@
+/* ==========================================================================
+   RESPONSIVE BREAKPOINTS
+   ========================================================================== */
+
+@media (max-width: 960px) {
+  .rules-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .faq-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .rules-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .countdown {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .wrap {
+    padding: 0 18px;
+  }
+
+  .section {
+    padding: 70px 0;
+  }
+
+  .theme-toggle-float {
+    top: 16px;
+    right: 16px;
+    width: 42px;
+    height: 42px;
+  }
+
+  .c-cell {
+    min-width: 60px;
+    padding: 10px 10px;
+  }
+
+  .flip-digit {
+    --flip-h: 24px;
+    font-size: 22px;
+  }
+}

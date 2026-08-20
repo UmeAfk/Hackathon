@@ -1,0 +1,142 @@
+/* ==========================================================================
+   FLIP CLOCK & COUNTDOWN
+   Single whole-card flip — no split seam, no horizontal divider line.
+   ========================================================================== */
+
+.countdown-block {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.countdown-label {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--text-soft);
+}
+
+.countdown {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ── Cell (the bordered box) ───────────────────────────────────────────── */
+.c-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: var(--surface);
+  border: 3px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 4px 4px 0 0 var(--shadow-color);
+  padding: 14px 16px;
+  min-width: 76px;
+}
+
+.countdown-sm .c-cell {
+  min-width: 62px;
+  padding: 10px 12px;
+}
+
+.c-unit {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-soft);
+  margin-top: 6px;
+}
+
+.c-sep {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-soft);
+}
+
+/* ── Flip clock container ──────────────────────────────────────────────── */
+.flip-clock {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+/* ── Single digit card ─────────────────────────────────────────────────── */
+.flip-card {
+  --card-w: 28px;
+  --card-h: 44px;
+  --font-sz: 32px;
+  position: relative;
+  width: var(--card-w);
+  height: var(--card-h);
+  perspective: 320px;
+}
+
+.countdown-sm .flip-card {
+  --card-w: 22px;
+  --card-h: 34px;
+  --font-sz: 24px;
+}
+
+/* The 3D scene that rotates */
+.flip-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transform-origin: center center;
+}
+
+/* Front & back faces share the same visual style */
+.flip-face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface);
+  border-radius: 5px;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  /* subtle inner shadow for depth — no horizontal line */
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.12),
+    inset 0 -1px 0 rgba(0,0,0,0.08);
+}
+
+.flip-face span {
+  font-family: "JetBrains Mono", monospace;
+  font-size: var(--font-sz);
+  font-weight: 700;
+  line-height: 1;
+  color: var(--tomato);
+  /* prevent any text-rendering shifts */
+  font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Back face starts rotated 180deg so it's hidden at rest */
+.flip-back {
+  transform: rotateX(180deg);
+}
+
+/* ── The flip animation ────────────────────────────────────────────────── */
+@keyframes cardFlip {
+  0%   { transform: rotateX(0deg); }
+  100% { transform: rotateX(-180deg); }
+}
+
+.flip-card-inner.flipping {
+  animation: cardFlip 0.38s cubic-bezier(0.45, 0, 0.55, 1) forwards;
+}
+
+/* Reduced-motion: instant swap, no animation */
+@media (prefers-reduced-motion: reduce) {
+  .flip-card-inner.flipping {
+    animation: none !important;
+  }
+}

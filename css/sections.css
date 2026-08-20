@@ -1,0 +1,176 @@
+/* ==========================================================================
+   SECTIONS, FAQ, RULES & FOOTER
+   ========================================================================== */
+
+.section {
+  padding: 100px 0;
+}
+
+.section-alt {
+  background: var(--surface);
+  border-top: 3px solid var(--border);
+}
+
+.h2 {
+  font-size: clamp(30px, 4vw, 46px);
+  line-height: 1.05;
+  margin-bottom: 50px;
+}
+
+/* FAQ Layout & Accordion */
+.faq-layout {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 50px;
+  align-items: start;
+}
+
+.accordion {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.acc-item {
+  background: var(--surface);
+  border: 3px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 4px 4px 0 0 var(--shadow-color);
+  overflow: hidden;
+}
+
+.acc-trigger {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  background: none;
+  border: none;
+  padding: 20px 22px;
+  text-align: left;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--text);
+}
+
+.acc-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  color: var(--tomato);
+  transition: transform 0.3s var(--ease-out);
+}
+
+.acc-item.open .acc-icon {
+  transform: rotate(45deg);
+}
+
+.acc-panel {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s var(--ease-out);
+}
+
+.acc-panel p {
+  margin: 0;
+  padding: 0 22px 22px;
+  color: var(--text-soft);
+  font-size: 14.5px;
+  line-height: 1.7;
+}
+
+/* Help Card */
+.help-card {
+  background: var(--mustard);
+  border: 3px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: 6px 6px 0 0 var(--shadow-color);
+  padding: 34px 28px;
+  color: var(--ink);
+  text-align: center;
+}
+
+.help-card svg {
+  width: 28px;
+  height: 28px;
+  margin-bottom: 14px;
+}
+
+.help-card h3 {
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 19px;
+  margin: 0 0 10px;
+}
+
+.help-card p {
+  font-size: 13.5px;
+  margin: 0 0 22px;
+}
+
+/* Rules Section (Phase 2) */
+.rules-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.rule-card {
+  background: var(--bg);
+  border: 3px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 4px 4px 0 0 var(--shadow-color);
+  padding: 26px 24px;
+}
+
+.rule-num {
+  display: block;
+  font-family: "JetBrains Mono", monospace;
+  font-weight: 700;
+  color: var(--tomato);
+  font-size: 13px;
+  margin-bottom: 10px;
+}
+
+.rule-card p {
+  margin: 0;
+  font-size: 14.5px;
+  color: var(--text-soft);
+}
+
+/* Footer */
+.footer {
+  padding: 42px 0 46px;
+  background: var(--surface);
+  text-align: center;
+}
+
+.footer-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.footer-credit {
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-soft);
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.footer-credit-link {
+  color: var(--tomato);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.15s var(--ease-out);
+}
+
+.footer-credit-link:hover {
+  color: var(--rust);
+}
