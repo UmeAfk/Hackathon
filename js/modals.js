@@ -3,8 +3,9 @@
    ========================================================= */
 
 import { showToast } from './utils.js';
-import { CHALLENGE_WAIT_MS, SUBMIT_WINDOW_MS, syncPhase, syncBriefState } from './phaseEngine.js';
+import { syncPhase, syncBriefState } from './phaseEngine.js';
 import { openModal, closeModal, spawnConfetti } from './modalCore.js';
+import { getAssetDownload, registerParticipant, saveDesignBrief } from './api.js';
 
 export function initModals() {
   // 1. Register modal
@@ -48,7 +49,7 @@ export function initModals() {
   }
 
   if (registerForm) {
-    registerForm.addEventListener('submit', (e) => {
+    registerForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const ageCheck = document.getElementById('regAge');
       const termsCheck = document.getElementById('regTerms');
@@ -64,30 +65,48 @@ export function initModals() {
       const phone = document.getElementById('regPhone').value.trim();
       const email = document.getElementById('regEmail').value.trim();
 
-      localStorage.setItem('av-registered', '1');
-      localStorage.setItem('av-registered-name', name);
-      localStorage.setItem('av-registered-phone', phone);
-      localStorage.setItem('av-registered-email', email);
-      localStorage.setItem('av-registered-age-confirmed', '1');
-      localStorage.setItem('av-registered-terms-accepted', '1');
-      localStorage.setItem('av-registered-at', Date.now().toString());
+      btnSubmitRegister.disabled = true;
+      btnSubmitRegister.textContent = 'Registering…';
+      try {
+        const result = await registerParticipant({
+          name,
+          phone,
+          email,
+          ageConfirmed: true,
+          termsAccepted: true,
+          website: registerForm.elements.website?.value || ''
+        });
 
-      const now = Date.now();
-      const reveal = now + CHALLENGE_WAIT_MS;
-      localStorage.setItem('av-task-reveal-time', reveal.toString());
-      localStorage.setItem('av-submission-deadline', (reveal + SUBMIT_WINDOW_MS).toString());
+        localStorage.setItem('av-registered', '1');
+        localStorage.setItem('av-registered-name', name);
+        localStorage.setItem('av-registered-phone', phone);
+        localStorage.setItem('av-registered-email', email);
+        localStorage.setItem('av-registered-at', Date.now().toString());
 
-      if (registerFormView) registerFormView.hidden = true;
-      if (registerSuccessView) registerSuccessView.hidden = false;
-      const successName = document.getElementById('successName');
-      if (successName) successName.textContent = name.split(' ')[0] || 'friend';
+        if (registerFormView) registerFormView.hidden = true;
+        if (registerSuccessView) registerSuccessView.hidden = false;
+        const successName = document.getElementById('successName');
+        if (successName) successName.textContent = name.split(' ')[0] || 'friend';
+        const successCopy = registerSuccessView?.querySelector('.modal-sub');
+        if (successCopy && result.alreadyRegistered) {
+          successCopy.textContent = result.message;
+        } else if (successCopy && result.emailSent === false) {
+          successCopy.textContent = 'Registration saved. Email delivery is not configured yet, but you can test the challenge on this device.';
+        }
 
-      if (window.anime) {
-        window.anime({ targets: '#successBadge', scale: [0, 1], duration: 500, easing: 'easeOutBack' });
-        window.anime({ targets: '#successBadge svg', strokeDashoffset: [40, 0], duration: 500, delay: 150, easing: 'easeOutCubic' });
-        spawnConfetti(registerModal);
+        if (window.anime) {
+          window.anime({ targets: '#successBadge', scale: [0, 1], duration: 500, easing: 'easeOutBack' });
+          window.anime({ targets: '#successBadge svg', strokeDashoffset: [40, 0], duration: 500, delay: 150, easing: 'easeOutCubic' });
+          spawnConfetti(registerModal);
+        }
+        registerForm.reset();
+        syncPhase();
+      } catch (error) {
+        if (regFormError) regFormError.textContent = error.message;
+      } finally {
+        btnSubmitRegister.textContent = 'Register';
+        updateRegisterButtonState();
       }
-      registerForm.reset();
     });
   }
 
@@ -118,13 +137,31 @@ export function initModals() {
   }
 
   document.querySelectorAll('.js-trigger-download').forEach(btn => {
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', async () => {
       const filename = btn.getAttribute('data-filename') || 'ArchViz_Base_Building.fbx';
-      showToast(`Downloading ${filename}... Remember to share your Design Brief!`);
-      btn.textContent = 'Downloaded ✓';
-      setTimeout(() => {
-        btn.innerHTML = `Download ${filename.slice(filename.lastIndexOf('.'))}`;
-      }, 2500);
+      const originalLabel = btn.innerHTML;
+      btn.disabled = true;
+      btn.textContent = 'Preparing…';
+      try {
+        const result = await getAssetDownload(filename);
+        const link = document.createElement('a');
+        link.href = result.url;
+        link.rel = 'noopener';
+        link.style.display = 'none';
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        btn.textContent = 'Downloaded';
+        showToast(`${filename} is downloading. Remember to share your Design Brief!`);
+      } catch (error) {
+        showToast(error.message);
+        btn.innerHTML = originalLabel;
+      } finally {
+        setTimeout(() => {
+          btn.disabled = false;
+          btn.innerHTML = originalLabel;
+        }, 2500);
+      }
     });
   });
 
@@ -187,7 +224,7 @@ export function initModals() {
   }
 
   if (briefForm) {
-    briefForm.addEventListener('submit', (e) => {
+    briefForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const text = (briefText ? briefText.value.trim() : '');
       if (text.length < 5) {
@@ -195,17 +232,27 @@ export function initModals() {
         return;
       }
 
-      localStorage.setItem('av-design-brief', text);
-      localStorage.setItem('av-brief-submitted', '1');
-      syncBriefState();
+      btnSubmitBrief.disabled = true;
+      const previousLabel = btnSubmitBrief.innerHTML;
+      btnSubmitBrief.textContent = 'Saving…';
+      try {
+        await saveDesignBrief(text);
+        localStorage.setItem('av-design-brief', text);
+        localStorage.setItem('av-brief-submitted', '1');
+        syncBriefState();
 
-      if (briefFormView) briefFormView.hidden = true;
-      if (briefSuccessView) briefSuccessView.hidden = false;
+        if (briefFormView) briefFormView.hidden = true;
+        if (briefSuccessView) briefSuccessView.hidden = false;
 
-      if (window.anime) {
-        window.anime({ targets: '#briefSuccessBadge', scale: [0, 1], duration: 500, easing: 'easeOutBack' });
-        window.anime({ targets: '#briefSuccessBadge svg', strokeDashoffset: [40, 0], duration: 500, delay: 150, easing: 'easeOutCubic' });
-        spawnConfetti(briefModal);
+        if (window.anime) {
+          window.anime({ targets: '#briefSuccessBadge', scale: [0, 1], duration: 500, easing: 'easeOutBack' });
+          window.anime({ targets: '#briefSuccessBadge svg', strokeDashoffset: [40, 0], duration: 500, delay: 150, easing: 'easeOutCubic' });
+          spawnConfetti(briefModal);
+        }
+      } catch (error) {
+        if (briefFormError) briefFormError.textContent = error.message;
+        btnSubmitBrief.innerHTML = previousLabel;
+        updateBriefWordCount();
       }
     });
   }

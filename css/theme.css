@@ -1,31 +1,59 @@
 /* ==========================================================================
-   THEME — Dark mode tokens & Floating Theme Switcher
+   THEME — Retro print palettes & floating theme switcher
    ========================================================================== */
 
 [data-theme="dark"] {
-  --bg: #16110B;
-  --surface: #2B2013;
-  --text: #F6ECD9;
-  --text-soft: #CBB89A;
-  --border: #F6ECD9;
-  --shadow-color: #F6ECD9;
-  --tomato: #FF7A45;
-  --tomato-ink: #FF9566;
-  --mustard: #FFC966;
-  --olive: #93AC57;
-  --rust: #FF8B5C;
+  color-scheme: dark;
+  --bg: #11100E;
+  --surface: #24201A;
+  --text: #FFF3DC;
+  --text-soft: #D8C6AA;
+  --border: #F6E8CF;
+  --shadow-color: #E6532E;
+  --tomato: #F0643C;
+  --tomato-ink: #FF8A64;
+  --mustard: #F4B942;
+  --olive: #91A958;
+  --rust: #FF8A62;
 }
 
 [data-theme="dark"] body {
   background:
-    radial-gradient(ellipse 70% 45% at 50% -8%, rgba(255, 122, 69, 0.10), transparent 60%),
-    radial-gradient(ellipse 60% 40% at 100% 100%, rgba(255, 201, 102, 0.06), transparent 55%),
+    radial-gradient(ellipse 70% 45% at 50% -8%, rgba(240, 100, 60, 0.13), transparent 60%),
+    radial-gradient(ellipse 60% 40% at 100% 100%, rgba(244, 185, 66, 0.08), transparent 55%),
     var(--bg);
 }
 
 [data-theme="dark"] .tag,
 [data-theme="dark"] .eyebrow {
   color: var(--mustard);
+}
+
+[data-theme="dark"] .hero-noise {
+  background-image: radial-gradient(var(--tomato) 1px, transparent 1px);
+  opacity: 0.13;
+}
+
+[data-theme="dark"] .section-alt {
+  background: #191713;
+}
+
+[data-theme="dark"] .modal-backdrop {
+  background: rgba(0, 0, 0, 0.78);
+}
+
+[data-theme="dark"] .help-card,
+[data-theme="dark"] .closed-jury-badge {
+  --text: var(--ink);
+  --text-soft: var(--ink-soft);
+  --border: var(--ink);
+  color: var(--ink);
+  border-color: var(--ink);
+  box-shadow: 6px 6px 0 var(--tomato);
+}
+
+[data-theme="dark"] .submit-guidelines-box {
+  background: #191713;
 }
 
 /* Floating Theme Toggle */
@@ -65,30 +93,30 @@
 }
 
 .theme-toggle .icon-moon {
-  opacity: 0;
-  transform: rotate(40deg) scale(0.6);
-}
-
-.theme-toggle .icon-sun {
   opacity: 1;
   transform: rotate(0) scale(1);
 }
 
-[data-theme="dark"] .theme-toggle .icon-sun {
+.theme-toggle .icon-sun {
   opacity: 0;
   transform: rotate(-40deg) scale(0.6);
 }
 
-[data-theme="dark"] .theme-toggle .icon-moon {
+[data-theme="dark"] .theme-toggle .icon-sun {
   opacity: 1;
   transform: rotate(0) scale(1);
 }
 
+[data-theme="dark"] .theme-toggle .icon-moon {
+  opacity: 0;
+  transform: rotate(40deg) scale(0.6);
+}
+
 .theme-toggle-float {
   position: fixed;
-  top: 22px;
-  right: 24px;
-  z-index: 300;
+  top: max(22px, env(safe-area-inset-top));
+  right: max(24px, env(safe-area-inset-right));
+  z-index: 150;
 }
 
 /* Brand */

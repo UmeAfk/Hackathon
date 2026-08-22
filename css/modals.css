@@ -30,6 +30,7 @@
   max-width: 460px;
   max-height: 88vh;
   overflow-y: auto;
+  overscroll-behavior: contain;
   padding: 40px 36px;
   transform: scale(0.9) translateY(16px);
   opacity: 0;

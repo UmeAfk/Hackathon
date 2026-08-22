@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Entangle Hackthon</title>
+  <title>Entangle ArchViz Challenge</title>
   <meta name="description"
     content="A real-time ArchViz challenge. Register, wait for the drop, build your hero shot, submit before the clock runs out.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,7 +15,7 @@
   <link rel="icon" type="image/x-icon" href="public/favicon.ico">
   <link rel="icon" type="image/png" href="public/icon.png">
   <link rel="apple-touch-icon" href="public/icon.png">
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/style.css?v=20260823b">
 </head>
 
 <body>
@@ -97,7 +97,7 @@
   </svg>
 
   <!-- ============================= THEME TOGGLE ============================= -->
-  <button class="theme-toggle theme-toggle-float" id="themeToggle" aria-label="Toggle color theme">
+  <button class="theme-toggle theme-toggle-float" id="themeToggle" aria-label="Switch to dark theme" aria-pressed="false">
     <svg class="icon-sun">
       <use href="#i-sun" xlink:href="#i-sun" />
     </svg>
@@ -272,6 +272,8 @@
         <p class="tag">[ REGISTRATION ]</p>
         <h3 id="registerTitle" class="h3">Lock in your spot.</h3>
         <form id="registerForm" novalidate>
+          <div aria-hidden="true" style="position:absolute;left:-10000px"><label for="regWebsite">Website</label><input
+              type="text" id="regWebsite" name="website" tabindex="-1" autocomplete="off"></div>
           <div class="field"><label for="regName">Full name</label><input type="text" id="regName" name="regName"
               required placeholder="Rushikesh Ingale"></div>
           <div class="field"><label for="regPhone">Mobile number</label><input type="tel" id="regPhone" name="regPhone"
@@ -309,11 +311,11 @@
       <h3 id="helpTitle" class="h3">Ask us directly.</h3>
       <p class="modal-sub">Drop us an email — we'll get back to you quickly.</p>
       <div class="help-options">
-        <a href="mailto:hello@archviz-hackathon.studio?subject=Quick%20question" class="help-option">
+        <a href="mailto:entangle2k26@vkarch.com?subject=Entangle%202K26%20question" class="help-option">
           <svg>
             <use href="#i-mail" xlink:href="#i-mail" />
           </svg>
-          <div><strong>Email</strong><span>test@vkarch.com</span></div>
+          <div><strong>Email</strong><span>entangle2k26@vkarch.com</span></div>
           <svg class="help-arrow">
             <use href="#i-arrow" xlink:href="#i-arrow" />
           </svg>
@@ -359,7 +361,7 @@
             </div><span class="format-sub">Binary glTF with PBR texture set · 36 MB</span>
           </div>
           <button class="btn btn-outline btn-sm js-trigger-download"
-            data-filename="ArchViz_Base_Building_v1.0.glb">Download .gltf</button>
+            data-filename="ArchViz_Base_Building_v1.0.glb">Download .glb</button>
         </div>
       </div>
     </div>

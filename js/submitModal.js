@@ -4,6 +4,7 @@
 
 import { formatSize, showToast } from './utils.js';
 import { openModal, closeModal, spawnConfetti } from './modalCore.js';
+import { fetchParticipant, uploadSubmission } from './api.js';
 
 export function initSubmitModal() {
   const submitModalBackdrop = document.getElementById('submitModalBackdrop');
@@ -77,7 +78,7 @@ export function initSubmitModal() {
   }
 
   if (btnContinueToUpload) {
-    btnContinueToUpload.addEventListener('click', () => {
+    btnContinueToUpload.addEventListener('click', async () => {
       if (submitModalGuidelinesView) submitModalGuidelinesView.hidden = true;
       if (submitModalFormView) submitModalFormView.hidden = false;
 
@@ -85,6 +86,18 @@ export function initSubmitModal() {
       const savedEmail = localStorage.getItem('av-registered-email');
       if (savedName && submitUploaderName) submitUploaderName.value = savedName;
       if (savedEmail && submitUploaderEmail) submitUploaderEmail.value = savedEmail;
+
+      try {
+        const { participant } = await fetchParticipant();
+        if (submitUploaderName) submitUploaderName.value = participant.name;
+        if (submitUploaderEmail) submitUploaderEmail.value = participant.email;
+        localStorage.setItem('av-registered-name', participant.name);
+        localStorage.setItem('av-registered-email', participant.email);
+      } catch (error) {
+        if (!savedName || !savedEmail) {
+          if (quickSubmitError) quickSubmitError.textContent = error.message;
+        }
+      }
 
       updateQuickSubmitButtonState();
     });
@@ -149,7 +162,7 @@ export function initSubmitModal() {
   }
 
   if (quickSubmitForm) {
-    quickSubmitForm.addEventListener('submit', (e) => {
+    quickSubmitForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       if (!uploadedZipFile) {
         if (quickSubmitError) quickSubmitError.textContent = 'Please attach a project archive (.zip) to submit.';
@@ -164,7 +177,11 @@ export function initSubmitModal() {
       btnQuickSubmit.disabled = true;
       btnQuickSubmit.textContent = 'Uploading project…';
 
-      setTimeout(() => {
+      try {
+        await uploadSubmission({
+          file: uploadedZipFile,
+          aiUsage: document.getElementById('submitAiUsage')?.value || 'none'
+        });
         btnQuickSubmit.textContent = 'Submit Entry';
         if (submitSuccessAuthor) submitSuccessAuthor.textContent = authorName.split(' ')[0];
         if (submitModalFormView) submitModalFormView.hidden = true;
@@ -175,7 +192,11 @@ export function initSubmitModal() {
           window.anime({ targets: '#submitSuccessBadge svg', strokeDashoffset: [40, 0], duration: 500, delay: 150, easing: 'easeOutCubic' });
           spawnConfetti(submitModal);
         }
-      }, 1000);
+      } catch (error) {
+        if (quickSubmitError) quickSubmitError.textContent = error.message;
+        btnQuickSubmit.textContent = 'Submit Entry';
+        updateQuickSubmitButtonState();
+      }
     });
   }
 
