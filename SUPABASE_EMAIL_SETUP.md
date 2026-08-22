@@ -27,7 +27,7 @@ The Supabase publishable key is not needed by this implementation.
 
 ## 2. Supabase database and buckets
 
-Run the complete contents of `supabase/migrations/202608220001_event_backend.sql` in **Supabase → SQL Editor**. If you already ran the original setup SQL, run the small follow-up file `supabase/migrations/202608230002_resend_sync_audit.sql` once as well. Both are safe to rerun. Confirm these private buckets exist:
+Run the complete contents of `supabase/migrations/202608220001_event_backend.sql` in **Supabase → SQL Editor**. If you already ran the original setup SQL, run the small follow-up files `supabase/migrations/202608230002_resend_sync_audit.sql` and `supabase/migrations/202608230003_resumable_5gb_submissions.sql` once as well. They are safe to rerun. Confirm these private buckets exist:
 
 - `challenge-assets`
 - `challenge-submissions`
@@ -42,7 +42,7 @@ The app prefers the final filenames shown on the website, but during setup it wi
 
 ## 3. Minimal Vercel variables
 
-Add these to both **Preview** and **Production**, then redeploy:
+Add the two Supabase values to **Development**, **Preview**, and **Production**. Add Resend to those same environments only after IT gives you a real API key:
 
 ```text
 SUPABASE_URL
@@ -50,9 +50,19 @@ SUPABASE_SECRET_KEY
 RESEND_API_KEY
 ```
 
-For now, you can omit `RESEND_API_KEY`. Registration, database storage, model downloads, briefs, and submission uploads will still work; emails and Resend contact syncing will be skipped. Add the key and redeploy after IT completes the domain setup.
+For now, omit `RESEND_API_KEY` completely. Do not save placeholder text as the value. Registration, database storage, model downloads, briefs, and submission uploads will still work; emails and Resend contact syncing will be skipped. Add the real key and redeploy after IT completes the domain setup.
+
+`vercel dev` reads the **Development** scope. After changing that scope, stop the local server, run `npx vercel@latest pull --yes`, and start `npm run dev` again. The generated `.env.local` and `.vercel` files are intentionally ignored by Git.
 
 No `CRON_SECRET`, model-path, email-content, date, or upload-size variables are required.
+
+## 3.1 Submission storage sizing
+
+The application allows **one resumable archive up to 5 GiB per participant**. This is not a shared 5 GiB allowance. Total project storage and download bandwidth are separate Supabase plan quotas, so size the Supabase plan for the expected participant count.
+
+The browser uploads directly to Supabase using signed TUS resumable uploads in fixed 6 MiB chunks. Interrupted transfers retry automatically and can resume from the previously uploaded chunks.
+
+Because the bucket inherits the project-wide Storage limit, open **Supabase → Storage → Settings** and set **Global file size limit** to at least **5 GB** before testing. Keep `challenge-submissions` private and leave its per-bucket file-size restriction disabled; the API enforces the 5 GiB participant limit.
 
 ## 4. Resend and the office mailbox
 
@@ -98,7 +108,7 @@ Use a Vercel **Preview** deployment, because Production correctly keeps the mode
 3. The secure participant token is stored in that browser automatically.
 4. Open the same Preview URL with `?debug=1&phase=2`.
 5. Click OBJ download. `models/test.obj` should download.
-6. Test a design brief and a small ZIP submission.
+6. Test a design brief and a ZIP submission. The upload should display percentage progress and continue through transient connection failures.
 7. Confirm rows in `participants` and `submissions`, and files in `challenge-submissions`.
 
 When Resend is ready, add its key, redeploy, and register with a new email address to test the instant confirmation and automatic segment creation.

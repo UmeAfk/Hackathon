@@ -19,7 +19,7 @@ export function getEventConfig() {
     ...defaults,
     eventName: 'Entangle ArchViz Challenge',
     siteUrl: automaticSiteUrl.replace(/\/$/, ''),
-    maxUploadBytes: 500 * 1024 * 1024
+    maxUploadBytes: 5 * 1024 * 1024 * 1024
   };
 
   validDate(config.registrationOpensAt, 'registration opening');

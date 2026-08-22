@@ -6,6 +6,8 @@ import { formatSize, showToast } from './utils.js';
 import { openModal, closeModal, spawnConfetti } from './modalCore.js';
 import { fetchParticipant, uploadSubmission } from './api.js';
 
+const MAX_SUBMISSION_BYTES = 5 * 1024 * 1024 * 1024;
+
 export function initSubmitModal() {
   const submitModalBackdrop = document.getElementById('submitModalBackdrop');
   const submitModal = document.getElementById('submitModal');
@@ -30,6 +32,10 @@ export function initSubmitModal() {
   const btnQuickSubmit = document.getElementById('btnQuickSubmit');
   const quickSubmitError = document.getElementById('quickSubmitError');
   const submitSuccessAuthor = document.getElementById('submitSuccessAuthor');
+  const uploadProgress = document.getElementById('uploadProgress');
+  const uploadProgressTrack = document.getElementById('uploadProgressTrack');
+  const uploadProgressFill = document.getElementById('uploadProgressFill');
+  const uploadProgressText = document.getElementById('uploadProgressText');
 
   let uploadedZipFile = null;
 
@@ -43,6 +49,16 @@ export function initSubmitModal() {
   }
 
   function handleZipFileSelected(file) {
+    if (file.size > MAX_SUBMISSION_BYTES) {
+      uploadedZipFile = null;
+      if (zipFileInput) zipFileInput.value = '';
+      if (zipFileCard) zipFileCard.style.display = 'none';
+      if (zipDropzone) zipDropzone.style.display = 'block';
+      resetUploadProgress();
+      if (quickSubmitError) quickSubmitError.textContent = 'Your archive is larger than the 5 GB submission limit.';
+      updateQuickSubmitButtonState();
+      return;
+    }
     uploadedZipFile = file;
     if (zipFileName) {
       zipFileName.textContent = `${file.name} · ${formatSize(file.size)}`;
@@ -50,7 +66,24 @@ export function initSubmitModal() {
     if (zipDropzone) zipDropzone.style.display = 'none';
     if (zipFileCard) zipFileCard.style.display = 'flex';
     if (quickSubmitError) quickSubmitError.textContent = '';
+    if (uploadProgress) uploadProgress.hidden = true;
     updateQuickSubmitButtonState();
+  }
+
+  function showUploadProgress(bytesUploaded, bytesTotal) {
+    const percentage = bytesTotal > 0 ? Math.min(100, Math.round((bytesUploaded / bytesTotal) * 100)) : 0;
+    if (uploadProgress) uploadProgress.hidden = false;
+    if (uploadProgressFill) uploadProgressFill.style.width = `${percentage}%`;
+    if (uploadProgressTrack) uploadProgressTrack.setAttribute('aria-valuenow', String(percentage));
+    if (uploadProgressText) uploadProgressText.textContent = `${percentage}% · ${formatSize(bytesUploaded)} of ${formatSize(bytesTotal)}`;
+    if (btnQuickSubmit) btnQuickSubmit.textContent = `Uploading ${percentage}%`;
+  }
+
+  function resetUploadProgress() {
+    if (uploadProgress) uploadProgress.hidden = true;
+    if (uploadProgressFill) uploadProgressFill.style.width = '0%';
+    if (uploadProgressTrack) uploadProgressTrack.setAttribute('aria-valuenow', '0');
+    if (uploadProgressText) uploadProgressText.textContent = 'Preparing secure upload…';
   }
 
   document.querySelectorAll('.js-open-submit-modal').forEach(btn => {
@@ -66,6 +99,7 @@ export function initSubmitModal() {
       if (btnContinueToUpload) {
         btnContinueToUpload.disabled = true;
       }
+      resetUploadProgress();
 
       openModal(submitModalBackdrop, submitModal);
     });
@@ -157,6 +191,7 @@ export function initSubmitModal() {
       if (zipFileInput) zipFileInput.value = '';
       if (zipFileCard) zipFileCard.style.display = 'none';
       if (zipDropzone) zipDropzone.style.display = 'block';
+      resetUploadProgress();
       updateQuickSubmitButtonState();
     });
   }
@@ -175,12 +210,16 @@ export function initSubmitModal() {
 
       const authorName = (submitUploaderName ? submitUploaderName.value.trim() : '') || 'friend';
       btnQuickSubmit.disabled = true;
-      btnQuickSubmit.textContent = 'Uploading project…';
+      btnQuickSubmit.textContent = 'Preparing upload…';
+      if (btnRemoveZip) btnRemoveZip.disabled = true;
+      if (btnBackToGuidelines) btnBackToGuidelines.disabled = true;
+      showUploadProgress(0, uploadedZipFile.size);
 
       try {
         await uploadSubmission({
           file: uploadedZipFile,
-          aiUsage: document.getElementById('submitAiUsage')?.value || 'none'
+          aiUsage: document.getElementById('submitAiUsage')?.value || 'none',
+          onProgress: showUploadProgress
         });
         btnQuickSubmit.textContent = 'Submit Entry';
         if (submitSuccessAuthor) submitSuccessAuthor.textContent = authorName.split(' ')[0];
@@ -196,6 +235,9 @@ export function initSubmitModal() {
         if (quickSubmitError) quickSubmitError.textContent = error.message;
         btnQuickSubmit.textContent = 'Submit Entry';
         updateQuickSubmitButtonState();
+      } finally {
+        if (btnRemoveZip) btnRemoveZip.disabled = false;
+        if (btnBackToGuidelines) btnBackToGuidelines.disabled = false;
       }
     });
   }

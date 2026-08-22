@@ -1,47 +1,76 @@
-# Hackthon # 
+# Entangle ArchViz Challenge
 
-A real-time ArchViz competition platform built with modular vanilla web technologies, split-flap flip countdowns, modal pipelines, and a retro-brutalist design system. Design Loud, Render Honest
+A responsive retro-brutalist event website for registration, challenge distribution, private model downloads, design briefs, and submission uploads.
 
-The production backend uses Supabase for registrations, private model assets, design briefs, and project archives. The app sends instant registration and submission receipts through Resend, syncs participants into Resend Segments, and lets organizers design and schedule the task-drop and reminder Broadcasts in Resend. See [SUPABASE_EMAIL_SETUP.md](SUPABASE_EMAIL_SETUP.md) for the launch checklist.
+## Event flow
 
----
+The interface and headline change with the event stage:
 
-## Features & Challenge Flow
+1. **Registration — “Design loud. Render honest.”** Participants provide their name, email, phone number, and required confirmations.
+2. **Awaiting drop — “Spot secured. Stay ready.”** Registered participants see the synchronized task countdown.
+3. **Live challenge — “Model dropped. Make it unforgettable.”** Participants can repeatedly download available model formats, save a design brief, and upload one resumable project archive up to 5 GiB.
+4. **Jury review — “Time’s up. Jury’s watching.”** Submissions close and the evaluation state is displayed.
 
-The site operates across **4 dynamic challenge phases**:
+## Backend and email flow
 
-1. **Phase 0: Pre-Registration**
-   - Hero displays *"Register Now"* and *"FAQ & Details"*.
-   - Interactive Registration modal with server validation, secure participant links, confirmation email, and celebration confetti.
-2. **Phase 1: Awaiting Drop**
-   - Hero switches to a split-flap countdown: `[ TASK DROPS IN ]`.
-3. **Phase 2: Live Challenge**
-   - Hero displays `[ CHALLENGE IS LIVE — SUBMISSIONS CLOSE IN ]` countdown synchronized to the event schedule.
-   - Action row unlocks:
-     - **Download Base Model** (.fbx, .obj, .glb)
-     - **Design Brief** modal (word count indicator & creative proposal submission)
-     - **Submit Entry** (2-step modal: Guidelines confirmation → direct private Supabase Storage upload)
-   - Rules section becomes visible.
-4. **Phase 3: Closed & Jury Evaluation**
-   - Submission window closes and displays the jury evaluation banner.
+- Supabase stores participants, secure access tokens, design briefs, submission metadata, and private files. Large submission archives upload directly in retryable 6 MiB chunks.
+- Registration saves normalized name, email, phone number, consent flags, and timestamps.
+- Resend sends the immediate registration confirmation and completed-upload receipt.
+- Each registrant is synchronized to the `Entangle 2K26 — Registered` Resend Segment with a private `access_url`.
+- Completed submitters are also synchronized to `Entangle 2K26 — Submitters`.
+- Organizers design and schedule task-drop, reminder, and jury-update Broadcasts in the Resend dashboard.
 
----
+See [SUPABASE_EMAIL_SETUP.md](SUPABASE_EMAIL_SETUP.md) for the production checklist, DNS guidance, SQL setup, Broadcast schedule, and organizer queries.
 
-## Running Locally
+## Local development
 
-Run with any local static web server (required for ES6 module loading):
+Use Node.js 22 LTS for the smoothest Vercel CLI experience, then install dependencies:
 
-```bash
-# Option 1: Using npx serve
-npx serve .
-
-# Option 2: Using Python 3
-python -m http.server 3000
+```powershell
+npm install
 ```
 
-Open `http://localhost:3000` in your browser.
+Create an ignored `.env.local` file when testing the API locally:
 
+```env
+SUPABASE_URL=https://YOUR_PROJECT.supabase.co
+SUPABASE_SECRET_KEY=YOUR_ROTATED_SERVER_SECRET
+RESEND_API_KEY=re_xxxxxxxxx
+```
 
-<p align="center">
-  Built with 💙 Made by <a href="https://venusapp.in/">Veil</a>
-</p>
+`RESEND_API_KEY` is optional until email testing is ready. Never place the Supabase secret or Resend key in browser code or commit them to Git.
+
+If you use Vercel-managed variables, enable the Supabase values for the **Development** environment as well as Preview and Production. `vercel dev` does not pull Preview or Production values into local development.
+
+Start the full Vercel development server:
+
+```powershell
+npm run dev
+```
+
+Open the URL printed by Vercel, normally `http://localhost:3000`.
+
+A plain static server can preview the design but cannot run registration, private downloads, Supabase uploads, or other `/api` routes.
+
+## Phase previewing
+
+On localhost or a Vercel Preview deployment, use:
+
+```text
+?debug=1&phase=0  Registration
+?debug=1&phase=1  Awaiting task drop
+?debug=1&phase=2  Live challenge
+?debug=1&phase=3  Jury review
+```
+
+Production still follows the published dates and cannot be unlocked by the visual debug query.
+
+## Validation
+
+```powershell
+npm run check
+npm test
+npm audit --omit=dev
+```
+
+The responsive layout is designed for desktop, tablet, iPhone-sized, and narrow-phone viewports without changing the desktop composition.

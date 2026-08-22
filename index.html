@@ -111,8 +111,9 @@
     <section class="hero">
       <div class="hero-noise" aria-hidden="true"></div>
       <div class="wrap hero-wrap">
-        <h1 class="display">Design loud.<br>Render <span class="hl">honest.</span></h1>
-        <p class="hero-sub">One building. One brief. Whatever you make of it.</p>
+        <h1 class="display"><span id="heroTitleLead">Design loud.</span><br><span id="heroTitleSecond">Render </span><span
+            class="hl" id="heroTitleAccent">honest.</span></h1>
+        <p class="hero-sub" id="heroSubtitle">One building. One brief. Whatever you make of it.</p>
         <div class="hero-ctas" id="heroCtas">
           <button class="btn btn-primary btn-lg js-open-register" id="heroRegisterBtn">Register Now <svg>
               <use href="#i-arrow" xlink:href="#i-arrow" />
@@ -450,6 +451,7 @@
           </div>
           <div class="field">
             <label>Project Archive (.zip / .rar / .7z) *</label>
+            <p class="upload-limit-note">One resumable archive per participant · maximum 5 GB</p>
             <div class="zip-dropzone" id="zipDropzone" tabindex="0" role="button" aria-label="Upload Project Zip">
               <svg>
                 <use href="#i-upload" xlink:href="#i-upload" />
@@ -462,6 +464,13 @@
               <button type="button" id="btnRemoveZip" aria-label="Remove zip file"><svg>
                   <use href="#i-trash" />
                 </svg></button>
+            </div>
+            <div class="upload-progress" id="uploadProgress" hidden>
+              <div class="upload-progress-track" role="progressbar" aria-label="Archive upload progress"
+                aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="uploadProgressTrack">
+                <span id="uploadProgressFill"></span>
+              </div>
+              <span id="uploadProgressText">Preparing secure upload…</span>
             </div>
           </div>
           <div class="modal-btn-row">

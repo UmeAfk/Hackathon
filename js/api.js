@@ -1,3 +1,5 @@
+import { Upload } from '../public/vendor/tus.esm.js';
+
 const TOKEN_KEY = 'av-participant-token';
 
 export function captureParticipantToken() {
@@ -57,7 +59,61 @@ export async function getAssetDownload(filename) {
   });
 }
 
-export async function uploadSubmission({ file, aiUsage }) {
+function runResumableUpload(intent, file, onProgress) {
+  return new Promise((resolve, reject) => {
+    const upload = new Upload(file, {
+      endpoint: intent.resumableEndpoint,
+      retryDelays: [0, 3000, 5000, 10000, 20000],
+      chunkSize: 6 * 1024 * 1024,
+      uploadDataDuringCreation: true,
+      removeFingerprintOnSuccess: true,
+      headers: {
+        'x-signature': intent.uploadToken,
+        'x-upsert': 'false'
+      },
+      metadata: {
+        bucketName: intent.bucketName,
+        objectName: intent.storagePath,
+        contentType: file.type || 'application/octet-stream',
+        cacheControl: '3600'
+      },
+      onError(error) {
+        reject(new Error(error?.message || 'The resumable upload failed. Check your connection and retry.'));
+      },
+      onProgress(bytesUploaded, bytesTotal) {
+        if (onProgress) onProgress(bytesUploaded, bytesTotal);
+      },
+      onSuccess() {
+        resolve();
+      }
+    });
+
+    upload.findPreviousUploads()
+      .then(previousUploads => {
+        if (previousUploads.length) upload.resumeFromPreviousUpload(previousUploads[0]);
+        upload.start();
+      })
+      .catch(reject);
+  });
+}
+
+async function finalizeSubmission(submissionId) {
+  let latestError;
+  for (const delay of [0, 1000, 2500]) {
+    if (delay) await new Promise(resolve => setTimeout(resolve, delay));
+    try {
+      return await apiRequest('/api/submission-complete', {
+        method: 'POST',
+        body: JSON.stringify({ submissionId })
+      });
+    } catch (error) {
+      latestError = error;
+    }
+  }
+  throw latestError;
+}
+
+export async function uploadSubmission({ file, aiUsage, onProgress }) {
   const intent = await apiRequest('/api/submission', {
     method: 'POST',
     body: JSON.stringify({
@@ -68,23 +124,8 @@ export async function uploadSubmission({ file, aiUsage }) {
     })
   });
 
-  const form = new FormData();
-  form.append('cacheControl', '3600');
-  form.append('', file);
-  const uploadResponse = await fetch(intent.signedUrl, {
-    method: 'PUT',
-    headers: { 'x-upsert': 'false' },
-    body: form
-  });
-  if (!uploadResponse.ok) {
-    const error = await uploadResponse.json().catch(() => ({}));
-    throw new Error(error.message || error.error || 'The archive upload failed. Please check your connection and retry.');
-  }
-
-  await apiRequest('/api/submission-complete', {
-    method: 'POST',
-    body: JSON.stringify({ submissionId: intent.submissionId })
-  });
+  await runResumableUpload(intent, file, onProgress);
+  await finalizeSubmission(intent.submissionId);
   return intent;
 }
 

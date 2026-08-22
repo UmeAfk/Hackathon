@@ -10,9 +10,9 @@ test('default event timeline moves through every public state', () => {
   assert.equal(eventState(new Date('2026-09-07T18:29:00Z')), 'closed');
 });
 
-test('event configuration uses explicit ISO dates and a safe upload default', () => {
+test('event configuration uses explicit ISO dates and a five GiB upload ceiling', () => {
   const config = getEventConfig();
-  assert.equal(config.maxUploadBytes, 500 * 1024 * 1024);
+  assert.equal(config.maxUploadBytes, 5 * 1024 * 1024 * 1024);
   assert.equal(new Date(config.taskDropsAt).toISOString(), '2026-09-03T18:29:00.000Z');
   assert.equal(new Date(config.submissionDeadlineAt).toISOString(), '2026-09-07T18:29:00.000Z');
 });

@@ -21,6 +21,33 @@ const forcedPhaseParam = debugAllowed ? urlParams.get('phase') : null;
 let debugPhase = parseForcedPhase(forcedPhaseParam);
 let activeTimer = null;
 
+const phaseCopy = [
+  {
+    lead: 'Design loud.',
+    second: 'Render ',
+    accent: 'honest.',
+    subtitle: 'One building. One brief. Whatever you make of it.'
+  },
+  {
+    lead: 'Spot secured.',
+    second: 'Stay ',
+    accent: 'ready.',
+    subtitle: 'Registration is locked. The model lands for everyone at the same moment.'
+  },
+  {
+    lead: 'Model dropped.',
+    second: 'Make it ',
+    accent: 'unforgettable.',
+    subtitle: 'Four days. One base model. Your strongest architectural story.'
+  },
+  {
+    lead: 'Time’s up.',
+    second: 'Jury’s ',
+    accent: 'watching.',
+    subtitle: 'Submissions are sealed. Every eligible entry now gets a careful look.'
+  }
+];
+
 function parseForcedPhase(value) {
   if (value === '0' || value === 'upcoming') return 0;
   if (value === '1') return 1;
@@ -111,6 +138,17 @@ export function syncPhase() {
   const liveCtaRow = document.getElementById('liveCtaRow');
   const rulesSection = document.getElementById('rules');
   const debugPillText = document.getElementById('debugPillText');
+  const hero = document.querySelector('.hero');
+  const heroTitleLead = document.getElementById('heroTitleLead');
+  const heroTitleSecond = document.getElementById('heroTitleSecond');
+  const heroTitleAccent = document.getElementById('heroTitleAccent');
+  const heroSubtitle = document.getElementById('heroSubtitle');
+  const copy = phaseCopy[phase] || phaseCopy[0];
+  if (hero) hero.dataset.phase = String(phase);
+  if (heroTitleLead) heroTitleLead.textContent = copy.lead;
+  if (heroTitleSecond) heroTitleSecond.textContent = copy.second;
+  if (heroTitleAccent) heroTitleAccent.textContent = copy.accent;
+  if (heroSubtitle) heroSubtitle.textContent = copy.subtitle;
   if (debugPillText) {
     const names = ['Phase 0: Register', 'Phase 1: Awaiting Drop', 'Phase 2: Live Drop', 'Phase 3: Closed'];
     debugPillText.textContent = names[phase] || `Phase ${phase}`;

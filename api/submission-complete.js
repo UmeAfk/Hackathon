@@ -16,7 +16,7 @@ export default async function handler(request, response) {
     const submissionId = String(bodyOf(request).submissionId || '');
     const supabase = getSupabase();
     const { data: submission, error } = await supabase.from('submissions')
-      .select('id,participant_id,storage_path,original_filename,status,receipt_sent_at')
+      .select('id,participant_id,storage_path,original_filename,file_size,status,receipt_sent_at')
       .eq('id', submissionId).eq('participant_id', participant.id).maybeSingle();
     if (error) throw error;
     if (!submission) return json(response, 404, { error: 'Submission record not found.' });
@@ -26,7 +26,12 @@ export default async function handler(request, response) {
     const filename = submission.storage_path.slice(slash + 1);
     const { data: objects, error: listError } = await supabase.storage.from('challenge-submissions').list(folder, { search: filename, limit: 5 });
     if (listError) throw listError;
-    if (!objects?.some(object => object.name === filename)) return json(response, 409, { error: 'The archive has not finished uploading. Please wait and try again.' });
+    const uploadedObject = objects?.find(object => object.name === filename);
+    if (!uploadedObject) return json(response, 409, { error: 'The archive has not finished uploading. Please wait and try again.' });
+    const storedSize = Number(uploadedObject.metadata?.size);
+    if (Number.isFinite(storedSize) && storedSize !== Number(submission.file_size)) {
+      return json(response, 409, { error: 'The stored archive size does not match the selected file. Please retry the upload.' });
+    }
 
     const uploadedAt = new Date().toISOString();
     const { error: updateError } = await supabase.from('submissions').update({ status: 'uploaded', uploaded_at: uploadedAt, updated_at: uploadedAt }).eq('id', submission.id);

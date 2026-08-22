@@ -47,6 +47,7 @@
   font-size: clamp(42px, 7.5vw, 88px);
   line-height: 0.98;
   margin-bottom: 22px;
+  text-wrap: balance;
 }
 
 .hl {
@@ -60,6 +61,24 @@
   margin: 0 auto 36px;
   color: var(--text-soft);
   font-size: 16.5px;
+  text-wrap: balance;
+}
+
+.hero[data-phase="1"] .hero-sub,
+.hero[data-phase="2"] .hero-sub,
+.hero[data-phase="3"] .hero-sub {
+  margin-bottom: 14px;
+}
+
+.hero[data-phase="1"] .countdown-block,
+.hero[data-phase="2"] .countdown-block {
+  margin-top: 0;
+}
+
+.hero[data-phase="1"] .display,
+.hero[data-phase="2"] .display,
+.hero[data-phase="3"] .display {
+  font-size: clamp(40px, 6.4vw, 78px);
 }
 
 .hero-ctas {

@@ -157,6 +157,13 @@
   text-decoration: underline;
 }
 
+.upload-limit-note {
+  margin: 5px 0 12px;
+  color: var(--text-soft);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
+}
+
 .zip-file-card {
   display: flex;
   align-items: center;
@@ -189,4 +196,38 @@
 .zip-file-card button svg {
   width: 16px;
   height: 16px;
+}
+
+.upload-progress {
+  display: grid;
+  gap: 8px;
+  margin: -2px 0 18px;
+}
+
+.upload-progress[hidden] {
+  display: none;
+}
+
+.upload-progress-track {
+  height: 16px;
+  overflow: hidden;
+  background: var(--bg);
+  border: 2px solid var(--border);
+  border-radius: 999px;
+  box-shadow: 2px 2px 0 var(--shadow-color);
+}
+
+.upload-progress-track span {
+  display: block;
+  width: 0;
+  height: 100%;
+  background: var(--tomato);
+  transition: width 0.18s linear;
+}
+
+#uploadProgressText {
+  color: var(--text-soft);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
+  font-weight: 700;
 }

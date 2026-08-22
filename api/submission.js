@@ -11,6 +11,13 @@ function safeFilename(filename) {
   return cleaned || 'submission.zip';
 }
 
+function resumableEndpoint() {
+  const projectUrl = new URL(process.env.SUPABASE_URL);
+  const standardHost = projectUrl.hostname.match(/^([^.]+)\.supabase\.co$/i);
+  if (standardHost) return `https://${standardHost[1]}.storage.supabase.co/storage/v1/upload/resumable`;
+  return `${projectUrl.origin}/storage/v1/upload/resumable`;
+}
+
 export default async function handler(request, response) {
   if (!allowMethods(request, response, ['POST'])) return;
   try {
@@ -25,15 +32,24 @@ export default async function handler(request, response) {
     const aiUsage = cleanText(body.aiUsage, 40);
     const config = getEventConfig();
     if (!allowedExtensions.has(extension)) return json(response, 400, { error: 'Upload a .zip, .rar, .7z, .tar, or .gz archive.' });
-    if (!Number.isSafeInteger(fileSize) || fileSize <= 0 || fileSize > config.maxUploadBytes) return json(response, 400, { error: `Archive must be smaller than ${Math.round(config.maxUploadBytes / 1024 / 1024)} MB.` });
+    if (!Number.isSafeInteger(fileSize) || fileSize <= 0 || fileSize > config.maxUploadBytes) return json(response, 400, { error: 'Archive must be 5 GB or smaller.' });
     if (!['none', 'concept', 'textures'].includes(aiUsage)) return json(response, 400, { error: 'Select a valid AI disclosure.' });
 
     const supabase = getSupabase();
-    const { data: existing, error: existingError } = await supabase.from('submissions').select('id,status').eq('participant_id', participant.id).maybeSingle();
+    const { data: existing, error: existingError } = await supabase.from('submissions')
+      .select('id,status,storage_path,original_filename,file_size')
+      .eq('participant_id', participant.id)
+      .maybeSingle();
     if (existingError) throw existingError;
     if (existing?.status === 'uploaded') return json(response, 409, { error: 'A completed submission is already recorded for this registration.' });
 
-    const storagePath = `${participant.id}/${crypto.randomUUID()}-${safeFilename(originalFilename)}`;
+    const samePendingFile = existing?.status === 'initiated'
+      && existing.original_filename === originalFilename
+      && Number(existing.file_size) === fileSize
+      && existing.storage_path;
+    const storagePath = samePendingFile
+      ? existing.storage_path
+      : `${participant.id}/${crypto.randomUUID()}-${safeFilename(originalFilename)}`;
     const row = {
       participant_id: participant.id,
       uploader_name: participant.name,
@@ -54,7 +70,14 @@ export default async function handler(request, response) {
 
     const { data: signed, error: signError } = await supabase.storage.from('challenge-submissions').createSignedUploadUrl(storagePath);
     if (signError) throw signError;
-    return json(response, 200, { ok: true, submissionId: submission.id, storagePath, signedUrl: signed.signedUrl });
+    return json(response, 200, {
+      ok: true,
+      submissionId: submission.id,
+      storagePath,
+      bucketName: 'challenge-submissions',
+      uploadToken: signed.token,
+      resumableEndpoint: resumableEndpoint()
+    });
   } catch (error) {
     console.error('Submission initialization failed:', error.message);
     return json(response, 500, { error: 'The secure upload could not be started. Please try again.' });
