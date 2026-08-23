@@ -5,14 +5,18 @@ import { accessUrl, submissionReceiptEmail } from './_lib/email-templates.js';
 import { sendEmail } from './_lib/mailer.js';
 import { eventState, windowOverrideEnabled } from './_lib/event.js';
 import { syncResendContact } from './_lib/resend-contacts.js';
+import { consumeRateLimit, rateLimitResponse } from './_lib/rate-limit.js';
 
 export default async function handler(request, response) {
   if (!allowMethods(request, response, ['POST'])) return;
   try {
-    if (!windowOverrideEnabled() && eventState() !== 'live') return json(response, 403, { error: 'The submission deadline has passed.' });
+    if (!windowOverrideEnabled(request) && eventState() !== 'live') return json(response, 403, { error: 'The submission deadline has passed.' });
     const participantToken = bearerToken(request);
     const participant = await findParticipantByToken(participantToken);
     if (!participant) return json(response, 401, { error: 'Your participant link is invalid or expired.' });
+    if (!await consumeRateLimit(request, 'submission-complete', 30, 60 * 60, participant.id)) {
+      return rateLimitResponse(response, 60 * 60);
+    }
     const submissionId = String(bodyOf(request).submissionId || '');
     const supabase = getSupabase();
     const { data: submission, error } = await supabase.from('submissions')

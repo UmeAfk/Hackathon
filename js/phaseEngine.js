@@ -16,7 +16,7 @@ let timeline = {
 };
 
 const urlParams = new URLSearchParams(window.location.search);
-const debugAllowed = ['localhost', '127.0.0.1'].includes(window.location.hostname) || urlParams.get('debug') === '1';
+const debugAllowed = ['localhost', '127.0.0.1'].includes(window.location.hostname);
 const forcedPhaseParam = debugAllowed ? urlParams.get('phase') : null;
 let debugPhase = parseForcedPhase(forcedPhaseParam);
 let activeTimer = null;

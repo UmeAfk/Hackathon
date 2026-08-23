@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { eventState, getEventConfig } from '../api/_lib/event.js';
+import { eventState, getEventConfig, windowOverrideEnabled } from '../api/_lib/event.js';
 import { registrationEmail, submissionReceiptEmail } from '../api/_lib/email-templates.js';
 
 test('default event timeline moves through every public state', () => {
@@ -15,6 +15,21 @@ test('event configuration uses explicit ISO dates and a five GiB upload ceiling'
   assert.equal(config.maxUploadBytes, 5 * 1024 * 1024 * 1024);
   assert.equal(new Date(config.taskDropsAt).toISOString(), '2026-09-03T18:29:00.000Z');
   assert.equal(new Date(config.submissionDeadlineAt).toISOString(), '2026-09-07T18:29:00.000Z');
+});
+
+test('event-window overrides are limited to local Vercel development', () => {
+  const previous = process.env.VERCEL_ENV;
+  process.env.VERCEL_ENV = 'preview';
+  assert.equal(windowOverrideEnabled({ headers: { host: 'localhost:3000' } }), false);
+  process.env.VERCEL_ENV = 'production';
+  assert.equal(windowOverrideEnabled({ headers: { host: 'localhost:3000' } }), false);
+  process.env.VERCEL_ENV = 'development';
+  assert.equal(windowOverrideEnabled({ headers: { host: 'example.com' } }), true);
+  delete process.env.VERCEL_ENV;
+  assert.equal(windowOverrideEnabled({ headers: { host: 'localhost:3000' } }), true);
+  assert.equal(windowOverrideEnabled({ headers: { host: 'example.com' } }), false);
+  if (previous === undefined) delete process.env.VERCEL_ENV;
+  else process.env.VERCEL_ENV = previous;
 });
 
 test('transactional email templates escape participant and file content', () => {

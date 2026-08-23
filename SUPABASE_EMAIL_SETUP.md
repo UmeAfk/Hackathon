@@ -25,9 +25,11 @@ The screenshots shared during setup exposed a Supabase secret and mailbox creden
 
 The Supabase publishable key is not needed by this implementation.
 
+Production registration does not return secure participant tokens to the browser response. Existing registrations cannot be overwritten through the public form; refreshed access is delivered only to the already-saved mailbox. Browser access tokens use session storage and disappear when the browser session closes.
+
 ## 2. Supabase database and buckets
 
-Run the complete contents of `supabase/migrations/202608220001_event_backend.sql` in **Supabase → SQL Editor**. If you already ran the original setup SQL, run the small follow-up files `supabase/migrations/202608230002_resend_sync_audit.sql` and `supabase/migrations/202608230003_resumable_5gb_submissions.sql` once as well. They are safe to rerun. Confirm these private buckets exist:
+Run the complete contents of `supabase/migrations/202608220001_event_backend.sql` in **Supabase → SQL Editor**. If you already ran the original setup SQL, run the small follow-up files `supabase/migrations/202608230002_resend_sync_audit.sql`, `supabase/migrations/202608230003_resumable_5gb_submissions.sql`, and `supabase/migrations/202608240004_security_hardening.sql` once as well. They are safe to rerun. Confirm these private buckets exist:
 
 - `challenge-assets`
 - `challenge-submissions`
@@ -56,6 +58,8 @@ For now, omit `RESEND_API_KEY` completely. Do not save placeholder text as the v
 
 No `CRON_SECRET`, model-path, email-content, date, or upload-size variables are required.
 
+The security-hardening migration adds server-side rate limits for registration, participant lookup, downloads, briefs, and submissions. If it has not been applied, the server logs a warning and temporarily fails open so the launch is not broken.
+
 ## 3.1 Submission storage sizing
 
 The application allows **one resumable archive up to 5 GiB per participant**. This is not a shared 5 GiB allowance. Total project storage and download bandwidth are separate Supabase plan quotas, so size the Supabase plan for the expected participant count.
@@ -72,6 +76,8 @@ Because the bucket inherits the project-wide Storage limit, open **Supabase → 
 4. After Resend shows **Verified**, create a **Full access** API key, add it to Vercel as `RESEND_API_KEY`, and redeploy. Full access is required because the backend both sends emails and creates/updates Contacts, Segments, and the `access_url` contact property. Keep this key server-only.
 
 The sender and reply address are fixed as `Entangle 2K26 <entangle2k26@vkarch.com>`. Resend handles outgoing delivery; replies and website questions continue to arrive in the existing Netrix inbox. Multiple DNS records can coexist when they have distinct names/purposes; IT should copy Resend's values exactly and preserve the office-mail MX records.
+
+Treat participant archives as untrusted files. Download them only on an organizer machine with current endpoint protection, scan every archive before extraction, extract into a dedicated folder, and never run submitted executables outside a disposable sandbox or virtual machine.
 
 The Resend test domain is suitable only for sending to the account owner's address. A verified `vkarch.com` domain is required before sending to all participants.
 
@@ -101,12 +107,12 @@ For the task-drop and reminder buttons, use `{{{contact.access_url}}}` as the UR
 
 ## 6. Test now without Resend
 
-Use a Vercel **Preview** deployment, because Production correctly keeps the model and submission controls locked until the real event dates.
+Use local `vercel dev` for early end-to-end testing. Preview and Production correctly keep model and submission APIs locked until the real event dates.
 
-1. Make sure the two Supabase variables are enabled for Preview and redeploy.
+1. Make sure the two Supabase variables are enabled for Development, pull them locally, and restart `npm run dev`.
 2. Register with a test address. The page should say the registration was saved without email delivery.
 3. The secure participant token is stored in that browser automatically.
-4. Open the same Preview URL with `?debug=1&phase=2`.
+4. Open the same localhost URL with `?debug=1&phase=2`.
 5. Click OBJ download. `models/test.obj` should download.
 6. Test a design brief and a ZIP submission. The upload should display percentage progress and continue through transient connection failures.
 7. Confirm rows in `participants` and `submissions`, and files in `challenge-submissions`.

@@ -3,18 +3,19 @@ import { Upload } from '../public/vendor/tus.esm.js';
 const TOKEN_KEY = 'av-participant-token';
 
 export function captureParticipantToken() {
+  ['av-registered-name', 'av-registered-email', 'av-registered-phone'].forEach(key => localStorage.removeItem(key));
   const hash = window.location.hash.startsWith('#') ? window.location.hash.slice(1) : '';
   const token = new URLSearchParams(hash).get('entry');
   if (token) {
-    localStorage.setItem(TOKEN_KEY, token);
+    sessionStorage.setItem(TOKEN_KEY, token);
     localStorage.setItem('av-registered', '1');
     history.replaceState(null, '', `${window.location.pathname}${window.location.search}`);
   }
-  return token || localStorage.getItem(TOKEN_KEY) || '';
+  return token || sessionStorage.getItem(TOKEN_KEY) || '';
 }
 
 export function participantToken() {
-  return localStorage.getItem(TOKEN_KEY) || captureParticipantToken();
+  return sessionStorage.getItem(TOKEN_KEY) || captureParticipantToken();
 }
 
 async function apiRequest(path, options = {}) {
@@ -44,7 +45,7 @@ export async function registerParticipant(details) {
     auth: false,
     body: JSON.stringify(details)
   });
-  if (data.token) localStorage.setItem(TOKEN_KEY, data.token);
+  if (data.token) sessionStorage.setItem(TOKEN_KEY, data.token);
   return data;
 }
 
@@ -59,8 +60,25 @@ export async function getAssetDownload(filename) {
   });
 }
 
-function runResumableUpload(intent, file, onProgress) {
+function cancelledUploadError() {
+  const error = new Error('Upload cancelled.');
+  error.name = 'AbortError';
+  return error;
+}
+
+function runResumableUpload(intent, file, onProgress, signal) {
   return new Promise((resolve, reject) => {
+    let settled = false;
+    let abortHandler;
+    const cleanup = () => {
+      if (signal && abortHandler) signal.removeEventListener('abort', abortHandler);
+    };
+    const finish = (callback, value) => {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      callback(value);
+    };
     const upload = new Upload(file, {
       endpoint: intent.resumableEndpoint,
       retryDelays: [0, 3000, 5000, 10000, 20000],
@@ -78,22 +96,34 @@ function runResumableUpload(intent, file, onProgress) {
         cacheControl: '3600'
       },
       onError(error) {
-        reject(new Error(error?.message || 'The resumable upload failed. Check your connection and retry.'));
+        finish(reject, new Error(error?.message || 'The resumable upload failed. Check your connection and retry.'));
       },
       onProgress(bytesUploaded, bytesTotal) {
         if (onProgress) onProgress(bytesUploaded, bytesTotal);
       },
       onSuccess() {
-        resolve();
+        finish(resolve);
       }
     });
 
+    abortHandler = () => {
+      upload.abort(true)
+        .catch(() => {})
+        .finally(() => finish(reject, cancelledUploadError()));
+    };
+    if (signal?.aborted) {
+      abortHandler();
+      return;
+    }
+    if (signal) signal.addEventListener('abort', abortHandler, { once: true });
+
     upload.findPreviousUploads()
       .then(previousUploads => {
+        if (signal?.aborted) return;
         if (previousUploads.length) upload.resumeFromPreviousUpload(previousUploads[0]);
         upload.start();
       })
-      .catch(reject);
+      .catch(error => finish(reject, error));
   });
 }
 
@@ -113,9 +143,10 @@ async function finalizeSubmission(submissionId) {
   throw latestError;
 }
 
-export async function uploadSubmission({ file, aiUsage, onProgress }) {
+export async function uploadSubmission({ file, aiUsage, onProgress, signal }) {
   const intent = await apiRequest('/api/submission', {
     method: 'POST',
+    signal,
     body: JSON.stringify({
       filename: file.name,
       fileSize: file.size,
@@ -124,7 +155,7 @@ export async function uploadSubmission({ file, aiUsage, onProgress }) {
     })
   });
 
-  await runResumableUpload(intent, file, onProgress);
+  await runResumableUpload(intent, file, onProgress, signal);
   await finalizeSubmission(intent.submissionId);
   return intent;
 }

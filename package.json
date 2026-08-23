@@ -4,17 +4,18 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "npx vercel@latest dev",
-    "build:vendor": "esbuild node_modules/tus-js-client/lib.esm/browser/index.js --bundle --format=esm --minify --sourcemap --outfile=public/vendor/tus.esm.js",
-    "check": "node --check api/register.js && node --check api/submission.js && node --check api/submission-complete.js && node --check api/brief.js && node --check api/asset-download.js && node --check api/participant.js && node --check api/_lib/http.js && node --check api/_lib/event.js && node --check api/_lib/email-templates.js && node --check api/_lib/resend-contacts.js && node --check js/api.js && node --check js/modals.js && node --check js/submitModal.js && node --check js/phaseEngine.js && node --check js/theme.js",
+    "dev": "npx vercel@59.5.0 dev",
+    "build:vendor": "esbuild node_modules/tus-js-client/lib.esm/browser/index.js --bundle --format=esm --minify --outfile=public/vendor/tus.esm.js",
+    "check": "node --check api/register.js && node --check api/submission.js && node --check api/submission-complete.js && node --check api/brief.js && node --check api/asset-download.js && node --check api/participant.js && node --check api/_lib/http.js && node --check api/_lib/event.js && node --check api/_lib/email-templates.js && node --check api/_lib/mailer.js && node --check api/_lib/rate-limit.js && node --check api/_lib/resend-contacts.js && node --check api/_lib/supabase.js && node --check api/_lib/tokens.js && node --check js/api.js && node --check js/modals.js && node --check js/submitModal.js && node --check js/phaseEngine.js && node --check js/theme.js",
     "test": "node --test"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.112.3",
+    "animejs": "^3.2.2",
     "tus-js-client": "^4.3.1"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=20.9 <25"
   },
   "devDependencies": {
     "esbuild": "^0.28.2"

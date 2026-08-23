@@ -15,6 +15,7 @@ The interface and headline change with the event stage:
 
 - Supabase stores participants, secure access tokens, design briefs, submission metadata, and private files. Large submission archives upload directly in retryable 6 MiB chunks.
 - Registration saves normalized name, email, phone number, consent flags, and timestamps.
+- Production registration never returns a participant access token in the public API response; secure access is delivered to the registered mailbox and kept only for the active browser session.
 - Resend sends the immediate registration confirmation and completed-upload receipt.
 - Each registrant is synchronized to the `Entangle 2K26 — Registered` Resend Segment with a private `access_url`.
 - Completed submitters are also synchronized to `Entangle 2K26 — Submitters`.
@@ -54,7 +55,7 @@ A plain static server can preview the design but cannot run registration, privat
 
 ## Phase previewing
 
-On localhost or a Vercel Preview deployment, use:
+On localhost, use:
 
 ```text
 ?debug=1&phase=0  Registration
@@ -63,7 +64,7 @@ On localhost or a Vercel Preview deployment, use:
 ?debug=1&phase=3  Jury review
 ```
 
-Production still follows the published dates and cannot be unlocked by the visual debug query.
+Preview and Production follow the published dates and cannot be unlocked by the visual debug query.
 
 ## Validation
 

@@ -15,6 +15,7 @@ function resendKey() {
 async function resendRequest(path, { method = 'GET', body, allowNotFound = false, allowConflict = false } = {}) {
   const response = await fetch(`${RESEND_API_URL}${path}`, {
     method,
+    signal: AbortSignal.timeout(10_000),
     headers: {
       Authorization: `Bearer ${resendKey()}`,
       ...(body ? { 'Content-Type': 'application/json' } : {})

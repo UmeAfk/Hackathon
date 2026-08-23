@@ -23,6 +23,7 @@ async function resendRequest(path, body, idempotencyKey) {
   const { apiKey } = emailConfig();
   const response = await fetch(`https://api.resend.com${path}`, {
     method: 'POST',
+    signal: AbortSignal.timeout(10_000),
     headers: {
       Authorization: `Bearer ${apiKey}`,
       'Content-Type': 'application/json',

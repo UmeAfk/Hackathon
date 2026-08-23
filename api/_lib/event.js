@@ -30,8 +30,12 @@ export function getEventConfig() {
   return config;
 }
 
-export function windowOverrideEnabled() {
-  return process.env.VERCEL_ENV !== 'production';
+export function windowOverrideEnabled(request) {
+  if (process.env.VERCEL_ENV === 'production' || process.env.VERCEL_ENV === 'preview') return false;
+  if (process.env.VERCEL_ENV === 'development') return true;
+  const host = String(request?.headers?.host || '').toLowerCase();
+  const hostname = host.startsWith('[') ? host.slice(0, host.indexOf(']') + 1) : host.split(':')[0];
+  return hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '[::1]';
 }
 
 export function eventState(now = new Date()) {

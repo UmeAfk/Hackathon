@@ -7,4 +7,3 @@ tus-js-client/lib.esm/upload.js:
 tus-js-client/lib.esm/browser/fileReader.js:
   (*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE *)
 */
-//# sourceMappingURL=tus.esm.js.map

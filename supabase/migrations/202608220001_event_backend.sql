@@ -30,6 +30,7 @@ create table if not exists public.participant_tokens (
 );
 create index if not exists participant_tokens_participant_idx on public.participant_tokens(participant_id);
 create index if not exists participant_tokens_active_idx on public.participant_tokens(token_hash, expires_at) where revoked_at is null;
+create index if not exists participant_tokens_expiry_idx on public.participant_tokens(expires_at);
 
 create table if not exists public.submissions (
   id uuid primary key default gen_random_uuid(),

@@ -78,9 +78,6 @@ export function initModals() {
         });
 
         localStorage.setItem('av-registered', '1');
-        localStorage.setItem('av-registered-name', name);
-        localStorage.setItem('av-registered-phone', phone);
-        localStorage.setItem('av-registered-email', email);
         localStorage.setItem('av-registered-at', Date.now().toString());
 
         if (registerFormView) registerFormView.hidden = true;
@@ -88,11 +85,7 @@ export function initModals() {
         const successName = document.getElementById('successName');
         if (successName) successName.textContent = name.split(' ')[0] || 'friend';
         const successCopy = registerSuccessView?.querySelector('.modal-sub');
-        if (successCopy && result.alreadyRegistered) {
-          successCopy.textContent = result.message;
-        } else if (successCopy && result.emailSent === false) {
-          successCopy.textContent = 'Registration saved. Email delivery is not configured yet, but you can test the challenge on this device.';
-        }
+        if (successCopy && result.message) successCopy.textContent = result.message;
 
         if (window.anime) {
           window.anime({ targets: '#successBadge', scale: [0, 1], duration: 500, easing: 'easeOutBack' });

@@ -2,6 +2,7 @@ import { allowMethods, bearerToken, bodyOf, json } from './_lib/http.js';
 import { findParticipantByToken } from './_lib/tokens.js';
 import { eventState, windowOverrideEnabled } from './_lib/event.js';
 import { getSupabase } from './_lib/supabase.js';
+import { consumeRateLimit, rateLimitResponse } from './_lib/rate-limit.js';
 
 const formats = {
   'ArchViz_Base_Building_v1.0.fbx': '.fbx',
@@ -38,9 +39,12 @@ async function createDownloadUrl(storage, path) {
 export default async function handler(request, response) {
   if (!allowMethods(request, response, ['POST'])) return;
   try {
-    if (!windowOverrideEnabled() && eventState() !== 'live') return json(response, 403, { error: 'The base model is available only while the challenge is live.' });
+    if (!windowOverrideEnabled(request) && eventState() !== 'live') return json(response, 403, { error: 'The base model is available only while the challenge is live.' });
     const participant = await findParticipantByToken(bearerToken(request));
     if (!participant) return json(response, 401, { error: 'Open the secure link in your task email to download the model.' });
+    if (!await consumeRateLimit(request, 'asset-download', 60, 60 * 60, participant.id)) {
+      return rateLimitResponse(response, 60 * 60);
+    }
     const requestedFilename = String(bodyOf(request).filename || '');
     const extension = formats[requestedFilename];
     if (!extension) return json(response, 404, { error: 'That model format is not available.' });

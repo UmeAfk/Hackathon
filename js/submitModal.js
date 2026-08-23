@@ -38,6 +38,13 @@ export function initSubmitModal() {
   const uploadProgressText = document.getElementById('uploadProgressText');
 
   let uploadedZipFile = null;
+  let activeUploadController = null;
+
+  function cancelActiveUpload() {
+    if (!activeUploadController) return;
+    activeUploadController.abort();
+    activeUploadController = null;
+  }
 
   function updateQuickSubmitButtonState() {
     const hasName = submitUploaderName && submitUploaderName.value.trim().length > 0;
@@ -116,21 +123,12 @@ export function initSubmitModal() {
       if (submitModalGuidelinesView) submitModalGuidelinesView.hidden = true;
       if (submitModalFormView) submitModalFormView.hidden = false;
 
-      const savedName = localStorage.getItem('av-registered-name');
-      const savedEmail = localStorage.getItem('av-registered-email');
-      if (savedName && submitUploaderName) submitUploaderName.value = savedName;
-      if (savedEmail && submitUploaderEmail) submitUploaderEmail.value = savedEmail;
-
       try {
         const { participant } = await fetchParticipant();
         if (submitUploaderName) submitUploaderName.value = participant.name;
         if (submitUploaderEmail) submitUploaderEmail.value = participant.email;
-        localStorage.setItem('av-registered-name', participant.name);
-        localStorage.setItem('av-registered-email', participant.email);
       } catch (error) {
-        if (!savedName || !savedEmail) {
-          if (quickSubmitError) quickSubmitError.textContent = error.message;
-        }
+        if (quickSubmitError) quickSubmitError.textContent = error.message;
       }
 
       updateQuickSubmitButtonState();
@@ -145,11 +143,17 @@ export function initSubmitModal() {
   }
 
   if (submitModalClose) {
-    submitModalClose.addEventListener('click', () => closeModal(submitModalBackdrop, submitModal));
+    submitModalClose.addEventListener('click', () => {
+      cancelActiveUpload();
+      closeModal(submitModalBackdrop, submitModal);
+    });
   }
   if (submitModalBackdrop) {
     submitModalBackdrop.addEventListener('click', (e) => {
-      if (e.target === submitModalBackdrop) closeModal(submitModalBackdrop, submitModal);
+      if (e.target === submitModalBackdrop) {
+        cancelActiveUpload();
+        closeModal(submitModalBackdrop, submitModal);
+      }
     });
   }
 
@@ -214,12 +218,15 @@ export function initSubmitModal() {
       if (btnRemoveZip) btnRemoveZip.disabled = true;
       if (btnBackToGuidelines) btnBackToGuidelines.disabled = true;
       showUploadProgress(0, uploadedZipFile.size);
+      const uploadController = new AbortController();
+      activeUploadController = uploadController;
 
       try {
         await uploadSubmission({
           file: uploadedZipFile,
           aiUsage: document.getElementById('submitAiUsage')?.value || 'none',
-          onProgress: showUploadProgress
+          onProgress: showUploadProgress,
+          signal: uploadController.signal
         });
         btnQuickSubmit.textContent = 'Submit Entry';
         if (submitSuccessAuthor) submitSuccessAuthor.textContent = authorName.split(' ')[0];
@@ -236,6 +243,7 @@ export function initSubmitModal() {
         btnQuickSubmit.textContent = 'Submit Entry';
         updateQuickSubmitButtonState();
       } finally {
+        if (activeUploadController === uploadController) activeUploadController = null;
         if (btnRemoveZip) btnRemoveZip.disabled = false;
         if (btnBackToGuidelines) btnBackToGuidelines.disabled = false;
       }

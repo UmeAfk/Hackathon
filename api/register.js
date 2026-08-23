@@ -5,6 +5,7 @@ import { issueParticipantToken } from './_lib/tokens.js';
 import { accessUrl, registrationEmail } from './_lib/email-templates.js';
 import { sendEmail } from './_lib/mailer.js';
 import { syncResendContact } from './_lib/resend-contacts.js';
+import { consumeRateLimit, rateLimitResponse } from './_lib/rate-limit.js';
 
 export default async function handler(request, response) {
   if (!allowMethods(request, response, ['POST'])) return;
@@ -18,13 +19,16 @@ export default async function handler(request, response) {
     if (name.length < 2 || !validPhone(phone) || !validEmail(email) || body.ageConfirmed !== true || body.termsAccepted !== true) {
       return json(response, 400, { error: 'Please provide a valid name, email, phone number, and both confirmations.' });
     }
+    const ipAllowed = await consumeRateLimit(request, 'register-ip', 20, 60 * 60);
+    const emailAllowed = await consumeRateLimit(request, 'register-email', 5, 60 * 60, email);
+    if (!ipAllowed || !emailAllowed) return rateLimitResponse(response, 60 * 60);
 
     const now = new Date();
     const config = getEventConfig();
-    if (!windowOverrideEnabled() && now < new Date(config.registrationOpensAt)) {
+    if (!windowOverrideEnabled(request) && now < new Date(config.registrationOpensAt)) {
       return json(response, 403, { error: 'Registration has not opened yet.' });
     }
-    if (!windowOverrideEnabled() && now >= new Date(config.registrationClosesAt)) {
+    if (!windowOverrideEnabled(request) && now >= new Date(config.registrationClosesAt)) {
       return json(response, 403, { error: 'Registration is closed.' });
     }
 
@@ -40,13 +44,25 @@ export default async function handler(request, response) {
         .select('id,status').eq('participant_id', existing.id).like('email_type', 'registration:%')
         .gte('attempted_at', tenMinutesAgo).in('status', ['processing', 'sent']).limit(1);
       recentDelivery = recent?.[0] || null;
-      const { data, error } = await supabase.from('participants').update({ name, phone, age_confirmed: true, terms_accepted: true, updated_at: now.toISOString() }).eq('id', existing.id).select('id,name,email,phone').single();
-      if (error) throw error;
-      participant = data;
+      participant = existing;
     } else {
       const { data, error } = await supabase.from('participants').insert({ name, phone, email, age_confirmed: true, terms_accepted: true }).select('id,name,email,phone').single();
       if (error) throw error;
       participant = data;
+    }
+
+    const emailConfigured = Boolean(process.env.RESEND_API_KEY);
+    const localTokenResponse = token => windowOverrideEnabled(request) ? { token } : {};
+    const responseMessage = emailConfigured
+      ? 'Registration received. Check your inbox for the secure challenge link.'
+      : 'Registration saved. Email delivery is not configured yet; local development can continue on this device.';
+
+    if (recentDelivery) {
+      return json(response, 200, {
+        ok: true,
+        emailConfigured,
+        message: responseMessage
+      });
     }
 
     const token = await issueParticipantToken(participant.id, 'registration');
@@ -69,32 +85,24 @@ export default async function handler(request, response) {
       if (syncAuditError) console.error('Resend sync failure could not be recorded:', syncAuditError.message);
     }
 
-    if (recentDelivery) {
-      return json(response, 200, {
-        ok: true,
-        token,
-        emailSent: recentDelivery.status === 'sent',
-        alreadyRegistered: true,
-        message: 'You are already registered. Your secure challenge access has been refreshed on this device.',
-        participant: { name: participant.name, email: participant.email }
-      });
-    }
-
     const emailType = `registration:${Date.now()}`;
     const { data: delivery, error: deliveryError } = await supabase.from('email_deliveries').insert({ participant_id: participant.id, email_type: emailType, status: 'processing' }).select('id').single();
     if (deliveryError) throw deliveryError;
 
-    let emailSent = false;
     try {
       const sent = await sendEmail(participant.email, registrationEmail(participant, token), `registration/${participant.id}/${emailType}`);
       await supabase.from('email_deliveries').update({ status: 'sent', provider_id: sent.id, sent_at: new Date().toISOString() }).eq('id', delivery.id);
-      emailSent = true;
     } catch (emailError) {
       console.error('Registration email was not sent:', emailError.message);
       await supabase.from('email_deliveries').update({ status: 'failed', error: String(emailError.message || emailError).slice(0, 1000) }).eq('id', delivery.id);
     }
 
-    return json(response, 201, { ok: true, token, emailSent, participant: { name: participant.name, email: participant.email } });
+    return json(response, 200, {
+      ok: true,
+      emailConfigured,
+      ...localTokenResponse(token),
+      message: responseMessage
+    });
   } catch (error) {
     console.error('Registration failed:', error.message);
     return json(response, 500, { error: 'Registration could not be completed right now. Please try again shortly.' });

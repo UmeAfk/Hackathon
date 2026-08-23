@@ -2,16 +2,30 @@ import crypto from 'node:crypto';
 import { getSupabase } from './supabase.js';
 import { getEventConfig } from './event.js';
 
+let tokenCleanupStarted = false;
+
+async function cleanExpiredTokens(supabase) {
+  if (tokenCleanupStarted) return;
+  tokenCleanupStarted = true;
+  const { error } = await supabase.from('participant_tokens').delete().lt('expires_at', new Date().toISOString());
+  if (error) {
+    tokenCleanupStarted = false;
+    console.error('Expired participant tokens could not be cleaned up:', error.message);
+  }
+}
+
 export function hashToken(token) {
   return crypto.createHash('sha256').update(token).digest('hex');
 }
 
 export async function issueParticipantToken(participantId, purpose = 'event-access') {
+  const supabase = getSupabase();
+  await cleanExpiredTokens(supabase);
   const token = crypto.randomBytes(32).toString('base64url');
   const tokenHash = hashToken(token);
   const expiresBase = new Date(getEventConfig().thankYouAt).getTime();
   const expiresAt = new Date(expiresBase + 30 * 24 * 60 * 60 * 1000).toISOString();
-  const { error } = await getSupabase().from('participant_tokens').insert({
+  const { error } = await supabase.from('participant_tokens').insert({
     participant_id: participantId,
     token_hash: tokenHash,
     purpose,
