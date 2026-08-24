@@ -181,9 +181,9 @@ export function initModals() {
       const isAlreadySubmitted = localStorage.getItem('av-brief-submitted') === '1';
       btnSubmitBrief.disabled = text.length < 5;
       if (isAlreadySubmitted) {
-        btnSubmitBrief.innerHTML = 'Update Design Brief <svg><use href="#i-arrow"/></svg>';
+        btnSubmitBrief.innerHTML = 'Update Design Brief <svg class="action-arrow"><use href="#i-arrow"/></svg>';
       } else {
-        btnSubmitBrief.innerHTML = 'Send Brief <svg><use href="#i-arrow"/></svg>';
+        btnSubmitBrief.innerHTML = 'Send Brief <svg class="action-arrow"><use href="#i-arrow"/></svg>';
       }
     }
   }

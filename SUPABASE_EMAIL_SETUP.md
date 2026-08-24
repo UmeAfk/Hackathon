@@ -1,149 +1,439 @@
-# Entangle launch setup
+# Entangle production launch runbook
 
-The site uses Supabase for registrations and private files. Resend sends two instant transactional emails and provides the visual editor/scheduler for organizer broadcasts.
+This runbook configures automated event email with Resend and large private submissions with Supabase without disturbing the existing `vkarch.com` office-mail system.
 
-## Event schedule (India Standard Time)
+Last reviewed: **24 August 2026** against the current application and the official Resend, Cloudflare, Supabase, and Vercel documentation.
 
-| Event | Time |
+## The safe architecture
+
+| Purpose | Service / address |
 | --- | --- |
-| Registration opens | 31 August 2026, 12:00 AM |
-| Registration closes / task drops | 3 September 2026, 11:59 PM |
-| 24-hour reminder | 6 September 2026, 11:59 PM |
-| One-hour reminder | 7 September 2026, 10:59 PM |
-| Submission deadline | 7 September 2026, 11:59 PM |
-| Jury thank-you broadcast | 10 September 2026, 12:00 PM |
+| Domain registrar | GoDaddy |
+| Authoritative DNS | Cloudflare |
+| Existing office inbox and incoming mail | Keep the current Netrix/SpamExperts-backed setup unchanged |
+| Automated sending domain | `updates.vkarch.com` in Resend |
+| Automated From address | `Entangle 2K26 <events@updates.vkarch.com>` |
+| Human Reply-To inbox | `entangle2k26@vkarch.com` on the existing office mail system |
+| Registration and metadata | Private Supabase database tables |
+| Challenge model and candidate archives | Private Supabase Storage buckets |
 
-The website dates are fixed in `api/_lib/event.js`. The four broadcast times are configured in Resend, not in Vercel code.
+The automated sender is deliberately on a subdomain. Resend recommends this for reputation isolation, and it lets its DNS records live at new names without changing the root-domain mail records.
 
-## 1. Security first
+## Public DNS state checked on 24 August 2026
 
-The screenshots shared during setup exposed a Supabase secret and mailbox credentials. Treat both as compromised:
+The current public records confirm:
 
-1. Create a new Supabase secret key and revoke the exposed one.
-2. Ask IT to change the mailbox password.
-3. Never place either secret in browser JavaScript, Git, screenshots, or chat.
+- `vkarch.com` uses Cloudflare nameservers: `adi.ns.cloudflare.com` and `hayes.ns.cloudflare.com`.
+- Root mail is routed through the existing SpamExperts MX records at priorities 10, 20, and 30.
+- The root SPF record is `v=spf1 a:vkarch.com ip4:188.40.22.54 include:spf.antispamcloud.com -all`.
+- No public `_dmarc.vkarch.com` record was found.
+- No `updates.vkarch.com` Resend records exist yet.
 
-The Supabase publishable key is not needed by this implementation.
+This means Cloudflare is the place where new DNS records must be added. GoDaddy remains the registrar; **do not change the GoDaddy nameservers**.
 
-Production registration does not return secure participant tokens to the browser response. Existing registrations cannot be overwritten through the public form; refreshed access is delivered only to the already-saved mailbox. Browser access tokens use session storage and disappear when the browser session closes.
+## Event schedule
 
-## 2. Supabase database and buckets
+Resend may display a local timezone or accept a UTC timestamp. Confirm every scheduled item in both IST and UTC before queueing it.
 
-Run the complete contents of `supabase/migrations/202608220001_event_backend.sql` in **Supabase → SQL Editor**. If you already ran the original setup SQL, run the small follow-up files `supabase/migrations/202608230002_resend_sync_audit.sql`, `supabase/migrations/202608230003_resumable_5gb_submissions.sql`, and `supabase/migrations/202608240004_security_hardening.sql` once as well. They are safe to rerun. Confirm these private buckets exist:
+| Event | India time (Asia/Kolkata) | UTC |
+| --- | --- | --- |
+| Registration opens | 31 Aug 2026, 12:00 AM IST | 30 Aug 2026, 18:30 UTC |
+| Registration closes / task drops | 3 Sep 2026, 11:59 PM IST | 3 Sep 2026, 18:29 UTC |
+| 24-hour reminder | 6 Sep 2026, 11:59 PM IST | 6 Sep 2026, 18:29 UTC |
+| One-hour reminder | 7 Sep 2026, 10:59 PM IST | 7 Sep 2026, 17:29 UTC |
+| Submission deadline | 7 Sep 2026, 11:59 PM IST | 7 Sep 2026, 18:29 UTC |
+| Jury thank-you broadcast | 10 Sep 2026, 12:00 PM IST | 10 Sep 2026, 06:30 UTC |
+
+The website dates are fixed in `api/_lib/event.js`. Scheduled Broadcasts are configured in Resend, not in Vercel code.
+
+## 1. Change boundary for office IT
+
+Give this section to the office IT team before touching DNS.
+
+### Do not change or delete
+
+- GoDaddy nameservers or domain-registration settings.
+- Any `@` / `vkarch.com` MX record.
+- The existing root SPF TXT record.
+- Existing DKIM selectors, mail host records, autodiscover, webmail, SRV, verification, or antispam records.
+- The office mailbox provider, mail passwords, forwarding, or normal employee mail clients.
+- Cloudflare proxy settings for existing records.
+
+### Only add
+
+The exact Resend-provided records beneath `updates.vkarch.com`, normally at these names:
+
+- `send.updates.vkarch.com` MX — Resend bounce/complaint return path.
+- `send.updates.vkarch.com` TXT — Resend SPF for the subdomain return path.
+- `resend._domainkey.updates.vkarch.com` TXT — Resend DKIM public key.
+- Optionally `_dmarc.updates.vkarch.com` TXT after IT reviews the current root-domain policy.
+
+Before the change, export or screenshot the complete Cloudflare DNS zone. After the change, compare it and verify that the only differences are the approved new subdomain records.
+
+## 2. Add the Resend sending subdomain
+
+1. In **Resend → Domains**, add `updates.vkarch.com`.
+2. Choose **Manual setup**. Do not enable Receiving/Inbound.
+3. Resend will show the exact SPF/MX and DKIM values for this domain. Copy those values; do not invent or shorten them.
+4. In **Cloudflare → vkarch.com → DNS → Records**, add each record.
+5. Use **DNS only** for any record that exposes a proxy-status choice. MX and TXT records are DNS-only by design.
+6. In a Cloudflare Name field, enter only the host portion. For this setup, Resend will normally map as follows:
+
+| Resend full name | Cloudflare Name | Type | Notes |
+| --- | --- | --- | --- |
+| `send.updates.vkarch.com` | `send.updates` | MX | Copy Resend's server and priority exactly |
+| `send.updates.vkarch.com` | `send.updates` | TXT | Copy Resend's SPF value exactly |
+| `resend._domainkey.updates.vkarch.com` | `resend._domainkey.updates` | TXT | Copy the complete DKIM value |
+
+Do **not** add another SPF TXT record at `vkarch.com` and do not append Resend to the current root SPF. A domain must not publish two competing SPF records. The dedicated `send.updates` SPF avoids that problem.
+
+The MX at `send.updates.vkarch.com` is a return-path record for outgoing Resend mail. It is not a replacement for the root MX records and does not route employee inbox mail to Resend.
+
+### DMARC
+
+There is currently no public root DMARC record. DMARC is recommended, but it affects every sender using the domain and should therefore be owned by office IT.
+
+Safe rollout:
+
+1. First verify that existing office email passes its current SPF and DKIM checks.
+2. Ask IT to review Resend's suggested DMARC record.
+3. Start in monitoring mode (`p=none`) and send aggregate reports to an inbox IT actually monitors.
+4. Do not move to `quarantine` or `reject` until IT has reviewed reports from every existing mail source.
+
+Never create multiple DMARC records at the same name. A subdomain-specific `_dmarc.updates` record can override the inherited root policy, so IT should approve it.
+
+### Verify without risking office mail
+
+1. Wait until Resend marks `updates.vkarch.com` **Verified** for SPF and DKIM.
+2. Send a test from `events@updates.vkarch.com` to:
+   - the existing `entangle2k26@vkarch.com` Netrix inbox;
+   - one external Gmail test inbox;
+   - one external Outlook test inbox.
+3. Inspect the delivered headers and confirm `spf=pass`, `dkim=pass`, and `dmarc=pass` when DMARC is present.
+4. Reply to the message and confirm the reply reaches `entangle2k26@vkarch.com`.
+5. Send a normal employee-to-employee office email and an external-to-office email. Both must continue through the existing office mail system.
+
+## 3. Resend API and Vercel configuration
+
+The backend sends transactional email and also creates Contacts, Segments, and the `access_url` contact property. Because those audience operations are not permitted by a sending-only key, this implementation needs a **Full access** Resend API key.
+
+Create a key named `Entangle production`, copy it once, and store it only as a Vercel server variable. Rotate it after the event.
+
+Set these in **Vercel → Project → Settings → Environment Variables → Production**:
+
+```text
+SUPABASE_URL=https://YOUR_PROJECT.supabase.co
+SUPABASE_SECRET_KEY=YOUR_SUPABASE_SERVER_SECRET
+SUPABASE_PUBLISHABLE_KEY=YOUR_SAFE_BROWSER_PUBLISHABLE_KEY
+RESEND_API_KEY=re_xxxxxxxxx
+RESEND_FROM_EMAIL=Entangle 2K26 <events@updates.vkarch.com>
+RESEND_REPLY_TO=entangle2k26@vkarch.com
+```
+
+Then redeploy Production. The From domain must exactly match the verified Resend domain, including the subdomain.
+
+### Keep production data separate
+
+- Production Vercel must point only to the production Supabase project.
+- Preview and local development should use a separate staging Supabase project.
+- Omit `RESEND_API_KEY` from Preview unless a separate staging Resend key/domain is available.
+- Never point an unrestricted Preview deployment at production registration or submission data.
+- Never commit `.env.local`, a Supabase secret key, Resend key, database password, or mailbox password.
+
+The Supabase variable must be a server-side secret key (`sb_secret_...`) or legacy service-role key. Do not use a publishable/anon key here, and do not use the database password.
+
+## 4. What the application sends automatically
+
+Transactional emails happen in direct response to participant actions:
+
+- Registration confirmation immediately after successful registration.
+- Submission receipt immediately after the archive is verified as uploaded.
+
+The application also maintains:
+
+- `Entangle 2K26 — Registered` segment.
+- `Entangle 2K26 — Submitters` segment.
+- `access_url` custom Contact property containing each participant's secure link.
+
+Registration is saved in Supabase before email is attempted. Resend results are audited in `email_deliveries`, and contact-sync failures are stored in `participants.resend_sync_error`.
+
+### Resend plan sizing
+
+The current Resend Free plan allows 100 transactional emails per day and 3,000 per month, plus Broadcasts to at most 1,000 marketing contacts. Upgrade before launch if registration confirmations plus submission receipts could exceed 100 in a day or if more than 1,000 candidates are expected.
+
+After the first controlled test registration, confirm that both Segments and the `access_url` property exist. Doing this before public launch prevents concurrent first registrations from racing to create the same resources.
+
+## 5. Create and schedule participant Broadcasts
+
+In **Resend → Broadcasts**, create four drafts with this sender:
+
+```text
+Entangle 2K26 <events@updates.vkarch.com>
+```
+
+| Broadcast | Segment | Schedule |
+| --- | --- | --- |
+| Task drop | Registered | 3 Sep 2026, 11:59 PM IST / 18:29 UTC |
+| 24-hour reminder | Registered | 6 Sep 2026, 11:59 PM IST / 18:29 UTC |
+| One-hour reminder | Registered | 7 Sep 2026, 10:59 PM IST / 17:29 UTC |
+| Thank-you / jury update | Submitters | 10 Sep 2026, 12:00 PM IST / 06:30 UTC |
+
+Use the following exact personalization syntax in the button URL for task-drop and reminder emails:
+
+```text
+{{{contact.access_url}}}
+```
+
+Useful copy placeholder:
+
+```text
+Hi {{{contact.first_name|there}}},
+```
+
+Keep Resend's unsubscribe handling in every Broadcast. Send every draft as a test to an organizer first. Verify the personalized link, mobile rendering, sender, Reply-To behavior, unsubscribe link, segment, and displayed schedule before queueing it.
+
+Do not schedule the Broadcast until a test Contact has a non-empty `access_url`. Immediately after scheduling, open the queued item again and confirm its UTC time.
+
+## 6. Supabase database and private buckets
+
+Run the migrations in filename order:
+
+1. `supabase/migrations/202608220001_event_backend.sql`
+2. `supabase/migrations/202608230002_resend_sync_audit.sql`
+3. `supabase/migrations/202608230003_resumable_5gb_submissions.sql`
+4. `supabase/migrations/202608240004_security_hardening.sql`
+5. `supabase/migrations/202608240005_enforce_submission_bucket_limit.sql`
+
+Run them through a controlled Supabase migration workflow or paste one complete file at a time into **Supabase → SQL Editor**. Keep the results with the launch record.
+
+The final state must contain two **private** buckets:
 
 - `challenge-assets`
 - `challenge-submissions`
 
-Inside `challenge-assets`, create a `models` folder and upload any or all of these formats:
+Upload the final model files inside `challenge-assets/models/` using the website filenames:
 
-- `.fbx`
-- `.obj`
-- `.glb`
+- `ArchViz_Base_Building_v1.0.fbx`
+- `ArchViz_Base_Building_v1.0.obj`
+- `ArchViz_Base_Building_v1.0.glb`
 
-The app prefers the final filenames shown on the website, but during setup it will use the first matching extension. Therefore `models/test.obj` is valid for testing. Replace it with the final model before launch. Do not make either bucket public.
+Do not make either bucket public and do not add public `storage.objects` policies. The backend issues short-lived signed URLs only after validating a participant token and the event window.
 
-## 3. Minimal Vercel variables
+### Storage limits
 
-Add the two Supabase values to **Development**, **Preview**, and **Production**. Add Resend to those same environments only after IT gives you a real API key:
+1. Open **Supabase → Storage → Settings**.
+2. Set **Global file size limit** to at least **6 GB**. The application allows 5 GiB (5,368,709,120 bytes); 6 GB avoids dashboard decimal/binary ambiguity.
+3. Confirm `challenge-submissions` has the exact bucket limit **5,368,709,120 bytes (5 GiB)** after the migrations.
+4. Leave MIME-type restrictions disabled because browsers report archive MIME types inconsistently. The API validates extensions and stores files at server-generated paths.
+5. Keep the bucket private.
 
-```text
-SUPABASE_URL
-SUPABASE_SECRET_KEY
-RESEND_API_KEY
+Supabase Pro supports a much higher configured file limit, and resumable uploads support files up to 50 GB. This application intentionally caps each participant at 5 GiB.
+
+### The implemented large-upload flow
+
+The current code correctly uses:
+
+- a private bucket;
+- one server-generated object path per pending submission;
+- server-side participant, phase, extension, file-size, and AI-disclosure validation;
+- a signed Supabase upload token;
+- the direct `PROJECT_REF.storage.supabase.co` TUS endpoint;
+- the required fixed 6 MiB TUS chunk size;
+- retry delays and browser upload fingerprints for resume;
+- `x-upsert: false` to prevent accidental overwrite;
+- one completed submission per registered participant;
+- object existence and stored-size verification before marking the row uploaded.
+
+Supabase signed upload URLs are valid for two hours. A created TUS upload URL can remain valid for up to 24 hours. Run a real 5 GiB test from the slowest representative connection; 5 GiB in two hours needs roughly 6 Mbps sustained upload throughput after overhead.
+
+## 7. Capacity and cost planning
+
+The worst-case storage requirement is candidate count multiplied by 5 GiB, plus challenge assets and operational headroom.
+
+| Candidates | Maximum candidate archives |
+| ---: | ---: |
+| 25 | 125 GiB |
+| 50 | 250 GiB |
+| 100 | 500 GiB |
+| 200 | 1,000 GiB |
+
+Supabase Pro currently includes 100 GB of Storage and 250 GB of egress for the organization; usage above included quotas is billed when overages are allowed. Storage is billed by GB-hour, so a short event costs less than retaining all archives for a full month, but organizer downloads also consume egress.
+
+In **Supabase Organization → Billing → Cost Control**:
+
+1. Confirm the project is on Pro.
+2. Decide with the budget owner whether to turn the Spend Cap off. With it on, services can be restricted after quota/grace-period handling; with it off, overages continue and are billed.
+3. Monitor Storage Size, egress, and the Upcoming Invoice during the event.
+4. Record who is authorized to change billing controls.
+
+Do not wait for launch day to make this decision.
+
+## 8. Read-only Supabase verification queries
+
+Run these after all migrations:
+
+```sql
+-- Required tables and RLS state
+select schemaname, tablename, rowsecurity
+from pg_tables
+where schemaname = 'public'
+  and tablename in (
+    'participants', 'participant_tokens', 'submissions',
+    'email_deliveries', 'api_rate_limits'
+  )
+order by tablename;
+
+-- Both buckets must be private; submissions must show 5368709120
+select id, public, file_size_limit, allowed_mime_types
+from storage.buckets
+where id in ('challenge-assets', 'challenge-submissions')
+order by id;
+
+-- Public roles should not have table privileges
+select grantee, table_name, privilege_type
+from information_schema.role_table_grants
+where table_schema = 'public'
+  and table_name in (
+    'participants', 'participant_tokens', 'submissions',
+    'email_deliveries', 'api_rate_limits'
+  )
+  and grantee in ('anon', 'authenticated')
+order by table_name, grantee, privilege_type;
+
+-- Rate-limit function should exist
+select to_regprocedure(
+  'public.consume_api_rate_limit(text,text,integer,integer)'
+) as rate_limit_function;
+
+-- Actual object count and bytes by bucket (bigint is required above 2 GiB)
+select bucket_id,
+       count(*) as object_count,
+       coalesce(sum((metadata->>'size')::bigint), 0) as total_bytes
+from storage.objects
+where bucket_id in ('challenge-assets', 'challenge-submissions')
+group by bucket_id
+order by bucket_id;
 ```
 
-For now, omit `RESEND_API_KEY` completely. Do not save placeholder text as the value. Registration, database storage, model downloads, briefs, and submission uploads will still work; emails and Resend contact syncing will be skipped. Add the real key and redeploy after IT completes the domain setup.
+Expected results:
 
-`vercel dev` reads the **Development** scope. After changing that scope, stop the local server, run `npx vercel@latest pull --yes`, and start `npm run dev` again. The generated `.env.local` and `.vercel` files are intentionally ignored by Git.
+- Five required tables with `rowsecurity = true`.
+- Both buckets with `public = false`.
+- `challenge-submissions.file_size_limit = 5368709120`.
+- No privilege rows for `anon` or `authenticated`.
+- A non-null rate-limit function.
 
-No `CRON_SECRET`, model-path, email-content, date, or upload-size variables are required.
+## 9. End-to-end launch test
 
-The security-hardening migration adds server-side rate limits for registration, participant lookup, downloads, briefs, and submissions. If it has not been applied, the server logs a warning and temporarily fails open so the launch is not broken.
+Use a staging Supabase project first. Then perform one controlled production test before registration opens.
 
-## 3.1 Submission storage sizing
+1. Register a fresh test candidate.
+2. Confirm the `participants` row, token row, successful registration email, Resend Contact, Registered segment membership, and populated `access_url`.
+3. Follow the secure link from the email in a fresh browser session.
+4. Confirm all three model downloads work and return private signed URLs.
+5. Save a design brief.
+6. Upload and complete:
+   - a small archive;
+   - an archive larger than 6 MiB;
+   - a large representative UE5 archive;
+   - one full 5 GiB boundary test if operationally possible.
+7. During a large upload, disconnect the network briefly and confirm it resumes.
+8. Refresh/reopen the page during an interrupted upload and confirm the TUS fingerprint can resume it.
+9. Confirm the final `submissions` row has `status = 'uploaded'`, the expected byte count, `uploaded_at`, and `receipt_sent_at`.
+10. Confirm the Contact is added to Submitters and receives one receipt only.
+11. Attempt a second completed submission and confirm it is rejected.
+12. Verify Preview/Production cannot bypass event dates with query parameters.
+13. Check Vercel function logs, Supabase API/Storage logs, and Resend delivery status for failures or rate limits.
 
-The application allows **one resumable archive up to 5 GiB per participant**. This is not a shared 5 GiB allowance. Total project storage and download bandwidth are separate Supabase plan quotas, so size the Supabase plan for the expected participant count.
+## 10. Back up candidate archives
 
-The browser uploads directly to Supabase using signed TUS resumable uploads in fixed 6 MiB chunks. Interrupted transfers retry automatically and can resume from the previously uploaded chunks.
+Supabase Pro database backups do **not** include Storage objects, and Supabase Storage does not provide S3 object versioning. A deleted archive cannot be restored through a database backup.
 
-Because the bucket inherits the project-wide Storage limit, open **Supabase → Storage → Settings** and set **Global file size limit** to at least **5 GB** before testing. Keep `challenge-submissions` private and leave its per-bucket file-size restriction disabled; the API enforces the 5 GiB participant limit.
+After submissions close:
 
-## 4. Resend and the office mailbox
+1. Freeze organizer access and do not delete or rename objects.
+2. Export the completed-submission manifest from the query below.
+3. Enable Supabase's S3-compatible access for a designated organizer and copy `challenge-submissions` to encrypted office-controlled storage using an S3 client such as rclone, AWS CLI, or Cyberduck.
+4. Generate SHA-256 hashes for the copied archives and compare counts and total bytes with Supabase.
+5. Keep at least two controlled copies until judging and dispute periods finish.
+6. Revoke the temporary S3 credentials after the backup is verified.
 
-1. Add `vkarch.com` as a sending domain in Resend.
-2. Ask IT to add the exact SPF, DKIM, and return-path records shown by Resend at the authoritative DNS provider (likely Cloudflare).
-3. Keep the existing root-domain MX records used by Netrix. Do not replace them and do not enable Resend Receiving on the root domain.
-4. After Resend shows **Verified**, create a **Full access** API key, add it to Vercel as `RESEND_API_KEY`, and redeploy. Full access is required because the backend both sends emails and creates/updates Contacts, Segments, and the `access_url` contact property. Keep this key server-only.
+Creating S3 credentials is a privileged action. Limit it to the smallest number of trusted organizers and save it in the office password manager, never in this repository.
 
-The sender and reply address are fixed as `Entangle 2K26 <entangle2k26@vkarch.com>`. Resend handles outgoing delivery; replies and website questions continue to arrive in the existing Netrix inbox. Multiple DNS records can coexist when they have distinct names/purposes; IT should copy Resend's values exactly and preserve the office-mail MX records.
-
-Treat participant archives as untrusted files. Download them only on an organizer machine with current endpoint protection, scan every archive before extraction, extract into a dedicated folder, and never run submitted executables outside a disposable sandbox or virtual machine.
-
-The Resend test domain is suitable only for sending to the account owner's address. A verified `vkarch.com` domain is required before sending to all participants.
-
-## 5. Which emails live where
-
-The application sends these automatically at the event action:
-
-- Registration confirmation: immediately after a successful registration.
-- Submission receipt: immediately after a completed archive upload.
-
-The application also keeps Resend contacts organized automatically:
-
-- `Entangle 2K26 — Registered`: every registered participant.
-- `Entangle 2K26 — Submitters`: participants whose upload completed.
-- `access_url`: each participant's private challenge link, stored as a custom contact property.
-
-Every successful registration first saves the participant's normalized name, email, phone number, consent flags, and timestamps in Supabase. If Resend is configured, that same request creates or updates a Resend Contact using the participant email and adds it to the Registered segment. Supabase records `resend_contact_id`, `resend_synced_at`, or `resend_sync_error`, so recipient syncing can be audited without guessing.
-
-After the API key is added, the first registration creates the segments automatically. In **Resend → Broadcasts**, use the visual editor to create and schedule:
-
-1. Task drop → Registered segment → 3 September, 11:59 PM IST.
-2. 24-hour reminder → Registered segment → 6 September, 11:59 PM IST.
-3. One-hour reminder → Registered segment → 7 September, 10:59 PM IST.
-4. Thank-you / jury review update → Submitters segment → 10 September, 12:00 PM IST.
-
-For the task-drop and reminder buttons, use `{{{contact.access_url}}}` as the URL so each recipient gets their own secure challenge link. The thank-you Broadcast can use the ordinary production website URL. Before scheduling, send each Broadcast as a test to yourself and verify the link and timezone shown by Resend.
-
-## 6. Test now without Resend
-
-Use local `vercel dev` for early end-to-end testing. Preview and Production correctly keep model and submission APIs locked until the real event dates.
-
-1. Make sure the two Supabase variables are enabled for Development, pull them locally, and restart `npm run dev`.
-2. Register with a test address. The page should say the registration was saved without email delivery.
-3. The secure participant token is stored in that browser automatically.
-4. Open the same localhost URL with `?debug=1&phase=2`.
-5. Click OBJ download. `models/test.obj` should download.
-6. Test a design brief and a ZIP submission. The upload should display percentage progress and continue through transient connection failures.
-7. Confirm rows in `participants` and `submissions`, and files in `challenge-submissions`.
-
-When Resend is ready, add its key, redeploy, and register with a new email address to test the instant confirmation and automatic segment creation.
-
-## Organizer queries
+## 11. Organizer queries
 
 ```sql
 -- Registration count
 select count(*) from participants;
 
--- Completed submissions with participant contact details
-select p.name, p.email, p.phone, s.original_filename, s.storage_path, s.uploaded_at
+-- Completed-submission manifest
+select p.name,
+       p.email,
+       p.phone,
+       s.id as submission_id,
+       s.original_filename,
+       s.storage_path,
+       s.file_size,
+       s.uploaded_at
 from submissions s
 join participants p on p.id = s.participant_id
 where s.status = 'uploaded'
 order by s.uploaded_at;
 
--- Failed instant emails to investigate
+-- Incomplete uploads to investigate before judging
+select p.name, p.email, s.id, s.original_filename, s.file_size,
+       s.status, s.updated_at
+from submissions s
+join participants p on p.id = s.participant_id
+where s.status <> 'uploaded'
+order by s.updated_at;
+
+-- Failed instant emails
 select p.email, e.email_type, e.error, e.attempted_at
 from email_deliveries e
 join participants p on p.id = e.participant_id
 where e.status = 'failed'
 order by e.attempted_at desc;
 
--- Participants whose Resend recipient sync needs attention
-select name, email, phone, resend_contact_id, resend_synced_at, resend_sync_error
+-- Resend Contacts needing attention
+select name, email, phone, resend_contact_id,
+       resend_synced_at, resend_sync_error
 from participants
 where resend_synced_at is null or resend_sync_error is not null
 order by registered_at desc;
 ```
 
-Download participant archives from the private `challenge-submissions` bucket in the Supabase dashboard.
+## 12. Final go-live checklist
+
+- [ ] Office IT approved the additive `updates.vkarch.com` DNS change.
+- [ ] GoDaddy nameservers and all existing office-mail records are unchanged.
+- [ ] Resend SPF and DKIM show Verified.
+- [ ] Office, Gmail, and Outlook tests pass; replies reach the Netrix inbox.
+- [ ] Production Vercel uses the production Supabase project only.
+- [ ] All migrations ran and the verification queries match expected results.
+- [ ] Global Storage limit is at least 6 GB; submissions bucket is private and capped at 5 GiB.
+- [ ] Supabase Pro spend-cap decision and monitoring owner are documented.
+- [ ] Resend plan supports the expected daily registrations and Contact count.
+- [ ] A realistic large upload resumed successfully.
+- [ ] Registered and Submitters segments contain the correct test Contact.
+- [ ] All four Broadcasts were test-sent, personalized, and scheduled at the checked UTC times.
+- [ ] Vercel, Supabase, and Resend logs were checked after the production test.
+- [ ] The post-deadline off-Supabase backup owner and destination are agreed.
+
+## Official references
+
+- [Resend: Cloudflare domain setup](https://resend.com/docs/knowledge-base/cloudflare)
+- [Resend: why a sending subdomain is recommended](https://resend.com/docs/knowledge-base/is-it-better-to-send-emails-from-a-subdomain-or-the-root-domain)
+- [Resend: avoiding MX conflicts](https://resend.com/docs/knowledge-base/how-do-i-avoid-conflicting-with-my-mx-records)
+- [Resend: API-key permissions](https://resend.com/docs/dashboard/api-keys/introduction)
+- [Resend: Contacts, Segments, and Contact Properties](https://resend.com/docs/dashboard/audiences/introduction)
+- [Resend: Broadcast creation and personalization](https://resend.com/docs/api-reference/broadcasts/create-broadcast)
+- [Resend: DMARC rollout](https://resend.com/docs/dashboard/domains/dmarc)
+- [Cloudflare: authoritative nameservers](https://developers.cloudflare.com/dns/nameservers/)
+- [Cloudflare: email records must be DNS-only](https://developers.cloudflare.com/dns/troubleshooting/email-issues/)
+- [Supabase: Storage file limits](https://supabase.com/docs/guides/storage/uploads/file-limits)
+- [Supabase: resumable TUS uploads](https://supabase.com/docs/guides/storage/uploads/resumable-uploads)
+- [Supabase: Storage pricing and included quota](https://supabase.com/docs/guides/storage/pricing)
+- [Supabase: cost control and Spend Cap](https://supabase.com/docs/guides/platform/cost-control)
+- [Supabase: database backups exclude Storage objects](https://supabase.com/docs/guides/platform/backups)
+- [Supabase: download and back up Storage objects](https://supabase.com/docs/guides/storage/management/download-objects)

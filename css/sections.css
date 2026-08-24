@@ -139,7 +139,7 @@
   color: var(--text-soft);
 }
 
-/* Footer */
+/* Footer (kept ready for the commented footer markup in index.html) */
 .footer {
   padding: 42px 0 46px;
   background: var(--surface);

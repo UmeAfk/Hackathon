@@ -25,6 +25,23 @@
   height: 16px;
 }
 
+.btn .action-arrow {
+  flex: 0 0 auto;
+  transition: transform 220ms var(--ease-out);
+}
+
+.btn:hover .action-arrow {
+  transform: translateX(3px);
+}
+
+.btn .action-arrow-back {
+  transform: rotate(180deg);
+}
+
+.btn:hover .action-arrow-back {
+  transform: rotate(180deg) translateX(3px);
+}
+
 .btn:hover {
   transform: translate(-2px, -2px);
   box-shadow: calc(var(--shadow-off) + 2px) calc(var(--shadow-off) + 2px) 0 0 var(--shadow-color);

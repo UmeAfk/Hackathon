@@ -11,8 +11,6 @@ revoke all on table public.api_rate_limits from anon, authenticated;
 create index if not exists api_rate_limits_window_idx on public.api_rate_limits(window_start);
 create index if not exists participant_tokens_expiry_idx on public.participant_tokens(expires_at);
 
-delete from public.participant_tokens where expires_at < now();
-
 create or replace function public.consume_api_rate_limit(
   p_key_hash text,
   p_route text,

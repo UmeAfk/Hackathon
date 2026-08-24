@@ -1,7 +1,7 @@
 import crypto from 'node:crypto';
 import { allowMethods, bearerToken, bodyOf, cleanText, json } from './_lib/http.js';
 import { findParticipantByToken } from './_lib/tokens.js';
-import { getSupabase } from './_lib/supabase.js';
+import { getSupabase, getSupabasePublishableKey } from './_lib/supabase.js';
 import { eventState, getEventConfig, windowOverrideEnabled } from './_lib/event.js';
 import { consumeRateLimit, rateLimitResponse } from './_lib/rate-limit.js';
 
@@ -80,6 +80,7 @@ export default async function handler(request, response) {
       storagePath,
       bucketName: 'challenge-submissions',
       uploadToken: signed.token,
+      apiKey: getSupabasePublishableKey(),
       resumableEndpoint: resumableEndpoint()
     });
   } catch (error) {

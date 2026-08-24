@@ -2,7 +2,7 @@ import { Upload } from '../public/vendor/tus.esm.js';
 
 const TOKEN_KEY = 'av-participant-token';
 
-export function captureParticipantToken() {
+function captureParticipantToken() {
   ['av-registered-name', 'av-registered-email', 'av-registered-phone'].forEach(key => localStorage.removeItem(key));
   const hash = window.location.hash.startsWith('#') ? window.location.hash.slice(1) : '';
   const token = new URLSearchParams(hash).get('entry');
@@ -14,7 +14,7 @@ export function captureParticipantToken() {
   return token || sessionStorage.getItem(TOKEN_KEY) || '';
 }
 
-export function participantToken() {
+function participantToken() {
   return sessionStorage.getItem(TOKEN_KEY) || captureParticipantToken();
 }
 
@@ -86,8 +86,8 @@ function runResumableUpload(intent, file, onProgress, signal) {
       uploadDataDuringCreation: true,
       removeFingerprintOnSuccess: true,
       headers: {
-        'x-signature': intent.uploadToken,
-        'x-upsert': 'false'
+        apikey: intent.apiKey,
+        'x-signature': intent.uploadToken
       },
       metadata: {
         bucketName: intent.bucketName,

@@ -52,7 +52,7 @@ export function buildFlipUnit(el) {
  *              rotateX(-90 → 0deg), ease-out — settles into place
  *   2×HALF_MS  static .flip-bottom swaps text to newChar, leaves reset
  */
-export function flipSingleDigit(card, oldChar, newChar) {
+function flipSingleDigit(card, oldChar, newChar) {
   if (!card) return;
   if (card._flipping) {
     // A new value arrived mid-flip (e.g. rapid seconds tick) — snap to a

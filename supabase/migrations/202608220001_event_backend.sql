@@ -75,7 +75,7 @@ revoke all on table public.submissions from anon, authenticated;
 revoke all on table public.email_deliveries from anon, authenticated;
 
 insert into storage.buckets (id, name, public, file_size_limit)
-values ('challenge-submissions', 'challenge-submissions', false, null)
+values ('challenge-submissions', 'challenge-submissions', false, 5368709120)
 on conflict (id) do update set public = false, file_size_limit = excluded.file_size_limit;
 
 insert into storage.buckets (id, name, public)

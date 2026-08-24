@@ -5,6 +5,8 @@
 import { formatSize, showToast } from './utils.js';
 import { openModal, closeModal, spawnConfetti } from './modalCore.js';
 import { fetchParticipant, uploadSubmission } from './api.js';
+import { animateArchiveStructure } from './archiveStructure.js';
+import { initCustomSelect } from './customSelect.js';
 
 const MAX_SUBMISSION_BYTES = 5 * 1024 * 1024 * 1024;
 
@@ -36,6 +38,8 @@ export function initSubmitModal() {
   const uploadProgressTrack = document.getElementById('uploadProgressTrack');
   const uploadProgressFill = document.getElementById('uploadProgressFill');
   const uploadProgressText = document.getElementById('uploadProgressText');
+
+  initCustomSelect(document.querySelector('[data-custom-select]'));
 
   let uploadedZipFile = null;
   let activeUploadController = null;
@@ -109,6 +113,7 @@ export function initSubmitModal() {
       resetUploadProgress();
 
       openModal(submitModalBackdrop, submitModal);
+      animateArchiveStructure();
     });
   });
 

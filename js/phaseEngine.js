@@ -6,7 +6,7 @@ import { buildFlipUnit, setFlipValue } from './flipClock.js';
 import { showToast } from './utils.js';
 import { fetchEventConfig } from './api.js';
 
-export const DAY = 24 * 60 * 60 * 1000;
+const DAY = 24 * 60 * 60 * 1000;
 
 let timeline = {
   registrationOpensAt: '2026-08-31T00:00:00+05:30',
@@ -56,14 +56,14 @@ function parseForcedPhase(value) {
   return null;
 }
 
-export function getAnchors() {
+function getAnchors() {
   return {
     taskRevealTime: new Date(timeline.taskDropsAt).getTime(),
     submissionDeadline: new Date(timeline.submissionDeadlineAt).getTime()
   };
 }
 
-export function computePhase() {
+function computePhase() {
   if (debugPhase !== null) return debugPhase;
   const now = Date.now();
   const registrationCloses = new Date(timeline.registrationClosesAt).getTime();
@@ -75,14 +75,14 @@ export function computePhase() {
   return 3;
 }
 
-export function clearTimers() {
+function clearTimers() {
   if (activeTimer) {
     clearInterval(activeTimer);
     activeTimer = null;
   }
 }
 
-export function startCountdown(targetTime, ids, onComplete) {
+function startCountdown(targetTime, ids, onComplete) {
   const el = {
     d: document.getElementById(ids.d), h: document.getElementById(ids.h),
     m: document.getElementById(ids.m), s: document.getElementById(ids.s)
@@ -181,7 +181,7 @@ export function syncPhase() {
   syncBriefState();
 }
 
-export function cycleDebugPhase() {
+function cycleDebugPhase() {
   debugPhase = (computePhase() + 1) % 4;
   showToast(`Debug: switched to phase ${debugPhase}`);
   syncPhase();

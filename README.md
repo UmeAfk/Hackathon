@@ -31,15 +31,20 @@ Use Node.js 22 LTS for the smoothest Vercel CLI experience, then install depende
 npm install
 ```
 
-Create an ignored `.env.local` file when testing the API locally:
+Create an ignored `.env.local` file when testing the API locally (never put real values in `.env.example`):
 
 ```env
 SUPABASE_URL=https://YOUR_PROJECT.supabase.co
 SUPABASE_SECRET_KEY=YOUR_ROTATED_SERVER_SECRET
+SUPABASE_PUBLISHABLE_KEY=YOUR_SAFE_BROWSER_PUBLISHABLE_KEY
 RESEND_API_KEY=re_xxxxxxxxx
+RESEND_FROM_EMAIL=Entangle 2K26 <events@updates.vkarch.com>
+RESEND_REPLY_TO=entangle2k26@vkarch.com
 ```
 
-`RESEND_API_KEY` is optional until email testing is ready. Never place the Supabase secret or Resend key in browser code or commit them to Git.
+The Resend values are optional until email testing is ready. The Supabase publishable key is intentionally safe to send to the browser and is required by signed resumable uploads; the secret key remains server-only. The recommended sending subdomain keeps automated event email separate from the existing office inbox; replies still go to `entangle2k26@vkarch.com`. Never place the Supabase secret or Resend key in browser code or commit them to Git.
+
+Run `npm run dev` to start the local site and API at `http://127.0.0.1:3000`. This repository-owned server loads `.env.local` automatically and does not require a Vercel login. Use `npm run dev:vercel` only when testing Vercel-specific behavior with an authenticated Vercel CLI.
 
 If you use Vercel-managed variables, enable the Supabase values for the **Development** environment as well as Preview and Production. `vercel dev` does not pull Preview or Production values into local development.
 

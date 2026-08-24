@@ -284,8 +284,7 @@
   }
 
   .field input,
-  .field textarea,
-  .select-field {
+  .field textarea {
     font-size: 16px;
     padding: 13px 14px;
   }
