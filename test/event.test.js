@@ -19,8 +19,11 @@ test('event configuration uses explicit ISO dates and a five GiB upload ceiling'
 
 test('event-window overrides are limited to local Vercel development', () => {
   const previous = process.env.VERCEL_ENV;
+  const previousPreviewMode = process.env.ENTANGLE_PREVIEW_TEST_MODE;
   process.env.VERCEL_ENV = 'preview';
   assert.equal(windowOverrideEnabled({ headers: { host: 'localhost:3000' } }), false);
+  process.env.ENTANGLE_PREVIEW_TEST_MODE = 'true';
+  assert.equal(windowOverrideEnabled({ headers: { host: 'preview.example.vercel.app' } }), true);
   process.env.VERCEL_ENV = 'production';
   assert.equal(windowOverrideEnabled({ headers: { host: 'localhost:3000' } }), false);
   process.env.VERCEL_ENV = 'development';
@@ -30,6 +33,8 @@ test('event-window overrides are limited to local Vercel development', () => {
   assert.equal(windowOverrideEnabled({ headers: { host: 'example.com' } }), false);
   if (previous === undefined) delete process.env.VERCEL_ENV;
   else process.env.VERCEL_ENV = previous;
+  if (previousPreviewMode === undefined) delete process.env.ENTANGLE_PREVIEW_TEST_MODE;
+  else process.env.ENTANGLE_PREVIEW_TEST_MODE = previousPreviewMode;
 });
 
 test('transactional email templates escape participant and file content', () => {
