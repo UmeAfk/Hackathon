@@ -267,11 +267,17 @@
           <div aria-hidden="true" style="position:absolute;left:-10000px"><label for="regWebsite">Website</label><input
               type="text" id="regWebsite" name="website" tabindex="-1" autocomplete="off"></div>
           <div class="field"><label for="regName">Full name</label><input type="text" id="regName" name="regName"
-              required placeholder="Rushikesh Ingale"></div>
-          <div class="field"><label for="regPhone">Mobile number</label><input type="tel" id="regPhone" name="regPhone"
-              required placeholder="+91 7815646884"></div>
+              required autocomplete="name" maxlength="120" placeholder="Rushikesh Ingale"></div>
+          <div class="field"><label for="regPhone">Mobile number</label>
+            <div class="phone-field"><span class="phone-prefix" aria-hidden="true">+91</span><input type="tel"
+                id="regPhone" name="regPhone" required autocomplete="tel-national" inputmode="numeric"
+                maxlength="10" pattern="[6-9][0-9]{9}" placeholder="98765 43210"
+                aria-describedby="regPhoneHint"></div>
+            <small class="field-hint" id="regPhoneHint">10-digit Indian mobile number</small>
+          </div>
           <div class="field"><label for="regEmail">Email address</label><input type="email" id="regEmail"
-              name="regEmail" required placeholder="rushikesh@gmail.com"></div>
+              name="regEmail" required autocomplete="email" inputmode="email" maxlength="254" spellcheck="false"
+              placeholder="rushikesh@gmail.com"></div>
           <div class="reg-checks">
             <label class="check-label" for="regAge"><input type="checkbox" id="regAge" name="regAge" required><span>I
                 confirm that I am below 35 years old.</span></label>

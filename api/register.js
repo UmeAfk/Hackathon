@@ -17,7 +17,7 @@ export default async function handler(request, response) {
     const phone = normalizePhone(body.phone);
     const email = normalizeEmail(body.email);
     if (name.length < 2 || !validPhone(phone) || !validEmail(email) || body.ageConfirmed !== true || body.termsAccepted !== true) {
-      return json(response, 400, { error: 'Please provide a valid name, email, phone number, and both confirmations.' });
+      return json(response, 400, { error: 'Please provide a valid name, email address, 10-digit Indian mobile number, and both confirmations.' });
     }
     const ipAllowed = await consumeRateLimit(request, 'register-ip', 20, 60 * 60);
     const emailAllowed = await consumeRateLimit(request, 'register-email', 5, 60 * 60, email);

@@ -117,6 +117,38 @@
   transition: border-color 0.15s;
 }
 
+.phone-field {
+  display: flex;
+  align-items: stretch;
+}
+
+.phone-field .phone-prefix {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 58px;
+  box-sizing: border-box;
+  background: var(--mustard);
+  border: 2.5px solid var(--border);
+  border-right: 0;
+  border-radius: var(--radius) 0 0 var(--radius);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.phone-field input {
+  min-width: 0;
+  border-radius: 0 var(--radius) var(--radius) 0;
+}
+
+.field-hint {
+  color: var(--text-soft);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
 .field textarea {
   resize: vertical;
   min-height: 130px;

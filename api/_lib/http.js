@@ -29,18 +29,27 @@ export function normalizeEmail(value) {
 }
 
 export function normalizePhone(value) {
-  const cleaned = cleanText(value, 30);
-  const digits = cleaned.replace(/\D/g, '');
-  return cleaned.startsWith('+') ? `+${digits}` : digits;
+  let digits = cleanText(value, 30).replace(/\D/g, '');
+  if (digits.length === 12 && digits.startsWith('91')) digits = digits.slice(2);
+  if (digits.length === 11 && digits.startsWith('0')) digits = digits.slice(1);
+  return digits.length === 10 ? `+91${digits}` : `+${digits}`;
 }
 
 export function validEmail(value) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) && value.length <= 254;
+  const email = String(value || '');
+  if (email.length < 6 || email.length > 254 || /\s/.test(email)) return false;
+  const parts = email.split('@');
+  if (parts.length !== 2) return false;
+  const [local, domain] = parts;
+  if (!local || local.length > 64 || local.startsWith('.') || local.endsWith('.') || local.includes('..')) return false;
+  if (!/^[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]+$/.test(local)) return false;
+  const labels = domain.split('.');
+  if (labels.length < 2 || labels.some(label => !/^[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?$/.test(label))) return false;
+  return /^[A-Za-z]{2,63}$/.test(labels.at(-1));
 }
 
 export function validPhone(value) {
-  const digits = String(value || '').replace(/\D/g, '');
-  return digits.length >= 7 && digits.length <= 15;
+  return /^\+91[6-9]\d{9}$/.test(String(value || ''));
 }
 
 export function bearerToken(request) {

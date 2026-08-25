@@ -19,7 +19,15 @@ export function initModals() {
   const registerDoneBtn = document.getElementById('registerDoneBtn');
   const regAge = document.getElementById('regAge');
   const regTerms = document.getElementById('regTerms');
+  const regPhone = document.getElementById('regPhone');
   const btnSubmitRegister = document.getElementById('btnSubmitRegister');
+
+  function indianPhoneDigits(value) {
+    let digits = String(value || '').replace(/\D/g, '');
+    if (digits.length > 10 && digits.startsWith('91')) digits = digits.slice(2);
+    if (digits.length > 10 && digits.startsWith('0')) digits = digits.slice(1);
+    return digits.slice(0, 10);
+  }
 
   function updateRegisterButtonState() {
     if (btnSubmitRegister) {
@@ -29,6 +37,11 @@ export function initModals() {
 
   if (regAge) regAge.addEventListener('change', updateRegisterButtonState);
   if (regTerms) regTerms.addEventListener('change', updateRegisterButtonState);
+  if (regPhone) {
+    regPhone.addEventListener('input', () => {
+      regPhone.value = indianPhoneDigits(regPhone.value);
+    });
+  }
 
   document.querySelectorAll('.js-open-register').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -62,7 +75,7 @@ export function initModals() {
       if (regFormError) regFormError.textContent = '';
 
       const name = document.getElementById('regName').value.trim();
-      const phone = document.getElementById('regPhone').value.trim();
+      const phone = `+91${indianPhoneDigits(document.getElementById('regPhone').value)}`;
       const email = document.getElementById('regEmail').value.trim();
 
       btnSubmitRegister.disabled = true;
