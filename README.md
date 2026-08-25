@@ -20,6 +20,7 @@ The interface and headline change with the event stage:
 - Each registrant is synchronized to the `Entangle 2K26 — Registered` Resend Segment with a private `access_url`.
 - Completed submitters are also synchronized to `Entangle 2K26 — Submitters`.
 - Organizers design and schedule task-drop, reminder, and jury-update Broadcasts in the Resend dashboard.
+- `npm run broadcast:two-days:draft` creates a safe, unsent two-day reminder draft for the Registered segment after the first controlled registration.
 
 See [SUPABASE_EMAIL_SETUP.md](SUPABASE_EMAIL_SETUP.md) for the production checklist, DNS guidance, SQL setup, Broadcast schedule, and organizer queries.
 
@@ -38,7 +39,7 @@ SUPABASE_URL=https://YOUR_PROJECT.supabase.co
 SUPABASE_SECRET_KEY=YOUR_ROTATED_SERVER_SECRET
 SUPABASE_PUBLISHABLE_KEY=YOUR_SAFE_BROWSER_PUBLISHABLE_KEY
 RESEND_API_KEY=re_xxxxxxxxx
-RESEND_FROM_EMAIL=Entangle 2K26 <events@updates.vkarch.com>
+RESEND_FROM_EMAIL=Entangle 2K26 <entangle2k26@vkarch.com>
 RESEND_REPLY_TO=entangle2k26@vkarch.com
 ```
 

@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { eventState, getEventConfig, windowOverrideEnabled } from '../api/_lib/event.js';
-import { registrationEmail, submissionReceiptEmail } from '../api/_lib/email-templates.js';
+import { registrationEmail, submissionReceiptEmail, twoDayReminderBroadcast } from '../api/_lib/email-templates.js';
 
 test('default event timeline moves through every public state', () => {
   assert.equal(eventState(new Date('2026-08-30T18:29:59Z')), 'upcoming');
@@ -40,4 +40,14 @@ test('transactional email templates escape participant and file content', () => 
   assert.match(registration.html, /&lt;img/);
   assert.doesNotMatch(receipt.html, /<script>/);
   assert.match(receipt.html, /&lt;script&gt;/);
+  assert.match(registration.text, /Task drops:/);
+  assert.match(receipt.text, /Receipt ID:/);
+});
+
+test('two-day broadcast keeps personalization, secure links, and unsubscribe handling', () => {
+  const reminder = twoDayReminderBroadcast();
+  assert.match(reminder.html, /\{\{\{contact\.first_name\|there\}\}\}/);
+  assert.match(reminder.html, /\{\{\{contact\.access_url\}\}\}/);
+  assert.match(reminder.html, /\{\{\{RESEND_UNSUBSCRIBE_URL\}\}\}/);
+  assert.match(reminder.text, /Two days remaining/);
 });

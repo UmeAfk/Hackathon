@@ -3,7 +3,7 @@ function emailConfig() {
   if (!apiKey) throw new Error('Resend is not configured.');
   return {
     apiKey,
-    from: process.env.RESEND_FROM_EMAIL || 'Entangle 2K26 <events@updates.vkarch.com>',
+    from: process.env.RESEND_FROM_EMAIL || 'Entangle 2K26 <entangle2k26@vkarch.com>',
     replyTo: process.env.RESEND_REPLY_TO || 'entangle2k26@vkarch.com'
   };
 }
@@ -15,6 +15,7 @@ function payloadFor(to, message) {
     to: [to],
     subject: message.subject,
     html: message.html,
+    ...(message.text ? { text: message.text } : {}),
     ...(replyTo ? { reply_to: replyTo } : {})
   };
 }

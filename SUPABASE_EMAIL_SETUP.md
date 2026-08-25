@@ -2,7 +2,7 @@
 
 This runbook configures automated event email with Resend and large private submissions with Supabase without disturbing the existing `vkarch.com` office-mail system.
 
-Last reviewed: **24 August 2026** against the current application and the official Resend, Cloudflare, Supabase, and Vercel documentation.
+Last reviewed: **25 August 2026** against the live Resend configuration, public DNS, the current application, and the official Resend, Cloudflare, Supabase, and Vercel documentation.
 
 ## The safe architecture
 
@@ -11,23 +11,25 @@ Last reviewed: **24 August 2026** against the current application and the offici
 | Domain registrar | GoDaddy |
 | Authoritative DNS | Cloudflare |
 | Existing office inbox and incoming mail | Keep the current Netrix/SpamExperts-backed setup unchanged |
-| Automated sending domain | `updates.vkarch.com` in Resend |
-| Automated From address | `Entangle 2K26 <events@updates.vkarch.com>` |
+| Automated sending domain | `vkarch.com` in Resend; `send.vkarch.com` is the return-path hostname |
+| Automated From address | `Entangle 2K26 <entangle2k26@vkarch.com>` |
 | Human Reply-To inbox | `entangle2k26@vkarch.com` on the existing office mail system |
 | Registration and metadata | Private Supabase database tables |
 | Challenge model and candidate archives | Private Supabase Storage buckets |
 
-The automated sender is deliberately on a subdomain. Resend recommends this for reputation isolation, and it lets its DNS records live at new names without changing the root-domain mail records.
+Resend verifies the root domain, but its SPF and bounce-routing records live at the separate `send.vkarch.com` hostname. The existing root MX and root SPF records remain dedicated to office mail.
 
-## Public DNS state checked on 24 August 2026
+## Public DNS state checked on 25 August 2026
 
 The current public records confirm:
 
 - `vkarch.com` uses Cloudflare nameservers: `adi.ns.cloudflare.com` and `hayes.ns.cloudflare.com`.
 - Root mail is routed through the existing SpamExperts MX records at priorities 10, 20, and 30.
 - The root SPF record is `v=spf1 a:vkarch.com ip4:188.40.22.54 include:spf.antispamcloud.com -all`.
-- No public `_dmarc.vkarch.com` record was found.
-- No `updates.vkarch.com` Resend records exist yet.
+- `_dmarc.vkarch.com` is present in monitoring mode with `v=DMARC1; p=none;`.
+- `resend._domainkey.vkarch.com` is present and Resend reports DKIM as verified.
+- `send.vkarch.com` MX points to Resend's Amazon SES feedback host and Resend reports it as verified.
+- The required `send.vkarch.com` SPF TXT record does not currently resolve publicly and must still be added.
 
 This means Cloudflare is the place where new DNS records must be added. GoDaddy remains the registrar; **do not change the GoDaddy nameservers**.
 
@@ -39,6 +41,7 @@ Resend may display a local timezone or accept a UTC timestamp. Confirm every sch
 | --- | --- | --- |
 | Registration opens | 31 Aug 2026, 12:00 AM IST | 30 Aug 2026, 18:30 UTC |
 | Registration closes / task drops | 3 Sep 2026, 11:59 PM IST | 3 Sep 2026, 18:29 UTC |
+| Two-day reminder | 5 Sep 2026, 11:59 PM IST | 5 Sep 2026, 18:29 UTC |
 | 24-hour reminder | 6 Sep 2026, 11:59 PM IST | 6 Sep 2026, 18:29 UTC |
 | One-hour reminder | 7 Sep 2026, 10:59 PM IST | 7 Sep 2026, 17:29 UTC |
 | Submission deadline | 7 Sep 2026, 11:59 PM IST | 7 Sep 2026, 18:29 UTC |
@@ -61,37 +64,31 @@ Give this section to the office IT team before touching DNS.
 
 ### Only add
 
-The exact Resend-provided records beneath `updates.vkarch.com`, normally at these names:
+The remaining approved record is:
 
-- `send.updates.vkarch.com` MX — Resend bounce/complaint return path.
-- `send.updates.vkarch.com` TXT — Resend SPF for the subdomain return path.
-- `resend._domainkey.updates.vkarch.com` TXT — Resend DKIM public key.
-- Optionally `_dmarc.updates.vkarch.com` TXT after IT reviews the current root-domain policy.
+- `send.vkarch.com` TXT with `v=spf1 include:amazonses.com ~all` — Resend SPF for the dedicated return-path hostname.
+
+The `send.vkarch.com` MX, `resend._domainkey.vkarch.com` DKIM TXT, and `_dmarc.vkarch.com` monitoring record are already present. Do not duplicate them.
 
 Before the change, export or screenshot the complete Cloudflare DNS zone. After the change, compare it and verify that the only differences are the approved new subdomain records.
 
-## 2. Add the Resend sending subdomain
+## 2. Complete Resend domain authentication
 
-1. In **Resend → Domains**, add `updates.vkarch.com`.
-2. Choose **Manual setup**. Do not enable Receiving/Inbound.
-3. Resend will show the exact SPF/MX and DKIM values for this domain. Copy those values; do not invent or shorten them.
-4. In **Cloudflare → vkarch.com → DNS → Records**, add each record.
-5. Use **DNS only** for any record that exposes a proxy-status choice. MX and TXT records are DNS-only by design.
-6. In a Cloudflare Name field, enter only the host portion. For this setup, Resend will normally map as follows:
+The `vkarch.com` domain is already verified in Resend and Sending is enabled. Do not enable Receiving/Inbound.
+
+In **Cloudflare → vkarch.com → DNS → Records**, add the missing SPF TXT record. Use **DNS only** and TTL **Auto**:
 
 | Resend full name | Cloudflare Name | Type | Notes |
 | --- | --- | --- | --- |
-| `send.updates.vkarch.com` | `send.updates` | MX | Copy Resend's server and priority exactly |
-| `send.updates.vkarch.com` | `send.updates` | TXT | Copy Resend's SPF value exactly |
-| `resend._domainkey.updates.vkarch.com` | `resend._domainkey.updates` | TXT | Copy the complete DKIM value |
+| `send.vkarch.com` | `send` | TXT | `v=spf1 include:amazonses.com ~all` |
 
-Do **not** add another SPF TXT record at `vkarch.com` and do not append Resend to the current root SPF. A domain must not publish two competing SPF records. The dedicated `send.updates` SPF avoids that problem.
+Do **not** add another SPF TXT record at `vkarch.com` and do not append Resend to the current root SPF. A domain must not publish two competing SPF records at the same hostname. The separate `send.vkarch.com` SPF does not conflict with the existing `vkarch.com` SPF.
 
-The MX at `send.updates.vkarch.com` is a return-path record for outgoing Resend mail. It is not a replacement for the root MX records and does not route employee inbox mail to Resend.
+The MX at `send.vkarch.com` is a return-path record for outgoing Resend mail. It is not a replacement for the root MX records and does not route employee inbox mail to Resend.
 
 ### DMARC
 
-There is currently no public root DMARC record. DMARC is recommended, but it affects every sender using the domain and should therefore be owned by office IT.
+The public root DMARC record is currently in safe monitoring mode (`p=none`). It affects every sender using the domain and should remain owned by office IT.
 
 Safe rollout:
 
@@ -100,12 +97,12 @@ Safe rollout:
 3. Start in monitoring mode (`p=none`) and send aggregate reports to an inbox IT actually monitors.
 4. Do not move to `quarantine` or `reject` until IT has reviewed reports from every existing mail source.
 
-Never create multiple DMARC records at the same name. A subdomain-specific `_dmarc.updates` record can override the inherited root policy, so IT should approve it.
+Never create multiple DMARC records at the same name. IT should review aggregate reports before changing the policy to `quarantine` or `reject`.
 
 ### Verify without risking office mail
 
-1. Wait until Resend marks `updates.vkarch.com` **Verified** for SPF and DKIM.
-2. Send a test from `events@updates.vkarch.com` to:
+1. After the `send` TXT record resolves, re-verify that Resend marks SPF and DKIM as **Verified**.
+2. Send a test from `entangle2k26@vkarch.com` to:
    - the existing `entangle2k26@vkarch.com` Netrix inbox;
    - one external Gmail test inbox;
    - one external Outlook test inbox.
@@ -117,7 +114,7 @@ Never create multiple DMARC records at the same name. A subdomain-specific `_dma
 
 The backend sends transactional email and also creates Contacts, Segments, and the `access_url` contact property. Because those audience operations are not permitted by a sending-only key, this implementation needs a **Full access** Resend API key.
 
-Create a key named `Entangle production`, copy it once, and store it only as a Vercel server variable. Rotate it after the event.
+Create a Full-access key named `Entangle website full access`, copy it once, and store it only in local development and Vercel server variables. Rotate it after the event.
 
 Set these in **Vercel → Project → Settings → Environment Variables → Production**:
 
@@ -126,7 +123,7 @@ SUPABASE_URL=https://YOUR_PROJECT.supabase.co
 SUPABASE_SECRET_KEY=YOUR_SUPABASE_SERVER_SECRET
 SUPABASE_PUBLISHABLE_KEY=YOUR_SAFE_BROWSER_PUBLISHABLE_KEY
 RESEND_API_KEY=re_xxxxxxxxx
-RESEND_FROM_EMAIL=Entangle 2K26 <events@updates.vkarch.com>
+RESEND_FROM_EMAIL=Entangle 2K26 <entangle2k26@vkarch.com>
 RESEND_REPLY_TO=entangle2k26@vkarch.com
 ```
 
@@ -165,15 +162,16 @@ After the first controlled test registration, confirm that both Segments and the
 
 ## 5. Create and schedule participant Broadcasts
 
-In **Resend → Broadcasts**, create four drafts with this sender:
+In **Resend → Broadcasts**, create five drafts with this sender:
 
 ```text
-Entangle 2K26 <events@updates.vkarch.com>
+Entangle 2K26 <entangle2k26@vkarch.com>
 ```
 
 | Broadcast | Segment | Schedule |
 | --- | --- | --- |
 | Task drop | Registered | 3 Sep 2026, 11:59 PM IST / 18:29 UTC |
+| Two-day reminder | Registered | 5 Sep 2026, 11:59 PM IST / 18:29 UTC |
 | 24-hour reminder | Registered | 6 Sep 2026, 11:59 PM IST / 18:29 UTC |
 | One-hour reminder | Registered | 7 Sep 2026, 10:59 PM IST / 17:29 UTC |
 | Thank-you / jury update | Submitters | 10 Sep 2026, 12:00 PM IST / 06:30 UTC |
@@ -191,6 +189,8 @@ Hi {{{contact.first_name|there}}},
 ```
 
 Keep Resend's unsubscribe handling in every Broadcast. Send every draft as a test to an organizer first. Verify the personalized link, mobile rendering, sender, Reply-To behavior, unsubscribe link, segment, and displayed schedule before queueing it.
+
+The matching two-day reminder is generated by `twoDayReminderBroadcast()` in `api/_lib/email-templates.js`. After one controlled registration has created the Registered segment, run `npm run broadcast:two-days:draft` to create or reopen a reviewable Resend draft. The command never sends or schedules the Broadcast.
 
 Do not schedule the Broadcast until a test Contact has a non-empty `access_url`. Immediately after scheduling, open the queued item again and confirm its UTC time.
 
@@ -405,7 +405,7 @@ order by registered_at desc;
 
 ## 12. Final go-live checklist
 
-- [ ] Office IT approved the additive `updates.vkarch.com` DNS change.
+- [ ] Office IT approved the additive `send.vkarch.com` SPF TXT record without changing the root SPF or MX records.
 - [ ] GoDaddy nameservers and all existing office-mail records are unchanged.
 - [ ] Resend SPF and DKIM show Verified.
 - [ ] Office, Gmail, and Outlook tests pass; replies reach the Netrix inbox.
@@ -416,7 +416,7 @@ order by registered_at desc;
 - [ ] Resend plan supports the expected daily registrations and Contact count.
 - [ ] A realistic large upload resumed successfully.
 - [ ] Registered and Submitters segments contain the correct test Contact.
-- [ ] All four Broadcasts were test-sent, personalized, and scheduled at the checked UTC times.
+- [ ] All five Broadcasts were test-sent, personalized, and scheduled at the checked UTC times.
 - [ ] Vercel, Supabase, and Resend logs were checked after the production test.
 - [ ] The post-deadline off-Supabase backup owner and destination are agreed.
 
