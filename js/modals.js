@@ -20,6 +20,7 @@ export function initModals() {
   const regAge = document.getElementById('regAge');
   const regTerms = document.getElementById('regTerms');
   const regPhone = document.getElementById('regPhone');
+  const regEmail = document.getElementById('regEmail');
   const btnSubmitRegister = document.getElementById('btnSubmitRegister');
 
   function indianPhoneDigits(value) {
@@ -27,6 +28,20 @@ export function initModals() {
     if (digits.length > 10 && digits.startsWith('91')) digits = digits.slice(2);
     if (digits.length > 10 && digits.startsWith('0')) digits = digits.slice(1);
     return digits.slice(0, 10);
+  }
+
+  function validRegistrationEmail(value) {
+    const email = String(value || '').trim();
+    if (!email || email.length > 254 || /\s/.test(email)) return false;
+    const parts = email.split('@');
+    if (parts.length !== 2) return false;
+    const [local, domain] = parts;
+    if (!local || local.length > 64 || local.startsWith('.') || local.endsWith('.') || local.includes('..')) return false;
+    if (!/^[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]+$/.test(local)) return false;
+    const labels = domain.split('.');
+    return labels.length >= 2
+      && labels.every(label => /^[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?$/.test(label))
+      && /^[A-Za-z]{2,63}$/.test(labels.at(-1));
   }
 
   function updateRegisterButtonState() {
@@ -40,6 +55,15 @@ export function initModals() {
   if (regPhone) {
     regPhone.addEventListener('input', () => {
       regPhone.value = indianPhoneDigits(regPhone.value);
+      const valid = !regPhone.value || /^[6-9]\d{9}$/.test(regPhone.value);
+      regPhone.setCustomValidity(valid ? '' : 'Enter a 10-digit Indian mobile number starting with 6, 7, 8, or 9.');
+    });
+  }
+  if (regEmail) {
+    regEmail.addEventListener('input', () => {
+      regEmail.setCustomValidity(!regEmail.value || validRegistrationEmail(regEmail.value)
+        ? ''
+        : 'Enter a valid email address, for example name@example.com.');
     });
   }
 
