@@ -169,7 +169,9 @@
                   <use href="#i-plus" xlink:href="#i-plus" />
                 </svg></button>
               <div class="acc-panel">
-                <p>Unreal Engine 5 or Twinmotion.</p>
+                <p>You may use any supporting software in your workflow. Your final environment, materials, scene,
+                  camera setup, and renders must be completed in Unreal Engine 5, and your submitted project files
+                  must be an Unreal Engine project.</p>
               </div>
             </div>
             <div class="acc-item">
@@ -230,7 +232,8 @@
             <p>The supplied model is your primary asset — don't swap the building.</p>
           </div>
           <div class="rule-card"><span class="rule-num">02</span>
-            <p>Final render must come from Unreal Engine 5 or Twinmotion. No exceptions.</p>
+            <p>Use any supporting software you need, but complete the final environment, materials, scene, camera
+              setup, and renders in Unreal Engine 5.</p>
           </div>
           <div class="rule-card"><span class="rule-num">03</span>
             <p>Scene dressing (plants, people, furniture, HDRIs) from third parties is fine.</p>
@@ -328,9 +331,20 @@
           <use href="#i-close" xlink:href="#i-close" />
         </svg></button>
       <p class="tag">[ ASSET DROP ]</p>
-      <h3 id="modelModalTitle" class="h3">Download Base Model</h3>
-      <p class="modal-sub">Clean geometry ready for Unreal Engine 5 or Twinmotion:</p>
+      <h3 id="modelModalTitle" class="h3">Download Challenge Files</h3>
+      <p class="modal-sub">Choose the format that works best for your workflow. Complete your final scene and
+        renders in Unreal Engine 5.</p>
       <div class="format-options">
+        <div class="format-card">
+          <div class="format-info">
+            <div class="format-title"><svg style="width:18px;height:18px;color:var(--tomato);">
+                <use href="#i-download" />
+              </svg> Challenge Brief</div><span
+              class="format-sub">Complete task, rules, evaluation points, and supporting references · PDF</span>
+          </div>
+          <button type="button" class="btn btn-primary btn-sm js-trigger-download"
+            data-filename="Entangle_2K26_Challenge_Brief_v1.pdf">Download PDF</button>
+        </div>
         <div class="format-card">
           <div class="format-info">
             <div class="format-title"><svg style="width:18px;height:18px;color:var(--tomato);">
@@ -373,13 +387,14 @@
       <div class="modal-view" id="briefFormView">
         <p class="tag">[ CREATIVE DIRECTION ]</p>
         <h3 id="briefModalTitle" class="h3">Share Your Design Brief <span style="color: var(--tomato);">*</span></h3>
-        <p class="modal-sub">Tell us what you plan to build (~100 words).</p>
+        <p class="modal-sub">In about 100 words, tell us the concept, mood, and experience you plan to create. This
+          helps us understand your creative direction before we see the finished work.</p>
         <form id="briefForm" novalidate>
           <div class="field">
             <textarea id="briefText" name="briefText" required rows="5"
               placeholder="e.g. A moody dusk scene during rain with warm interior lighting contrasting wet asphalt reflections..."></textarea>
             <div class="field-meta">
-              <span>One-time submission</span><span id="briefWordCount">0 words</span>
+              <span>You can update this later</span><span id="briefWordCount">0 / ~100 words</span>
             </div>
           </div>
           <button type="submit" class="btn btn-primary btn-wide btn-lg" id="btnSubmitBrief" disabled>Send Brief <svg class="action-arrow">

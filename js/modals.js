@@ -182,7 +182,15 @@ export function initModals() {
         link.click();
         link.remove();
         btn.textContent = 'Downloaded';
-        showToast(`${filename} is downloading. Remember to share your Design Brief!`);
+        showToast(`${filename} is downloading.`);
+        if (localStorage.getItem('av-brief-submitted') !== '1') {
+          setTimeout(() => {
+            closeModal(modelBackdrop, modelModal);
+            if (briefFormView) briefFormView.hidden = false;
+            if (briefSuccessView) briefSuccessView.hidden = true;
+            openModal(briefModalBackdrop, briefModal);
+          }, 700);
+        }
       } catch (error) {
         showToast(error.message);
         btn.innerHTML = originalLabel;

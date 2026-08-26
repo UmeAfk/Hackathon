@@ -1,20 +1,27 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { eventState, getEventConfig, windowOverrideEnabled } from '../api/_lib/event.js';
-import { registrationEmail, submissionReceiptEmail, twoDayReminderBroadcast } from '../api/_lib/email-templates.js';
+import {
+  challengeLaunchBroadcast,
+  evaluationUpdateBroadcast,
+  notSelectedEmail,
+  registrationEmail,
+  shortlistedEmail,
+  submissionReceiptEmail
+} from '../api/_lib/email-templates.js';
 
 test('default event timeline moves through every public state', () => {
-  assert.equal(eventState(new Date('2026-08-30T18:29:59Z')), 'upcoming');
-  assert.equal(eventState(new Date('2026-08-30T18:30:00Z')), 'registration');
-  assert.equal(eventState(new Date('2026-09-03T18:29:00Z')), 'live');
-  assert.equal(eventState(new Date('2026-09-07T18:29:00Z')), 'closed');
+  assert.equal(eventState(new Date('2026-08-31T06:28:59Z')), 'upcoming');
+  assert.equal(eventState(new Date('2026-08-31T06:29:00Z')), 'registration');
+  assert.equal(eventState(new Date('2026-09-04T06:29:00Z')), 'live');
+  assert.equal(eventState(new Date('2026-09-09T06:29:00Z')), 'closed');
 });
 
 test('event configuration uses explicit ISO dates and a five GiB upload ceiling', () => {
   const config = getEventConfig();
   assert.equal(config.maxUploadBytes, 5 * 1024 * 1024 * 1024);
-  assert.equal(new Date(config.taskDropsAt).toISOString(), '2026-09-03T18:29:00.000Z');
-  assert.equal(new Date(config.submissionDeadlineAt).toISOString(), '2026-09-07T18:29:00.000Z');
+  assert.equal(new Date(config.taskDropsAt).toISOString(), '2026-09-04T06:29:00.000Z');
+  assert.equal(new Date(config.submissionDeadlineAt).toISOString(), '2026-09-09T06:29:00.000Z');
 });
 
 test('event-window overrides are limited to local Vercel development', () => {
@@ -45,14 +52,46 @@ test('transactional email templates escape participant and file content', () => 
   assert.match(registration.html, /&lt;img/);
   assert.doesNotMatch(receipt.html, /<script>/);
   assert.match(receipt.html, /&lt;script&gt;/);
-  assert.match(registration.text, /Task drops:/);
-  assert.match(receipt.text, /Receipt ID:/);
+  assert.match(registration.text, /4 September at 11:59 AM IST/);
+  assert.doesNotMatch(registration.text, /private challenge|Submission deadline/);
+  assert.match(receipt.text, /ready for evaluation/);
+  assert.doesNotMatch(receipt.text, /receipt|Receipt ID/);
 });
 
-test('two-day broadcast keeps personalization, secure links, and unsubscribe handling', () => {
-  const reminder = twoDayReminderBroadcast();
-  assert.match(reminder.html, /\{\{\{contact\.first_name\|there\}\}\}/);
-  assert.match(reminder.html, /\{\{\{contact\.access_url\}\}\}/);
-  assert.match(reminder.html, /\{\{\{RESEND_UNSUBSCRIBE_URL\}\}\}/);
-  assert.match(reminder.text, /Two days remaining/);
+test('the complete participant email set renders shared branded HTML', () => {
+  const participant = { name: 'Aarav Sharma', email: 'aarav@example.com' };
+  const messages = [
+    challengeLaunchBroadcast(),
+    evaluationUpdateBroadcast(),
+    shortlistedEmail(participant, { venue: '<script>bad</script>', venueUrl: 'https://maps.example/test' }),
+    notSelectedEmail(participant)
+  ];
+  for (const message of messages) {
+    assert.match(message.html, /\[ ENTANGLE 2K26 \]/);
+    assert.ok(message.subject);
+  }
+  assert.match(messages[0].html, /Unreal Engine 5/);
+  assert.match(messages[0].html, /9 September 2026.*at 11:59 am/);
+  assert.match(messages[0].html, />09<\/td>/);
+  assert.match(messages[0].html, /@media only screen and \(max-width:600px\)/);
+  assert.doesNotMatch(messages[0].html, /Button not working|RESEND_UNSUBSCRIBE_URL/);
+  assert.doesNotMatch(messages[1].html, /Button not working|RESEND_UNSUBSCRIBE_URL/);
+  assert.match(messages[1].html, /Keep an eye on your inbox\.<\/p>/);
+  assert.doesNotMatch(messages[1].html, /next Entangle update/);
+  assert.match(messages[0].html, /Visit Website/);
+  assert.doesNotMatch(messages[2].html, /<script>bad<\/script>/);
+  assert.match(messages[2].html, /aria-label="Presentation"/);
+  assert.match(messages[2].html, /aria-label="Location"/);
+  assert.match(messages[2].html, /https:\/\/maps\.example\/test/);
+  assert.doesNotMatch(messages[2].html, /Presentation duration|Confirm by/);
+  assert.match(submissionReceiptEmail(participant, { original_filename: 'Aarav.zip' }).html, /aria-label="Upload"/);
+  assert.match(messages[3].html, /not selected to advance/);
+});
+
+test('event schedule can be extended through environment configuration', () => {
+  const previousDeadline = process.env.ENTANGLE_SUBMISSION_DEADLINE_AT;
+  process.env.ENTANGLE_SUBMISSION_DEADLINE_AT = '2026-09-11T11:59:00+05:30';
+  assert.equal(getEventConfig().submissionDeadlineAt, '2026-09-11T11:59:00+05:30');
+  if (previousDeadline === undefined) delete process.env.ENTANGLE_SUBMISSION_DEADLINE_AT;
+  else process.env.ENTANGLE_SUBMISSION_DEADLINE_AT = previousDeadline;
 });

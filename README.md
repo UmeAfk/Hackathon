@@ -20,7 +20,20 @@ The interface and headline change with the event stage:
 - Each registrant is synchronized to the `Entangle 2K26 — Registered` Resend Segment with a private `access_url`.
 - Completed submitters are also synchronized to `Entangle 2K26 — Submitters`.
 - Organizers design and schedule task-drop, reminder, and jury-update Broadcasts in the Resend dashboard.
-- `npm run broadcast:two-days:draft` creates a safe, unsent two-day reminder draft for the Registered segment after the first controlled registration.
+
+All email copy and HTML live in `api/_lib/email-templates.js`. Generate a local gallery of every email without sending anything:
+
+```powershell
+npm run emails:preview
+```
+
+With the local server running, open `http://localhost:3000/tmp/email-previews/`. To send real test copies through Resend to one organizer mailbox:
+
+```powershell
+npm run emails:test -- --to organizer@vkarch.com --template all
+```
+
+Use a template slug instead of `all` to send one test: `registration`, `challenge-launch`, `submission-receipt`, `evaluation-update`, `shortlisted`, or `not-selected`. Test sends are prefixed with `[TEST]` and never send to a Segment.
 
 See [SUPABASE_EMAIL_SETUP.md](SUPABASE_EMAIL_SETUP.md) for the production checklist, DNS guidance, SQL setup, Broadcast schedule, and organizer queries.
 

@@ -9,10 +9,10 @@ import { fetchEventConfig } from './api.js';
 const DAY = 24 * 60 * 60 * 1000;
 
 let timeline = {
-  registrationOpensAt: '2026-08-31T00:00:00+05:30',
-  registrationClosesAt: '2026-09-03T23:59:00+05:30',
-  taskDropsAt: '2026-09-03T23:59:00+05:30',
-  submissionDeadlineAt: '2026-09-07T23:59:00+05:30'
+  registrationOpensAt: '2026-08-31T11:59:00+05:30',
+  registrationClosesAt: '2026-09-04T11:59:00+05:30',
+  taskDropsAt: '2026-09-04T11:59:00+05:30',
+  submissionDeadlineAt: '2026-09-09T11:59:00+05:30'
 };
 
 const urlParams = new URLSearchParams(window.location.search);

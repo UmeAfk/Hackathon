@@ -85,6 +85,7 @@ on conflict (id) do update set public = false;
 -- No public storage.objects policies are intentional. Uploads use short-lived,
 -- server-created signed upload URLs; organizer downloads use the Supabase dashboard.
 -- Supabase Storage folders are virtual. Upload the finished assets with these paths:
+--   challenge-assets/brief/Entangle_2K26_Challenge_Brief_v1.pdf
 --   challenge-assets/models/ArchViz_Base_Building_v1.0.fbx
 --   challenge-assets/models/ArchViz_Base_Building_v1.0.obj
 --   challenge-assets/models/ArchViz_Base_Building_v1.0.glb

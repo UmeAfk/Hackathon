@@ -16,6 +16,8 @@ function payloadFor(to, message) {
     subject: message.subject,
     html: message.html,
     ...(message.text ? { text: message.text } : {}),
+    ...(message.attachments ? { attachments: message.attachments } : {}),
+    ...(message.scheduledAt ? { scheduled_at: message.scheduledAt } : {}),
     ...(replyTo ? { reply_to: replyTo } : {})
   };
 }

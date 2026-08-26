@@ -4,27 +4,28 @@ import { eventState, windowOverrideEnabled } from './_lib/event.js';
 import { getSupabase } from './_lib/supabase.js';
 import { consumeRateLimit, rateLimitResponse } from './_lib/rate-limit.js';
 
-const formats = {
-  'ArchViz_Base_Building_v1.0.fbx': '.fbx',
-  'ArchViz_Base_Building_v1.0.obj': '.obj',
-  'ArchViz_Base_Building_v1.0.glb': '.glb'
+const assets = {
+  'Entangle_2K26_Challenge_Brief_v1.pdf': { folder: 'brief', extension: '.pdf' },
+  'ArchViz_Base_Building_v1.0.fbx': { folder: 'models', extension: '.fbx' },
+  'ArchViz_Base_Building_v1.0.obj': { folder: 'models', extension: '.obj' },
+  'ArchViz_Base_Building_v1.0.glb': { folder: 'models', extension: '.glb' }
 };
 
 const resolvedPaths = new Map();
 
-async function resolveModelPath(storage, requestedFilename, extension) {
-  const cached = resolvedPaths.get(extension);
+async function resolveAssetPath(storage, requestedFilename, asset) {
+  const cached = resolvedPaths.get(requestedFilename);
   if (cached) return cached;
 
-  const { data: files, error } = await storage.list('models', { limit: 100, sortBy: { column: 'name', order: 'asc' } });
+  const { data: files, error } = await storage.list(asset.folder, { limit: 100, sortBy: { column: 'name', order: 'asc' } });
   if (error) throw error;
   const preferred = files?.find(file => file.name === requestedFilename);
-  const fallback = files?.find(file => file.name.toLowerCase().endsWith(extension));
+  const fallback = files?.find(file => file.name.toLowerCase().endsWith(asset.extension));
   const selected = preferred || fallback;
   if (!selected) return null;
 
-  const path = `models/${selected.name}`;
-  resolvedPaths.set(extension, path);
+  const path = `${asset.folder}/${selected.name}`;
+  resolvedPaths.set(requestedFilename, path);
   return path;
 }
 
@@ -46,20 +47,20 @@ export default async function handler(request, response) {
       return rateLimitResponse(response, 60 * 60);
     }
     const requestedFilename = String(bodyOf(request).filename || '');
-    const extension = formats[requestedFilename];
-    if (!extension) return json(response, 404, { error: 'That model format is not available.' });
+    const asset = assets[requestedFilename];
+    if (!asset) return json(response, 404, { error: 'That challenge file is not available.' });
 
     const storage = getSupabase().storage.from('challenge-assets');
-    const path = await resolveModelPath(storage, requestedFilename, extension);
-    if (!path) return json(response, 404, { error: `No ${extension} model has been uploaded to challenge-assets/models yet.` });
+    const path = await resolveAssetPath(storage, requestedFilename, asset);
+    if (!path) return json(response, 404, { error: `${requestedFilename} has not been uploaded to challenge-assets/${asset.folder} yet.` });
 
     try {
       const download = await createDownloadUrl(storage, path);
       return json(response, 200, { ok: true, ...download });
     } catch (signError) {
-      resolvedPaths.delete(extension);
-      const refreshedPath = await resolveModelPath(storage, requestedFilename, extension);
-      if (!refreshedPath) return json(response, 404, { error: `No ${extension} model has been uploaded to challenge-assets/models yet.` });
+      resolvedPaths.delete(requestedFilename);
+      const refreshedPath = await resolveAssetPath(storage, requestedFilename, asset);
+      if (!refreshedPath) return json(response, 404, { error: `${requestedFilename} has not been uploaded to challenge-assets/${asset.folder} yet.` });
       const download = await createDownloadUrl(storage, refreshedPath);
       return json(response, 200, { ok: true, ...download });
     }

@@ -1,8 +1,8 @@
 const defaults = {
-  registrationOpensAt: '2026-08-31T00:00:00+05:30',
-  registrationClosesAt: '2026-09-03T23:59:00+05:30',
-  taskDropsAt: '2026-09-03T23:59:00+05:30',
-  submissionDeadlineAt: '2026-09-07T23:59:00+05:30',
+  registrationOpensAt: '2026-08-31T11:59:00+05:30',
+  registrationClosesAt: '2026-09-04T11:59:00+05:30',
+  taskDropsAt: '2026-09-04T11:59:00+05:30',
+  submissionDeadlineAt: '2026-09-09T11:59:00+05:30',
   thankYouAt: '2026-09-10T12:00:00+05:30'
 };
 
@@ -16,7 +16,11 @@ export function getEventConfig() {
   const vercelHost = process.env.VERCEL_PROJECT_PRODUCTION_URL || process.env.VERCEL_URL;
   const automaticSiteUrl = vercelHost ? `https://${vercelHost}` : 'http://localhost:3000';
   const config = {
-    ...defaults,
+    registrationOpensAt: process.env.ENTANGLE_REGISTRATION_OPENS_AT || defaults.registrationOpensAt,
+    registrationClosesAt: process.env.ENTANGLE_REGISTRATION_CLOSES_AT || defaults.registrationClosesAt,
+    taskDropsAt: process.env.ENTANGLE_TASK_DROPS_AT || defaults.taskDropsAt,
+    submissionDeadlineAt: process.env.ENTANGLE_SUBMISSION_DEADLINE_AT || defaults.submissionDeadlineAt,
+    thankYouAt: process.env.ENTANGLE_THANK_YOU_AT || defaults.thankYouAt,
     eventName: 'Entangle ArchViz Challenge',
     siteUrl: automaticSiteUrl.replace(/\/$/, ''),
     maxUploadBytes: 5 * 1024 * 1024 * 1024
@@ -27,6 +31,9 @@ export function getEventConfig() {
   validDate(config.taskDropsAt, 'task drop');
   validDate(config.submissionDeadlineAt, 'submission deadline');
   validDate(config.thankYouAt, 'thank-you');
+  if (new Date(config.registrationOpensAt) >= new Date(config.registrationClosesAt)) throw new Error('Registration must close after it opens');
+  if (new Date(config.registrationClosesAt) > new Date(config.taskDropsAt)) throw new Error('The task cannot drop before registration closes');
+  if (new Date(config.taskDropsAt) >= new Date(config.submissionDeadlineAt)) throw new Error('The submission deadline must be after the task drop');
   return config;
 }
 

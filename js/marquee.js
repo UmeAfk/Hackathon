@@ -8,7 +8,7 @@ export function initMarquee() {
 
   const phrases = [
     'UNREAL ENGINE 5',
-    'TWINMOTION',
+    'OPEN SUPPORTING WORKFLOW',
     'ONE BASE MODEL',
     'ONE HERO SHOT',
     'LIGHTING & ATMOSPHERE',
