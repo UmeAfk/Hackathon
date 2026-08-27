@@ -29,6 +29,20 @@
 
   .help-card {
     max-width: 560px;
+    margin-inline: auto;
+  }
+
+  #faq {
+    padding-bottom: 52px;
+  }
+
+  #rules {
+    padding-top: 40px;
+    padding-bottom: 52px;
+  }
+
+  .help-section {
+    padding: 24px 0 84px;
   }
 
   .rules-grid {
@@ -112,8 +126,8 @@
 
   .hero-sub {
     max-width: 330px;
-    font-size: 15.5px;
-    line-height: 1.55;
+    font-size: 12px;
+    line-height: 1.6;
     margin-bottom: 28px;
   }
 
@@ -185,6 +199,32 @@
   .help-card,
   .closed-hero-card {
     padding: 28px 20px;
+  }
+
+  #faq {
+    padding-bottom: 38px;
+  }
+
+  #rules {
+    padding-top: 30px;
+    padding-bottom: 42px;
+  }
+
+  .help-section {
+    padding: 18px 0 60px;
+  }
+
+  .help-section .help-card {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    gap: 12px;
+    padding: 28px 20px;
+    text-align: center;
+  }
+
+  .help-section .help-card .btn {
+    justify-self: center;
+    margin-top: 8px;
   }
 
   .rule-card {

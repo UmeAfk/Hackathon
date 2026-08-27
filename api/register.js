@@ -33,22 +33,27 @@ export default async function handler(request, response) {
     }
 
     const supabase = getSupabase();
-    const { data: existing, error: lookupError } = await supabase.from('participants').select('id,name,email,phone').eq('email', email).maybeSingle();
-    if (lookupError) throw lookupError;
+    const [emailLookup, phoneLookup] = await Promise.all([
+      supabase.from('participants').select('id').eq('email', email).maybeSingle(),
+      supabase.from('participants').select('id').eq('phone', phone).maybeSingle()
+    ]);
+    if (emailLookup.error) throw emailLookup.error;
+    if (phoneLookup.error) throw phoneLookup.error;
+    if (emailLookup.data) {
+      return json(response, 409, { code: 'already_registered', field: 'email', error: 'This email address is already registered.' });
+    }
+    if (phoneLookup.data) {
+      return json(response, 409, { code: 'already_registered', field: 'phone', error: 'This mobile number is already registered.' });
+    }
 
-    let participant;
-    let recentDelivery = null;
-    if (existing) {
-      const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000).toISOString();
-      const { data: recent } = await supabase.from('email_deliveries')
-        .select('id,status').eq('participant_id', existing.id).like('email_type', 'registration:%')
-        .gte('attempted_at', tenMinutesAgo).in('status', ['processing', 'sent']).limit(1);
-      recentDelivery = recent?.[0] || null;
-      participant = existing;
-    } else {
-      const { data, error } = await supabase.from('participants').insert({ name, phone, email, age_confirmed: true, terms_accepted: true }).select('id,name,email,phone').single();
-      if (error) throw error;
-      participant = data;
+    const { data: participant, error: insertError } = await supabase.from('participants')
+      .insert({ name, phone, email, age_confirmed: true, terms_accepted: true })
+      .select('id,name,email,phone').single();
+    if (insertError) {
+      if (insertError.code === '23505') {
+        return json(response, 409, { code: 'already_registered', error: 'This email address or mobile number is already registered.' });
+      }
+      throw insertError;
     }
 
     const emailConfigured = Boolean(process.env.RESEND_API_KEY);
@@ -56,14 +61,6 @@ export default async function handler(request, response) {
     const responseMessage = emailConfigured
       ? 'Registration received. Check your inbox for the secure challenge link.'
       : 'Registration saved. Email delivery is not configured yet; local development can continue on this device.';
-
-    if (recentDelivery) {
-      return json(response, 200, {
-        ok: true,
-        emailConfigured,
-        message: responseMessage
-      });
-    }
 
     const token = await issueParticipantToken(participant.id, 'registration');
 

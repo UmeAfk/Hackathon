@@ -2,10 +2,10 @@
    MODALS SYSTEM — Register, Model, Brief & Help Dialogs
    ========================================================= */
 
-import { showToast } from './utils.js';
-import { syncPhase, syncBriefState } from './phaseEngine.js';
-import { openModal, closeModal, spawnConfetti } from './modalCore.js';
-import { getAssetDownload, registerParticipant, saveDesignBrief } from './api.js';
+import { showToast } from './utils.js?v=20260826g';
+import { syncPhase, syncBriefState } from './phaseEngine.js?v=20260826g';
+import { openModal, closeModal, spawnConfetti } from './modalCore.js?v=20260826g';
+import { getAssetDownload, registerParticipant, saveDesignBrief } from './api.js?v=20260826g';
 
 export function initModals() {
   // 1. Register modal
@@ -46,17 +46,23 @@ export function initModals() {
 
   function updateRegisterButtonState() {
     if (btnSubmitRegister) {
-      btnSubmitRegister.disabled = !(regAge?.checked && regTerms?.checked);
+      const nameReady = String(registerForm?.elements.regName?.value || '').trim().length >= 2;
+      const phoneReady = /^[6-9]\d{9}$/.test(indianPhoneDigits(regPhone?.value));
+      const emailReady = validRegistrationEmail(regEmail?.value);
+      btnSubmitRegister.disabled = !(nameReady && phoneReady && emailReady && regAge?.checked && regTerms?.checked);
     }
   }
 
   if (regAge) regAge.addEventListener('change', updateRegisterButtonState);
   if (regTerms) regTerms.addEventListener('change', updateRegisterButtonState);
+  if (registerForm?.elements.regName) registerForm.elements.regName.addEventListener('input', updateRegisterButtonState);
   if (regPhone) {
     regPhone.addEventListener('input', () => {
       regPhone.value = indianPhoneDigits(regPhone.value);
       const valid = !regPhone.value || /^[6-9]\d{9}$/.test(regPhone.value);
       regPhone.setCustomValidity(valid ? '' : 'Enter a 10-digit Indian mobile number starting with 6, 7, 8, or 9.');
+      if (regFormError) regFormError.textContent = '';
+      updateRegisterButtonState();
     });
   }
   if (regEmail) {
@@ -64,6 +70,8 @@ export function initModals() {
       regEmail.setCustomValidity(!regEmail.value || validRegistrationEmail(regEmail.value)
         ? ''
         : 'Enter a valid email address, for example name@example.com.');
+      if (regFormError) regFormError.textContent = '';
+      updateRegisterButtonState();
     });
   }
 
@@ -133,6 +141,12 @@ export function initModals() {
         syncPhase();
       } catch (error) {
         if (regFormError) regFormError.textContent = error.message;
+        const duplicateField = error.field === 'phone' ? regPhone : (error.field === 'email' ? regEmail : null);
+        if (duplicateField) {
+          duplicateField.setCustomValidity(error.message);
+          duplicateField.focus();
+          duplicateField.reportValidity();
+        }
       } finally {
         btnSubmitRegister.textContent = 'Register';
         updateRegisterButtonState();
@@ -183,14 +197,10 @@ export function initModals() {
         link.remove();
         btn.textContent = 'Downloaded';
         showToast(`${filename} is downloading.`);
-        if (localStorage.getItem('av-brief-submitted') !== '1') {
-          setTimeout(() => {
-            closeModal(modelBackdrop, modelModal);
-            if (briefFormView) briefFormView.hidden = false;
-            if (briefSuccessView) briefSuccessView.hidden = true;
-            openModal(briefModalBackdrop, briefModal);
-          }, 700);
-        }
+        setTimeout(() => {
+          closeModal(modelBackdrop, modelModal);
+          openBriefEditor();
+        }, 700);
       } catch (error) {
         showToast(error.message);
         btn.innerHTML = originalLabel;
@@ -233,18 +243,19 @@ export function initModals() {
     }
   }
 
+  function openBriefEditor() {
+    const savedBrief = localStorage.getItem('av-design-brief');
+    if (savedBrief && briefText) briefText.value = savedBrief;
+    if (briefFormView) briefFormView.hidden = false;
+    if (briefSuccessView) briefSuccessView.hidden = true;
+    updateBriefWordCount();
+    openModal(briefModalBackdrop, briefModal);
+  }
+
   document.querySelectorAll('.js-open-brief-modal').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.preventDefault();
-      const savedBrief = localStorage.getItem('av-design-brief');
-      if (savedBrief && briefText) {
-        briefText.value = savedBrief;
-        updateBriefWordCount();
-      }
-
-      if (briefFormView) briefFormView.hidden = false;
-      if (briefSuccessView) briefSuccessView.hidden = true;
-      openModal(briefModalBackdrop, briefModal);
+      openBriefEditor();
     });
   });
 

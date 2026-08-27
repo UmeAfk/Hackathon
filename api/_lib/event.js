@@ -1,5 +1,5 @@
 const defaults = {
-  registrationOpensAt: '2026-08-31T11:59:00+05:30',
+  registrationOpensAt: '2026-08-31T11:00:00+05:30',
   registrationClosesAt: '2026-09-04T11:59:00+05:30',
   taskDropsAt: '2026-09-04T11:59:00+05:30',
   submissionDeadlineAt: '2026-09-09T11:59:00+05:30',

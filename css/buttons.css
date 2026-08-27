@@ -92,3 +92,14 @@
   transform: none !important;
   box-shadow: var(--shadow-off) var(--shadow-off) 0 0 var(--shadow-color) !important;
 }
+
+.btn.btn-registered:disabled {
+  opacity: 1;
+  cursor: default;
+  background: var(--olive);
+  color: #fff;
+}
+
+#heroRegisterBtn:disabled .action-arrow {
+  display: none;
+}

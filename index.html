@@ -15,7 +15,7 @@
   <link rel="icon" type="image/x-icon" href="public/favicon.ico">
   <link rel="icon" type="image/png" href="public/icon.png">
   <link rel="apple-touch-icon" href="public/icon.png">
-  <link rel="stylesheet" href="css/style.css?v=20260823b">
+  <link rel="stylesheet" href="css/style.css?v=20260826h">
 </head>
 
 <body>
@@ -88,7 +88,8 @@
   </svg>
 
   <!-- ============================= THEME TOGGLE ============================= -->
-  <button type="button" class="theme-toggle theme-toggle-float" id="themeToggle" aria-label="Switch to dark theme" aria-pressed="false">
+  <button type="button" class="theme-toggle theme-toggle-float" id="themeToggle" aria-label="Switch to dark theme"
+    aria-pressed="false">
     <svg class="icon-sun">
       <use href="#i-sun" xlink:href="#i-sun" />
     </svg>
@@ -102,13 +103,16 @@
     <section class="hero">
       <div class="hero-noise" aria-hidden="true"></div>
       <div class="wrap hero-wrap">
-        <h1 class="display"><span id="heroTitleLead">Design loud.</span><br><span id="heroTitleSecond">Render </span><span
-            class="hl" id="heroTitleAccent">honest.</span></h1>
-        <p class="hero-sub" id="heroSubtitle">One building. One brief. Whatever you make of it.</p>
+        <h1 class="display"><span id="heroTitleLead">Design loud.</span><br><span id="heroTitleSecond">Render
+          </span><span class="hl" id="heroTitleAccent">honest.</span></h1>
+        <p class="hero-sub" id="heroSubtitle">[ One building. One brief. Whatever you make of it ]</p>
         <div class="hero-ctas" id="heroCtas">
-          <button type="button" class="btn btn-primary btn-lg js-open-register" id="heroRegisterBtn">Register Now <svg class="action-arrow">
-              <use href="#i-arrow" xlink:href="#i-arrow" />
-            </svg></button>
+          <span class="registration-cta" id="heroRegisterWrap">
+            <button type="button" class="btn btn-primary btn-lg js-open-register" id="heroRegisterBtn"><span
+                id="heroRegisterLabel">Register</span> <svg class="action-arrow">
+                <use id="heroRegisterIcon" href="#i-arrow" xlink:href="#i-arrow" />
+              </svg></button>
+          </span>
           <a href="#faq" class="btn btn-ghost btn-lg" id="heroTimelineBtn">FAQ &amp; Details</a>
         </div>
         <div class="countdown-block" id="countdownBlock" style="display: none;">
@@ -131,10 +135,12 @@
             </div>
           </div>
           <div class="live-cta-row" id="liveCtaRow" style="display: none;">
-            <button type="button" class="btn btn-outline btn-lg js-open-model-modal" id="btnOpenModelModal">Download <svg>
+            <button type="button" class="btn btn-outline btn-lg js-open-model-modal" id="btnOpenModelModal">Download
+              <svg>
                 <use href="#i-download" xlink:href="#i-download" />
               </svg></button>
-            <button type="button" class="btn btn-primary btn-lg js-open-submit-modal" id="cardEarlySubmitBtn">Submit <svg>
+            <button type="button" class="btn btn-primary btn-lg js-open-submit-modal" id="cardEarlySubmitBtn">Submit
+              <svg>
                 <use href="#i-upload" xlink:href="#i-upload" />
               </svg></button>
             <button type="button" class="btn btn-ghost btn-lg js-open-brief-modal" id="btnOpenBriefModal"
@@ -164,14 +170,14 @@
         <div class="faq-layout">
           <div class="accordion" id="accordion">
             <div class="acc-item">
-              <button type="button" class="acc-trigger" aria-expanded="false"><span>What software can I actually use?</span><svg
+              <button type="button" class="acc-trigger" aria-expanded="false"><span>What software can I use?</span><svg
                   class="acc-icon">
                   <use href="#i-plus" xlink:href="#i-plus" />
                 </svg></button>
               <div class="acc-panel">
-                <p>You may use any supporting software in your workflow. Your final environment, materials, scene,
-                  camera setup, and renders must be completed in Unreal Engine 5, and your submitted project files
-                  must be an Unreal Engine project.</p>
+                <p>You may use supporting design and content-creation software in your workflow. Your final
+                  environment, materials, scene, camera setup, renders, and interactive features must be assembled
+                  and completed in Unreal Engine 5.</p>
               </div>
             </div>
             <div class="acc-item">
@@ -180,53 +186,106 @@
                   <use href="#i-plus" xlink:href="#i-plus" />
                 </svg></button>
               <div class="acc-panel">
-                <p>No — it's a bonus, not a requirement. A strong static hero shot competes just fine.</p>
+                <p>Yes. Include at least one simple interaction built with Unreal Engine 5 Blueprints—such as a door
+                  opening, a day/night switch, or lights turning on and off. Also include a short MP4 walkthrough or
+                  cinematic in the Video folder so the jury can review the experience quickly.</p>
               </div>
             </div>
             <div class="acc-item">
-              <button type="button" class="acc-trigger" aria-expanded="false"><span>When exactly do I get the model?</span><svg
-                  class="acc-icon">
+              <button type="button" class="acc-trigger" aria-expanded="false"><span>When exactly do I get the
+                  task?</span><svg class="acc-icon">
                   <use href="#i-plus" xlink:href="#i-plus" />
                 </svg></button>
               <div class="acc-panel">
-                <p>The second the countdown hits zero. Everyone gets it simultaneously.</p>
+                <p>The task brief, supporting references, and project files will be available when registration closes
+                  on 4 September 2026 at 11:59 AM IST. You will receive an email and can access everything from the
+                  website.</p>
               </div>
             </div>
             <div class="acc-item">
-              <button type="button" class="acc-trigger" aria-expanded="false"><span>How long do I have to submit?</span><svg
-                  class="acc-icon">
+              <button type="button" class="acc-trigger" aria-expanded="false"><span>How long do I have to
+                  submit?</span><svg class="acc-icon">
                   <use href="#i-plus" xlink:href="#i-plus" />
                 </svg></button>
               <div class="acc-panel">
-                <p>4 days from release. There's a live countdown on the challenge section once it drops.</p>
+                <p>The submission window runs from 4 September 2026 at 11:59 AM IST until 9 September 2026 at 11:59
+                  AM IST. Upload and verify your final archive before the closing time.</p>
               </div>
             </div>
             <div class="acc-item">
-              <button type="button" class="acc-trigger" aria-expanded="false"><span>What do I actually upload?</span><svg
-                  class="acc-icon">
+              <button type="button" class="acc-trigger" aria-expanded="false"><span>What do I actually
+                  upload?</span><svg class="acc-icon">
                   <use href="#i-plus" xlink:href="#i-plus" />
                 </svg></button>
               <div class="acc-panel">
-                <p>A packaged zip archive containing your Renders, optional EXE build, and Video walkthrough.</p>
+                <p>Upload one archive named <strong>YOUR_FULL_NAME.zip</strong>. Inside it, include
+                  <strong>Images/</strong> for final JPG or PNG renders, <strong>Video/</strong> for the MP4 walkthrough
+                  or cinematic, and <strong>Executable/</strong> for the packaged Windows build and its support files.
+                  Keep your editable Unreal Engine project available in case the jury requests verification.
+                </p>
               </div>
             </div>
-          </div>
-          <div class="help-card">
-            <svg>
-              <use href="#i-mail" xlink:href="#i-mail" />
-            </svg>
-            <h3>Still stuck?</h3>
-            <p>Reach the organizers directly — email or WhatsApp, whichever's faster for you.</p>
-            <button type="button" class="btn btn-primary btn-sm js-open-help">Need Help</button>
+            <div class="acc-item">
+              <button type="button" class="acc-trigger" aria-expanded="false"><span>Can I use third-party assets,
+                  plugins, or AI tools?</span><svg class="acc-icon">
+                  <use href="#i-plus" xlink:href="#i-plus" />
+                </svg></button>
+              <div class="acc-panel">
+                <p>Yes, provided you have the right to use them. Third-party vegetation, people, furniture, HDRIs,
+                  textures, and plugins are allowed. Disclose any AI tools you use, and make sure the final creative
+                  direction, scene composition, and Unreal Engine work are your own.</p>
+              </div>
+            </div>
+            <div class="acc-item">
+              <button type="button" class="acc-trigger" aria-expanded="false"><span>What should I include in my
+                  creative brief?</span><svg class="acc-icon">
+                  <use href="#i-plus" xlink:href="#i-plus" />
+                </svg></button>
+              <div class="acc-panel">
+                <p>In roughly 100 words, describe your central idea, intended mood or story, material and lighting
+                  direction, and the interaction you plan to build. This helps the jury understand your intention
+                  before reviewing the finished work.</p>
+              </div>
+            </div>
+            <div class="acc-item">
+              <button type="button" class="acc-trigger" aria-expanded="false"><span>Which archive formats and file
+                  size are accepted?</span><svg class="acc-icon">
+                  <use href="#i-plus" xlink:href="#i-plus" />
+                </svg></button>
+              <div class="acc-panel">
+                <p>You may upload a .zip, .rar, or .7z archive up to 5 GB. Use one clearly named final archive and
+                  check that it opens correctly before uploading.</p>
+              </div>
+            </div>
+            <div class="acc-item">
+              <button type="button" class="acc-trigger" aria-expanded="false"><span>What happens if my upload is
+                  interrupted?</span><svg class="acc-icon">
+                  <use href="#i-plus" xlink:href="#i-plus" />
+                </svg></button>
+              <div class="acc-panel">
+                <p>The uploader supports resumable uploads. Keep the tab open, restore your connection, and retry the
+                  same archive. If it still fails, contact the organizers before the submission deadline.</p>
+              </div>
+            </div>
+            <div class="acc-item">
+              <button type="button" class="acc-trigger" aria-expanded="false"><span>How will my submission be
+                  evaluated?</span><svg class="acc-icon">
+                  <use href="#i-plus" xlink:href="#i-plus" />
+                </svg></button>
+              <div class="acc-panel">
+                <p>The jury will consider the strength of your concept, materials, lighting, environment design,
+                  camera composition, visual storytelling, Unreal Engine execution, interaction, and overall polish.</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </section>
     <!-- RULES -->
-    <section class="section section-alt" id="rules" style="display: none;">
+    <section class="section" id="rules" style="display: none;">
       <div class="wrap">
         <p class="eyebrow">[ 02 — THE RULES ]</p>
-        <h2 class="h2">Six things to not get<br>disqualified over.</h2>
+        <h2 class="h2">Six things to not get <br>disqualified over.</h2>
         <div class="rules-grid">
           <div class="rule-card"><span class="rule-num">01</span>
             <p>The supplied model is your primary asset — don't swap the building.</p>
@@ -247,6 +306,20 @@
           <div class="rule-card"><span class="rule-num">06</span>
             <p>Keep your project file — organizers may ask for proof of process.</p>
           </div>
+        </div>
+      </div>
+    </section>
+    <section class="section help-section" id="help">
+      <div class="wrap help-section-inner">
+        <div class="help-card">
+          <svg>
+            <use href="#i-mail" xlink:href="#i-mail" />
+          </svg>
+          <div class="help-copy">
+            <h3>Still stuck?</h3>
+            <p>Reach the organizers directly — email or WhatsApp, whichever's faster for you.</p>
+          </div>
+          <button type="button" class="btn btn-primary btn-sm js-open-help">Need Help</button>
         </div>
       </div>
     </section>
@@ -273,9 +346,8 @@
               required autocomplete="name" maxlength="120" placeholder="Rushikesh Ingale"></div>
           <div class="field"><label for="regPhone">Mobile number</label>
             <div class="phone-field"><span class="phone-prefix" aria-hidden="true">+91</span><input type="tel"
-                id="regPhone" name="regPhone" required autocomplete="tel-national" inputmode="numeric"
-                maxlength="10" pattern="[6-9][0-9]{9}" placeholder="98765 43210"
-                aria-describedby="regPhoneHint"></div>
+                id="regPhone" name="regPhone" required autocomplete="tel-national" inputmode="numeric" maxlength="10"
+                pattern="[6-9][0-9]{9}" placeholder="98765 43210" aria-describedby="regPhoneHint"></div>
             <small class="field-hint" id="regPhoneHint">10-digit Indian mobile number</small>
           </div>
           <div class="field"><label for="regEmail">Email address</label><input type="email" id="regEmail"
@@ -283,13 +355,13 @@
               placeholder="rushikesh@gmail.com"></div>
           <div class="reg-checks">
             <label class="check-label" for="regAge"><input type="checkbox" id="regAge" name="regAge" required><span>I
-                confirm that I am below 35 years old.</span></label>
+                confirm that I am below 30 years old.</span></label>
             <label class="check-label" for="regTerms"><input type="checkbox" id="regTerms" name="regTerms"
                 required><span>I accept the terms &amp; competition policy.</span></label>
           </div>
           <button type="submit" class="btn btn-primary btn-wide btn-lg" id="btnSubmitRegister"
             disabled>Register</button>
-          <p class="field-error" id="regFormError"></p>
+          <p class="field-error" id="regFormError" role="status" aria-live="polite"></p>
         </form>
       </div>
       <div class="modal-view modal-view-success" id="registerSuccessView" hidden>
@@ -339,8 +411,7 @@
           <div class="format-info">
             <div class="format-title"><svg style="width:18px;height:18px;color:var(--tomato);">
                 <use href="#i-download" />
-              </svg> Challenge Brief</div><span
-              class="format-sub">Complete task, rules, evaluation points, and supporting references · PDF</span>
+              </svg> Challenge Brief</div><span class="format-sub">Complete task and rules · PDF</span>
           </div>
           <button type="button" class="btn btn-primary btn-sm js-trigger-download"
             data-filename="Entangle_2K26_Challenge_Brief_v1.pdf">Download PDF</button>
@@ -349,8 +420,7 @@
           <div class="format-info">
             <div class="format-title"><svg style="width:18px;height:18px;color:var(--tomato);">
                 <use href="#i-cube" />
-              </svg> .FBX Format</div><span
-              class="format-sub">Autodesk Filmbox with hierarchies · 48 MB</span>
+              </svg> .FBX Format</div><span class="format-sub">Autodesk Filmbox with hierarchies · 48 MB</span>
           </div>
           <button type="button" class="btn btn-primary btn-sm js-trigger-download"
             data-filename="ArchViz_Base_Building_v1.0.fbx">Download .fbx</button>
@@ -359,8 +429,7 @@
           <div class="format-info">
             <div class="format-title"><svg style="width:18px;height:18px;color:var(--mustard);">
                 <use href="#i-cube" />
-              </svg> .OBJ Format</div><span
-              class="format-sub">Wavefront Quad mesh with MTL companion · 52 MB</span>
+              </svg> .OBJ Format</div><span class="format-sub">Wavefront Quad mesh · 52 MB</span>
           </div>
           <button type="button" class="btn btn-outline btn-sm js-trigger-download"
             data-filename="ArchViz_Base_Building_v1.0.obj">Download .obj</button>
@@ -370,7 +439,7 @@
             <div class="format-title"><svg style="width:18px;height:18px;color:var(--rust);">
                 <use href="#i-cube" />
               </svg> .GLTF / .GLB Format
-            </div><span class="format-sub">Binary glTF with PBR texture set · 36 MB</span>
+            </div><span class="format-sub">Binary glTF · 36 MB</span>
           </div>
           <button type="button" class="btn btn-outline btn-sm js-trigger-download"
             data-filename="ArchViz_Base_Building_v1.0.glb">Download .glb</button>
@@ -397,7 +466,8 @@
               <span>You can update this later</span><span id="briefWordCount">0 / ~100 words</span>
             </div>
           </div>
-          <button type="submit" class="btn btn-primary btn-wide btn-lg" id="btnSubmitBrief" disabled>Send Brief <svg class="action-arrow">
+          <button type="submit" class="btn btn-primary btn-wide btn-lg" id="btnSubmitBrief" disabled>Send Brief <svg
+              class="action-arrow">
               <use href="#i-arrow" />
             </svg></button>
           <p class="field-error" id="briefFormError"></p>
@@ -428,7 +498,9 @@
         <section class="archive-structure" data-archive-structure aria-labelledby="archiveStructureTitle">
           <header class="archive-root">
             <div class="archive-root-name">
-              <span class="archive-root-icon"><svg aria-hidden="true"><use href="#i-folder" /></svg></span>
+              <span class="archive-root-icon"><svg aria-hidden="true">
+                  <use href="#i-folder" />
+                </svg></span>
               <span><strong id="archiveStructureTitle">YOUR_FULL_NAME</strong><small>Place each module below inside this
                   folder</small></span>
             </div>
@@ -439,11 +511,13 @@
               <div class="archive-module-body">
                 <div class="archive-folder-scene" aria-hidden="true">
                   <span class="archive-folder-back"></span>
-                  <span class="archive-file-motion"><span class="archive-file-preview"><svg><use
-                          href="#i-image" /></svg><i></i><i></i></span></span>
+                  <span class="archive-file-motion"><span class="archive-file-preview"><svg>
+                        <use href="#i-image" />
+                      </svg><i></i><i></i></span></span>
                   <span class="archive-folder-front">IMAGES</span>
                 </div>
-                <div class="archive-module-copy"><strong>Images</strong><p>Final JPG or PNG renders</p><code>Images/</code>
+                <div class="archive-module-copy"><strong>Images</strong>
+                  <p>Final JPG or PNG renders</p><code>Images/</code>
                 </div>
               </div>
             </article>
@@ -452,11 +526,13 @@
               <div class="archive-module-body">
                 <div class="archive-folder-scene" aria-hidden="true">
                   <span class="archive-folder-back"></span>
-                  <span class="archive-file-motion"><span class="archive-file-preview"><svg><use
-                          href="#i-video" /></svg><i></i><i></i></span></span>
+                  <span class="archive-file-motion"><span class="archive-file-preview"><svg>
+                        <use href="#i-video" />
+                      </svg><i></i><i></i></span></span>
                   <span class="archive-folder-front">VIDEO</span>
                 </div>
-                <div class="archive-module-copy"><strong>Video</strong><p>MP4 walkthrough or cinematic</p><code>Video/</code>
+                <div class="archive-module-copy"><strong>Video</strong>
+                  <p>MP4 walkthrough or cinematic</p><code>Video/</code>
                 </div>
               </div>
             </article>
@@ -465,11 +541,13 @@
               <div class="archive-module-body">
                 <div class="archive-folder-scene" aria-hidden="true">
                   <span class="archive-folder-back"></span>
-                  <span class="archive-file-motion"><span class="archive-file-preview"><svg><use
-                          href="#i-exe" /></svg><i></i><i></i></span></span>
+                  <span class="archive-file-motion"><span class="archive-file-preview"><svg>
+                        <use href="#i-exe" />
+                      </svg><i></i><i></i></span></span>
                   <span class="archive-folder-front">BUILD</span>
                 </div>
-                <div class="archive-module-copy"><strong>Executable</strong><p>Packaged EXE plus every support file</p>
+                <div class="archive-module-copy"><strong>Executable</strong>
+                  <p>Packaged EXE plus every support file</p>
                   <code>Executable/</code>
                 </div>
               </div>
@@ -477,7 +555,9 @@
           </div>
           <div class="archive-zip-flow">
             <span>3 folders inside <strong>YOUR_FULL_NAME</strong></span>
-            <svg aria-hidden="true"><use href="#i-arrow" /></svg>
+            <svg aria-hidden="true">
+              <use href="#i-arrow" />
+            </svg>
             <code>YOUR_FULL_NAME.zip</code>
           </div>
         </section>
@@ -510,22 +590,29 @@
                   <strong id="submitAiUsageText">No generative AI</strong>
                   <small>100% human-crafted submission</small>
                 </span>
-                <svg class="retro-select-chevron" aria-hidden="true"><use href="#i-arrow" /></svg>
+                <svg class="retro-select-chevron" aria-hidden="true">
+                  <use href="#i-arrow" />
+                </svg>
               </button>
               <div class="retro-select-menu" role="listbox" aria-labelledby="submitAiUsageLabel" hidden>
                 <button type="button" class="retro-select-option" role="option" aria-selected="true" data-value="none"
                   data-title="No generative AI" data-description="100% human-crafted submission">
-                  <span class="retro-select-index">01</span><span><strong>No generative AI</strong><small>100% human-crafted submission</small></span>
+                  <span class="retro-select-index">01</span><span><strong>No generative AI</strong><small>100%
+                      human-crafted submission</small></span>
                   <span class="retro-select-mark" aria-hidden="true">✓</span>
                 </button>
-                <button type="button" class="retro-select-option" role="option" aria-selected="false" data-value="concept"
-                  data-title="Concepts and references" data-description="AI used only for moodboards or reference images">
-                  <span class="retro-select-index">02</span><span><strong>Concepts and references</strong><small>AI only for moodboards or reference images</small></span>
+                <button type="button" class="retro-select-option" role="option" aria-selected="false"
+                  data-value="concept" data-title="Concepts and references"
+                  data-description="AI used only for moodboards or reference images">
+                  <span class="retro-select-index">02</span><span><strong>Concepts and references</strong><small>AI only
+                      for moodboards or reference images</small></span>
                   <span class="retro-select-mark" aria-hidden="true">✓</span>
                 </button>
-                <button type="button" class="retro-select-option" role="option" aria-selected="false" data-value="textures"
-                  data-title="AI-assisted 2D assets" data-description="AI used for textures or backdrop skyplates">
-                  <span class="retro-select-index">03</span><span><strong>AI-assisted 2D assets</strong><small>Textures or backdrop skyplates only</small></span>
+                <button type="button" class="retro-select-option" role="option" aria-selected="false"
+                  data-value="textures" data-title="AI-assisted 2D assets"
+                  data-description="AI used for textures or backdrop skyplates">
+                  <span class="retro-select-index">03</span><span><strong>AI-assisted 2D assets</strong><small>Textures
+                      or backdrop skyplates only</small></span>
                   <span class="retro-select-mark" aria-hidden="true">✓</span>
                 </button>
               </div>
@@ -555,8 +642,12 @@
             </div>
           </div>
           <div class="modal-btn-row">
-            <button type="button" class="btn btn-outline" id="btnBackToGuidelines"><svg class="action-arrow action-arrow-back" aria-hidden="true"><use href="#i-arrow" /></svg>Back</button>
-            <button type="submit" class="btn btn-primary btn-lg" id="btnQuickSubmit" disabled>Submit Entry <svg class="action-arrow">
+            <button type="button" class="btn btn-outline" id="btnBackToGuidelines"><svg
+                class="action-arrow action-arrow-back" aria-hidden="true">
+                <use href="#i-arrow" />
+              </svg>Back</button>
+            <button type="submit" class="btn btn-primary btn-lg" id="btnQuickSubmit" disabled>Submit Entry <svg
+                class="action-arrow">
                 <use href="#i-arrow" />
               </svg></button>
           </div>
@@ -580,7 +671,7 @@
   <div class="debug-toast" id="debugToast" role="status" aria-live="polite"></div>
   <!-- JS Modules -->
   <script src="public/vendor/anime.min.js"></script>
-  <script type="module" src="js/main.js"></script>
+  <script type="module" src="js/main.js?v=20260826g"></script>
 </body>
 
 </html>

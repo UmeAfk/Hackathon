@@ -2,14 +2,14 @@
    PHASE ENGINE — fixed, server-synchronized event timeline
    ========================================================= */
 
-import { buildFlipUnit, setFlipValue } from './flipClock.js';
-import { showToast } from './utils.js';
-import { fetchEventConfig } from './api.js';
+import { buildFlipUnit, setFlipValue } from './flipClock.js?v=20260826g';
+import { showToast } from './utils.js?v=20260826g';
+import { fetchEventConfig } from './api.js?v=20260826g';
 
 const DAY = 24 * 60 * 60 * 1000;
 
 let timeline = {
-  registrationOpensAt: '2026-08-31T11:59:00+05:30',
+  registrationOpensAt: '2026-08-31T11:00:00+05:30',
   registrationClosesAt: '2026-09-04T11:59:00+05:30',
   taskDropsAt: '2026-09-04T11:59:00+05:30',
   submissionDeadlineAt: '2026-09-09T11:59:00+05:30'
@@ -18,6 +18,7 @@ let timeline = {
 const urlParams = new URLSearchParams(window.location.search);
 const debugAllowed = ['localhost', '127.0.0.1'].includes(window.location.hostname);
 const forcedPhaseParam = debugAllowed ? urlParams.get('phase') : null;
+const debugRegistered = debugAllowed && urlParams.get('registered') === '1';
 let debugPhase = parseForcedPhase(forcedPhaseParam);
 let activeTimer = null;
 
@@ -26,27 +27,34 @@ const phaseCopy = [
     lead: 'Design loud.',
     second: 'Render ',
     accent: 'honest.',
-    subtitle: 'One building. One brief. Whatever you make of it.'
+    subtitle: '[ One building. One brief. Whatever you make of it ]'
   },
   {
     lead: 'Spot secured.',
     second: 'Stay ',
     accent: 'ready.',
-    subtitle: 'Registration is locked. The model lands for everyone at the same moment.'
+    subtitle: '[ Registration is locked ]'
   },
   {
     lead: 'Model dropped.',
     second: 'Make it ',
     accent: 'unforgettable.',
-    subtitle: 'Four days. One base model. Your strongest architectural story.'
+    subtitle: ''
   },
   {
     lead: 'Time’s up.',
     second: 'Jury’s ',
     accent: 'watching.',
-    subtitle: 'Submissions are sealed. Every eligible entry now gets a careful look.'
+    subtitle: '[ Submissions are sealed ]'
   }
 ];
+
+const registrationUpcomingCopy = {
+  lead: 'Registration opens.',
+  second: 'Be there ',
+  accent: 'early.',
+  subtitle: ''
+};
 
 function parseForcedPhase(value) {
   if (value === '0' || value === 'upcoming') return 0;
@@ -58,6 +66,7 @@ function parseForcedPhase(value) {
 
 function getAnchors() {
   return {
+    registrationOpens: new Date(timeline.registrationOpensAt).getTime(),
     taskRevealTime: new Date(timeline.taskDropsAt).getTime(),
     submissionDeadline: new Date(timeline.submissionDeadlineAt).getTime()
   };
@@ -73,6 +82,50 @@ function computePhase() {
   if (now < taskRevealTime) return 1;
   if (now < submissionDeadline) return 2;
   return 3;
+}
+
+function registrationIsUpcoming() {
+  return debugPhase === null && Date.now() < new Date(timeline.registrationOpensAt).getTime();
+}
+
+function registeredOnThisDevice() {
+  return debugRegistered || localStorage.getItem('av-registered') === '1';
+}
+
+function syncRegistrationButton(mode) {
+  const button = document.getElementById('heroRegisterBtn');
+  const wrapper = document.getElementById('heroRegisterWrap');
+  const label = document.getElementById('heroRegisterLabel');
+  const icon = document.getElementById('heroRegisterIcon');
+  if (!button || !label) return;
+
+  button.classList.toggle('btn-registered', mode === 'registered');
+  button.disabled = mode !== 'open';
+  button.setAttribute('aria-disabled', String(mode !== 'open'));
+  if (mode === 'registered') {
+    label.textContent = 'Registered';
+    button.title = 'Registration completed on this device.';
+    button.setAttribute('aria-label', 'Registered');
+    if (icon?.closest('svg')) icon.closest('svg').hidden = true;
+    if (wrapper) delete wrapper.dataset.tooltip;
+  } else if (mode === 'upcoming') {
+    const openingMessage = 'Registration opens on 31 August at 11:00 AM IST.';
+    label.textContent = 'Register';
+    button.title = openingMessage;
+    button.setAttribute('aria-label', openingMessage);
+    if (icon?.closest('svg')) icon.closest('svg').hidden = true;
+    if (wrapper) wrapper.dataset.tooltip = 'Opens 31 August · 11:00 AM IST';
+  } else {
+    label.textContent = 'Register';
+    button.removeAttribute('title');
+    button.setAttribute('aria-label', 'Register for Entangle 2K26');
+    if (icon?.closest('svg')) icon.closest('svg').hidden = false;
+    if (icon) {
+      icon.setAttribute('href', '#i-arrow');
+      icon.setAttribute('xlink:href', '#i-arrow');
+    }
+    if (wrapper) delete wrapper.dataset.tooltip;
+  }
 }
 
 function clearTimers() {
@@ -129,7 +182,9 @@ export function syncBriefState() {
 export function syncPhase() {
   clearTimers();
   const phase = computePhase();
-  const { taskRevealTime, submissionDeadline } = getAnchors();
+  const { registrationOpens, taskRevealTime, submissionDeadline } = getAnchors();
+  const registrationUpcoming = registrationIsUpcoming();
+  const isRegistered = registeredOnThisDevice();
   const heroCtas = document.getElementById('heroCtas');
   const heroClosedCard = document.getElementById('heroClosedCard');
   const countdownBlock = document.getElementById('countdownBlock');
@@ -143,12 +198,15 @@ export function syncPhase() {
   const heroTitleSecond = document.getElementById('heroTitleSecond');
   const heroTitleAccent = document.getElementById('heroTitleAccent');
   const heroSubtitle = document.getElementById('heroSubtitle');
-  const copy = phaseCopy[phase] || phaseCopy[0];
+  const copy = registrationUpcoming ? registrationUpcomingCopy : (phaseCopy[phase] || phaseCopy[0]);
   if (hero) hero.dataset.phase = String(phase);
   if (heroTitleLead) heroTitleLead.textContent = copy.lead;
   if (heroTitleSecond) heroTitleSecond.textContent = copy.second;
   if (heroTitleAccent) heroTitleAccent.textContent = copy.accent;
-  if (heroSubtitle) heroSubtitle.textContent = copy.subtitle;
+  if (heroSubtitle) {
+    heroSubtitle.textContent = copy.subtitle;
+    heroSubtitle.hidden = !copy.subtitle;
+  }
   if (debugPillText) {
     const names = ['Phase 0: Register', 'Phase 1: Awaiting Drop', 'Phase 2: Live Drop', 'Phase 3: Closed'];
     debugPillText.textContent = names[phase] || `Phase ${phase}`;
@@ -156,10 +214,17 @@ export function syncPhase() {
   if (phase === 0) {
     if (heroCtas) heroCtas.style.display = 'flex';
     if (heroClosedCard) heroClosedCard.style.display = 'none';
-    if (countdownBlock) countdownBlock.style.display = 'none';
+    syncRegistrationButton(registrationUpcoming ? 'upcoming' : 'open');
+    if (countdownBlock) countdownBlock.style.display = registrationUpcoming ? 'inline-flex' : 'none';
+    if (countdownLabel) countdownLabel.textContent = '[ REGISTRATION OPENS IN ]';
+    if (countdownEl) countdownEl.style.display = 'flex';
+    if (registrationUpcoming) {
+      activeTimer = startCountdown(registrationOpens, { d: 'cd-d', h: 'cd-h', m: 'cd-m', s: 'cd-s' }, syncPhase);
+    }
   } else if (phase === 1) {
-    if (heroCtas) heroCtas.style.display = 'none';
+    if (heroCtas) heroCtas.style.display = 'flex';
     if (heroClosedCard) heroClosedCard.style.display = 'none';
+    syncRegistrationButton(isRegistered ? 'registered' : 'open');
     if (countdownBlock) countdownBlock.style.display = 'inline-flex';
     if (countdownLabel) countdownLabel.textContent = '[ TASK DROPS IN ]';
     if (countdownEl) countdownEl.style.display = 'flex';

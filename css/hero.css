@@ -45,7 +45,10 @@
   max-width: 520px;
   margin: 0 auto 36px;
   color: var(--text-soft);
-  font-size: 16.5px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
   text-wrap: balance;
 }
 
@@ -72,6 +75,45 @@
   justify-content: center;
   flex-wrap: wrap;
   margin-bottom: 0;
+}
+
+.registration-cta {
+  position: relative;
+  display: inline-flex;
+}
+
+.registration-cta[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  z-index: 4;
+  left: 50%;
+  bottom: calc(100% + 12px);
+  width: max-content;
+  max-width: min(280px, 80vw);
+  padding: 8px 10px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: 3px 3px 0 var(--shadow-color);
+  color: var(--text);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  line-height: 1.4;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, 5px);
+  transition: opacity 160ms ease, transform 160ms ease;
+}
+
+.registration-cta[data-tooltip]:hover::after {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+.hero[data-phase="1"] .countdown-block {
+  margin-top: 24px;
 }
 
 .live-cta-row {

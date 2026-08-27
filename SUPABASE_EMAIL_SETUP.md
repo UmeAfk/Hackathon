@@ -39,7 +39,7 @@ Resend may display a local timezone or accept a UTC timestamp. Confirm every sch
 
 | Event | India time (Asia/Kolkata) | UTC |
 | --- | --- | --- |
-| Registration opens | 31 Aug 2026, 11:59 AM IST | 31 Aug 2026, 06:29 UTC |
+| Registration opens | 31 Aug 2026, 11:00 AM IST | 31 Aug 2026, 05:30 UTC |
 | Registration closes / task drops | 4 Sep 2026, 11:59 AM IST | 4 Sep 2026, 06:29 UTC |
 | 24-hour reminder | 8 Sep 2026, 11:59 AM IST | 8 Sep 2026, 06:29 UTC |
 | One-hour reminder | 9 Sep 2026, 10:59 AM IST | 9 Sep 2026, 05:29 UTC |
@@ -206,6 +206,8 @@ Run the migrations in filename order:
 3. `supabase/migrations/202608230003_resumable_5gb_submissions.sql`
 4. `supabase/migrations/202608240004_security_hardening.sql`
 5. `supabase/migrations/202608240005_enforce_submission_bucket_limit.sql`
+6. `supabase/migrations/202608240006_signed_resumable_submission_policy.sql`
+7. `supabase/migrations/202608260007_unique_participant_phone.sql`
 
 Run them through a controlled Supabase migration workflow or paste one complete file at a time into **Supabase → SQL Editor**. Keep the results with the launch record.
 

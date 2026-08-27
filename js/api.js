@@ -27,7 +27,13 @@ async function apiRequest(path, options = {}) {
   }
   const response = await fetch(path, { ...options, headers });
   const data = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(data.error || 'Something went wrong. Please try again.');
+  if (!response.ok) {
+    const error = new Error(data.error || 'Something went wrong. Please try again.');
+    error.status = response.status;
+    error.code = data.code || '';
+    error.field = data.field || '';
+    throw error;
+  }
   return data;
 }
 

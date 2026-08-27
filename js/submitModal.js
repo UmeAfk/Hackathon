@@ -2,11 +2,11 @@
    PROJECT SUBMISSION MODAL (2-Step Upload Flow)
    ========================================================= */
 
-import { formatSize, showToast } from './utils.js';
-import { openModal, closeModal, spawnConfetti } from './modalCore.js';
-import { fetchParticipant, uploadSubmission } from './api.js';
-import { animateArchiveStructure } from './archiveStructure.js';
-import { initCustomSelect } from './customSelect.js';
+import { formatSize, showToast } from './utils.js?v=20260826g';
+import { openModal, closeModal, spawnConfetti } from './modalCore.js?v=20260826g';
+import { fetchParticipant, uploadSubmission } from './api.js?v=20260826g';
+import { animateArchiveStructure } from './archiveStructure.js?v=20260826g';
+import { initCustomSelect } from './customSelect.js?v=20260826g';
 
 const MAX_SUBMISSION_BYTES = 5 * 1024 * 1024 * 1024;
 

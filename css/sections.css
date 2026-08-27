@@ -19,10 +19,7 @@
 
 /* FAQ Layout & Accordion */
 .faq-layout {
-  display: grid;
-  grid-template-columns: 1.5fr 1fr;
-  gap: 50px;
-  align-items: start;
+  display: block;
 }
 
 .accordion {
@@ -95,7 +92,7 @@
 .help-card svg {
   width: 28px;
   height: 28px;
-  margin-bottom: 14px;
+  margin: 0;
 }
 
 .help-card h3 {
@@ -106,10 +103,45 @@
 
 .help-card p {
   font-size: 13.5px;
-  margin: 0 0 22px;
+  margin: 2px 0 0;
+}
+
+.help-section {
+  padding: 32px 0 100px;
+}
+
+.help-section-inner {
+  display: flex;
+  justify-content: center;
+}
+
+.help-section .help-card {
+  width: 100%;
+  max-width: none;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 22px;
+  text-align: left;
+  padding: 28px 30px;
+}
+
+.help-section .help-card .btn {
+  justify-self: end;
 }
 
 /* Rules Section (Phase 2) */
+#faq {
+  padding-bottom: 64px;
+}
+
+#rules {
+  padding-top: 48px;
+  padding-bottom: 64px;
+  background: transparent;
+  border: 0;
+}
+
 .rules-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -117,7 +149,7 @@
 }
 
 .rule-card {
-  background: var(--bg);
+  background: var(--surface);
   border: 3px solid var(--border);
   border-radius: var(--radius);
   box-shadow: 4px 4px 0 0 var(--shadow-color);

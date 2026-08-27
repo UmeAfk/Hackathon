@@ -11,8 +11,8 @@ import {
 } from '../api/_lib/email-templates.js';
 
 test('default event timeline moves through every public state', () => {
-  assert.equal(eventState(new Date('2026-08-31T06:28:59Z')), 'upcoming');
-  assert.equal(eventState(new Date('2026-08-31T06:29:00Z')), 'registration');
+  assert.equal(eventState(new Date('2026-08-31T05:29:59Z')), 'upcoming');
+  assert.equal(eventState(new Date('2026-08-31T05:30:00Z')), 'registration');
   assert.equal(eventState(new Date('2026-09-04T06:29:00Z')), 'live');
   assert.equal(eventState(new Date('2026-09-09T06:29:00Z')), 'closed');
 });
@@ -20,6 +20,7 @@ test('default event timeline moves through every public state', () => {
 test('event configuration uses explicit ISO dates and a five GiB upload ceiling', () => {
   const config = getEventConfig();
   assert.equal(config.maxUploadBytes, 5 * 1024 * 1024 * 1024);
+  assert.equal(new Date(config.registrationOpensAt).toISOString(), '2026-08-31T05:30:00.000Z');
   assert.equal(new Date(config.taskDropsAt).toISOString(), '2026-09-04T06:29:00.000Z');
   assert.equal(new Date(config.submissionDeadlineAt).toISOString(), '2026-09-09T06:29:00.000Z');
 });
