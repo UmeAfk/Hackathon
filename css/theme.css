@@ -114,3 +114,18 @@
   right: max(24px, env(safe-area-inset-right));
   z-index: 150;
 }
+
+.theme-ready body,
+.theme-ready .hero,
+.theme-ready .section,
+.theme-ready .section-alt,
+.theme-ready .help-section,
+.theme-ready .modal,
+.theme-ready .rule-card,
+.theme-ready .acc-item {
+  transition:
+    background-color 0.4s var(--ease-out),
+    border-color 0.4s var(--ease-out),
+    color 0.4s var(--ease-out),
+    box-shadow 0.4s var(--ease-out);
+}

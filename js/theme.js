@@ -5,10 +5,22 @@
 export function initTheme() {
   const root = document.documentElement;
   const themeToggle = document.getElementById('themeToggle');
-  const savedTheme = localStorage.getItem('av-theme');
+  const themeColor = document.getElementById('themeColor');
+  const storageKey = 'entangle-theme-v2';
+  let savedTheme = null;
 
-  if (savedTheme === 'light' || savedTheme === 'dark') {
-    root.setAttribute('data-theme', savedTheme);
+  try {
+    savedTheme = localStorage.getItem(storageKey);
+  } catch (_) {
+    savedTheme = null;
+  }
+
+  const initialTheme = savedTheme === 'dark' ? 'dark' : 'light';
+  root.setAttribute('data-theme', initialTheme);
+
+  function updateThemeColor() {
+    if (!themeColor) return;
+    themeColor.setAttribute('content', root.getAttribute('data-theme') === 'dark' ? '#11100E' : '#F1E6D0');
   }
 
   function updateToggleLabel() {
@@ -19,13 +31,20 @@ export function initTheme() {
     themeToggle.setAttribute('aria-pressed', String(dark));
   }
 
+  updateThemeColor();
   updateToggleLabel();
+  requestAnimationFrame(() => root.classList.add('theme-ready'));
 
   if (themeToggle) {
     themeToggle.addEventListener('click', () => {
       const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
       root.setAttribute('data-theme', next);
-      localStorage.setItem('av-theme', next);
+      try {
+        localStorage.setItem(storageKey, next);
+      } catch (_) {
+        // The selected theme still applies when browser storage is unavailable.
+      }
+      updateThemeColor();
       updateToggleLabel();
       if (window.anime) {
         window.anime({

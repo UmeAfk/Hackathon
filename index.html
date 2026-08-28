@@ -4,6 +4,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" id="themeColor" content="#F1E6D0">
   <title>Entangle ArchViz Challenge</title>
   <meta name="description"
     content="A real-time ArchViz challenge. Register, wait for the drop, build your hero shot, submit before the clock runs out.">
@@ -15,7 +17,17 @@
   <link rel="icon" type="image/x-icon" href="public/favicon.ico">
   <link rel="icon" type="image/png" href="public/icon.png">
   <link rel="apple-touch-icon" href="public/icon.png">
-  <link rel="stylesheet" href="css/style.css?v=20260826h">
+  <script>
+    (() => {
+      try {
+        const savedTheme = localStorage.getItem('entangle-theme-v2');
+        document.documentElement.dataset.theme = savedTheme === 'dark' ? 'dark' : 'light';
+      } catch (_) {
+        document.documentElement.dataset.theme = 'light';
+      }
+    })();
+  </script>
+  <link rel="stylesheet" href="css/style.css?v=20260828a">
 </head>
 
 <body>
@@ -87,7 +99,10 @@
     </defs>
   </svg>
 
-  <!-- ============================= THEME TOGGLE ============================= -->
+  <!-- ============================= BRAND & THEME ============================= -->
+  <a class="brand-mark" href="#top" aria-label="Entangle 2K26 home">
+    <img src="public/logo.png" alt="Vastuchitra">
+  </a>
   <button type="button" class="theme-toggle theme-toggle-float" id="themeToggle" aria-label="Switch to dark theme"
     aria-pressed="false">
     <svg class="icon-sun">
@@ -330,6 +345,15 @@
           rel="noopener noreferrer" class="footer-credit-link">Veil</a></p>
     </div>
   </footer> -->
+  <footer class="legal-bar" aria-label="Legal information">
+    <div class="wrap legal-bar-inner">
+      <p>© 2026 Vastuchitra · Entangle 2K26</p>
+      <nav class="legal-links" aria-label="Legal links">
+        <a href="terms.html">Terms &amp; Conditions</a>
+        <a href="privacy.html">Privacy Policy</a>
+      </nav>
+    </div>
+  </footer>
   <!-- MODAL: REGISTER -->
   <div class="modal-backdrop" id="registerBackdrop">
     <div class="modal" id="registerModal" role="dialog" aria-modal="true" aria-labelledby="registerTitle">
@@ -671,7 +695,7 @@
   <div class="debug-toast" id="debugToast" role="status" aria-live="polite"></div>
   <!-- JS Modules -->
   <script src="public/vendor/anime.min.js"></script>
-  <script type="module" src="js/main.js?v=20260826g"></script>
+  <script type="module" src="js/main.js?v=20260828a"></script>
 </body>
 
 </html>

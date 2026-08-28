@@ -2,13 +2,14 @@
    MASTER STYLESHEET — Retro Brutalism Architecture
    ========================================================================== */
 
-@import "base.css?v=20260826h";
-@import "buttons.css?v=20260826h";
-@import "theme.css?v=20260826h";
-@import "hero.css?v=20260826h";
-@import "countdown.css?v=20260826h";
-@import "sections.css?v=20260826h";
-@import "modals.css?v=20260826h";
-@import "submission.css?v=20260826h";
-@import "debug.css?v=20260826h";
-@import "responsive.css?v=20260826h";
+@import "base.css?v=20260828a";
+@import "buttons.css?v=20260828a";
+@import "theme.css?v=20260828a";
+@import "hero.css?v=20260828a";
+@import "countdown.css?v=20260828a";
+@import "sections.css?v=20260828a";
+@import "modals.css?v=20260828a";
+@import "submission.css?v=20260828a";
+@import "debug.css?v=20260828a";
+@import "legal.css?v=20260828a";
+@import "responsive.css?v=20260828a";
