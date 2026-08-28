@@ -6,7 +6,8 @@ export function initTheme() {
   const root = document.documentElement;
   const themeToggle = document.getElementById('themeToggle');
   const themeColor = document.getElementById('themeColor');
-  const storageKey = 'entangle-theme-v2';
+  const themeColorScheme = document.getElementById('themeColorScheme');
+  const storageKey = 'entangle-theme-v3';
   let savedTheme = null;
 
   try {
@@ -18,9 +19,11 @@ export function initTheme() {
   const initialTheme = savedTheme === 'dark' ? 'dark' : 'light';
   root.setAttribute('data-theme', initialTheme);
 
-  function updateThemeColor() {
-    if (!themeColor) return;
-    themeColor.setAttribute('content', root.getAttribute('data-theme') === 'dark' ? '#11100E' : '#F1E6D0');
+  function updateBrowserTheme() {
+    const dark = root.getAttribute('data-theme') === 'dark';
+    root.style.colorScheme = dark ? 'dark' : 'light';
+    if (themeColorScheme) themeColorScheme.setAttribute('content', dark ? 'dark' : 'light');
+    if (themeColor) themeColor.setAttribute('content', dark ? '#11100E' : '#F1E6D0');
   }
 
   function updateToggleLabel() {
@@ -31,7 +34,7 @@ export function initTheme() {
     themeToggle.setAttribute('aria-pressed', String(dark));
   }
 
-  updateThemeColor();
+  updateBrowserTheme();
   updateToggleLabel();
   requestAnimationFrame(() => root.classList.add('theme-ready'));
 
@@ -44,7 +47,7 @@ export function initTheme() {
       } catch (_) {
         // The selected theme still applies when browser storage is unavailable.
       }
-      updateThemeColor();
+      updateBrowserTheme();
       updateToggleLabel();
       if (window.anime) {
         window.anime({

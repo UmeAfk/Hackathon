@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="color-scheme" content="light dark">
+  <meta name="color-scheme" id="themeColorScheme" content="light">
   <meta name="theme-color" id="themeColor" content="#F1E6D0">
   <title>Privacy Policy · Entangle 2K26</title>
   <meta name="description" content="Privacy policy for Entangle 2K26 registration and submissions.">
@@ -12,17 +12,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="icon" type="image/png" href="public/icon.png">
-  <script>
-    (() => {
-      try {
-        const savedTheme = localStorage.getItem('entangle-theme-v2');
-        document.documentElement.dataset.theme = savedTheme === 'dark' ? 'dark' : 'light';
-      } catch (_) {
-        document.documentElement.dataset.theme = 'light';
-      }
-    })();
-  </script>
-  <link rel="stylesheet" href="css/style.css?v=20260828a">
+  <script src="js/theme-bootstrap.js?v=20260828d"></script>
+  <link rel="stylesheet" href="css/style.css?v=20260828c">
 </head>
 
 <body class="legal-page">
@@ -66,8 +57,8 @@
         </section>
         <section class="legal-section">
           <span class="legal-number">04 / SERVICE PROVIDERS</span>
-          <h2>Where data is handled</h2>
-          <p>We use trusted service providers to run the event, including Supabase for database and file storage, Resend for email delivery, and Vercel for website hosting and server functions. They process information only as needed to provide those services and under their own security and privacy commitments.</p>
+          <h2>Supporting the event securely</h2>
+          <p>We work with carefully selected technology and operational partners to host the website, store registration and submission data, deliver event communications, and keep the service reliable. They may process information only as needed to provide these services, subject to appropriate security, confidentiality, and privacy obligations.</p>
         </section>
         <section class="legal-section">
           <span class="legal-number">05 / SHARING</span>
@@ -84,6 +75,11 @@
           <h2>Access, correction, and event emails</h2>
           <p>You may ask us to correct inaccurate registration information or request access to or deletion of personal information, subject to verification and any information we must retain for legal or event-integrity reasons. Transactional emails needed to confirm registration, submission, or important event changes may still be sent while you participate.</p>
           <p>For a privacy request, email us from your registered address and describe what you need.</p>
+        </section>
+        <section class="legal-section legal-section-wide">
+          <span class="legal-number">08 / TECHNICAL DATA</span>
+          <h2>Security and service logs</h2>
+          <p>Our hosting and security providers may record limited technical information such as IP address, browser or device type, request timestamps, and error or security logs. We use this information to keep uploads reliable, investigate failures, apply rate limits, and protect the event from misuse.</p>
         </section>
       </div>
 
@@ -102,7 +98,7 @@
     </div>
   </footer>
   <script src="public/vendor/anime.min.js"></script>
-  <script type="module" src="js/legal.js?v=20260828a"></script>
+  <script type="module" src="js/legal.js?v=20260828c"></script>
 </body>
 
 </html>

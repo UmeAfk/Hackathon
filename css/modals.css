@@ -217,6 +217,18 @@
   flex-shrink: 0;
 }
 
+.reg-checks .check-label a {
+  color: var(--tomato-ink);
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 3px;
+}
+
+.reg-checks .check-label a:hover {
+  color: var(--rust);
+}
+
 /* Word-count / meta row under a field (e.g. textarea character count) */
 .field-meta {
   display: flex;

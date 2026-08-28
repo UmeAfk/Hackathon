@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="color-scheme" content="light dark">
+  <meta name="color-scheme" id="themeColorScheme" content="light">
   <meta name="theme-color" id="themeColor" content="#F1E6D0">
   <title>Terms &amp; Conditions · Entangle 2K26</title>
   <meta name="description" content="Terms and conditions for participating in Entangle 2K26.">
@@ -12,17 +12,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="icon" type="image/png" href="public/icon.png">
-  <script>
-    (() => {
-      try {
-        const savedTheme = localStorage.getItem('entangle-theme-v2');
-        document.documentElement.dataset.theme = savedTheme === 'dark' ? 'dark' : 'light';
-      } catch (_) {
-        document.documentElement.dataset.theme = 'light';
-      }
-    })();
-  </script>
-  <link rel="stylesheet" href="css/style.css?v=20260828a">
+  <script src="js/theme-bootstrap.js?v=20260828d"></script>
+  <link rel="stylesheet" href="css/style.css?v=20260828c">
 </head>
 
 <body class="legal-page">
@@ -52,7 +43,7 @@
         <section class="legal-section">
           <span class="legal-number">02 / ELIGIBILITY</span>
           <h2>Who may participate</h2>
-          <p>You must provide accurate registration details, meet the age requirement shown on the registration form, and use only one registration per person. The organizers may request reasonable proof of eligibility.</p>
+          <p>You must be below 30 years old when you register, provide accurate registration details, and use only one registration per person. The organizers may request reasonable proof of eligibility.</p>
         </section>
         <section class="legal-section">
           <span class="legal-number">03 / ORIGINAL WORK</span>
@@ -80,6 +71,11 @@
           <p>The organizers may reasonably update dates, instructions, technical requirements, or event arrangements and will communicate material changes through the website or registered email addresses. The service is provided on an as-available basis. To the extent permitted by law, the organizers are not responsible for losses caused by participant equipment, internet failure, third-party services, or events outside their reasonable control.</p>
           <p>Nothing in these terms excludes rights or responsibilities that cannot legally be excluded.</p>
         </section>
+        <section class="legal-section legal-section-wide">
+          <span class="legal-number">08 / GOVERNING LAW</span>
+          <h2>Applicable law and disputes</h2>
+          <p>These terms are governed by the laws of India. The parties should first try to resolve any concern directly and in good faith. Subject to applicable law, unresolved disputes will be under the jurisdiction of the courts in Pune, Maharashtra.</p>
+        </section>
       </div>
 
       <p class="legal-contact"><strong>Questions about these terms?</strong> Email <a href="mailto:entangle2k26@vkarch.com">entangle2k26@vkarch.com</a>.</p>
@@ -97,7 +93,7 @@
     </div>
   </footer>
   <script src="public/vendor/anime.min.js"></script>
-  <script type="module" src="js/legal.js?v=20260828a"></script>
+  <script type="module" src="js/legal.js?v=20260828c"></script>
 </body>
 
 </html>

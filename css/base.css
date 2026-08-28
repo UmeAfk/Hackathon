@@ -37,6 +37,8 @@ html {
   scroll-behavior: smooth;
   overflow-x: clip;
   color-scheme: light;
+  background-color: var(--bg);
+  transition: background-color 0.4s var(--ease-out);
 }
 
 @media (prefers-reduced-motion: reduce) {

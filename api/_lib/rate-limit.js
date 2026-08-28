@@ -30,13 +30,12 @@ export async function consumeRateLimit(request, route, limit, windowSeconds, ide
     if (error) throw error;
     return data === true;
   } catch (error) {
-    // Keep the launch usable if the hardening migration has not been applied yet,
-    // but surface one server-side warning so the missing protection is visible.
+    // Fail closed: an unavailable limiter must never silently remove abuse protection.
     if (!warningShown) {
       console.error('API rate limiting is unavailable:', error.message);
       warningShown = true;
     }
-    return true;
+    return false;
   }
 }
 

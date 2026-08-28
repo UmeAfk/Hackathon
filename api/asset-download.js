@@ -31,8 +31,8 @@ async function resolveAssetPath(storage, requestedFilename, asset) {
 
 async function createDownloadUrl(storage, path) {
   const filename = path.slice(path.lastIndexOf('/') + 1);
-  let signed = await storage.createSignedUrl(path, 15 * 60, { download: filename });
-  if (signed.error) signed = await storage.createSignedUrl(path, 15 * 60, { download: filename });
+  let signed = await storage.createSignedUrl(path, 5 * 60, { download: filename });
+  if (signed.error) signed = await storage.createSignedUrl(path, 5 * 60, { download: filename });
   if (signed.error) throw signed.error;
   return { url: signed.data.signedUrl, filename };
 }
@@ -52,7 +52,7 @@ export default async function handler(request, response) {
 
     const storage = getSupabase().storage.from('challenge-assets');
     const path = await resolveAssetPath(storage, requestedFilename, asset);
-    if (!path) return json(response, 404, { error: `${requestedFilename} has not been uploaded to challenge-assets/${asset.folder} yet.` });
+    if (!path) return json(response, 404, { error: `${requestedFilename} is not available yet.` });
 
     try {
       const download = await createDownloadUrl(storage, path);
@@ -60,7 +60,7 @@ export default async function handler(request, response) {
     } catch (signError) {
       resolvedPaths.delete(requestedFilename);
       const refreshedPath = await resolveAssetPath(storage, requestedFilename, asset);
-      if (!refreshedPath) return json(response, 404, { error: `${requestedFilename} has not been uploaded to challenge-assets/${asset.folder} yet.` });
+      if (!refreshedPath) return json(response, 404, { error: `${requestedFilename} is not available yet.` });
       const download = await createDownloadUrl(storage, refreshedPath);
       return json(response, 200, { ok: true, ...download });
     }

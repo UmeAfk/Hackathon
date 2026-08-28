@@ -33,6 +33,14 @@ test('production page uses local vendored scripts instead of a remote script CDN
   const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
   assert.match(html, /public\/vendor\/anime\.min\.js/);
   assert.doesNotMatch(html, /<script[^>]+https:\/\//i);
+  assert.doesNotMatch(html, /<script(?![^>]*\bsrc=)[^>]*>/i);
+  assert.match(html, /js\/theme-bootstrap\.js/);
+});
+
+test('rate limiting fails closed when its database guard is unavailable', async () => {
+  const source = await readFile(new URL('../api/_lib/rate-limit.js', import.meta.url), 'utf8');
+  assert.match(source, /Fail closed/);
+  assert.doesNotMatch(source, /catch \(error\)[\s\S]*?return true/);
 });
 
 test('submission storage stays private and capped at five GiB', async () => {
@@ -85,4 +93,18 @@ test('signed resumable uploads include a public API key and never expose a secre
     if (originalAnon === undefined) delete process.env.SUPABASE_ANON_KEY;
     else process.env.SUPABASE_ANON_KEY = originalAnon;
   }
+});
+
+test('challenge downloads use short-lived signed links and local browser blobs', async () => {
+  const [downloadApi, modalClient] = await Promise.all([
+    readFile(new URL('../api/asset-download.js', import.meta.url), 'utf8'),
+    readFile(new URL('../js/modals.js', import.meta.url), 'utf8')
+  ]);
+
+  assert.match(downloadApi, /createSignedUrl\(path, 5 \* 60/);
+  assert.doesNotMatch(downloadApi, /createSignedUrl\(path, 15 \* 60/);
+  assert.doesNotMatch(downloadApi, /has not been uploaded to challenge-assets/);
+  assert.match(modalClient, /fetch\(result\.url/);
+  assert.match(modalClient, /URL\.createObjectURL\(fileBlob\)/);
+  assert.match(modalClient, /link\.download = result\.filename \|\| filename/);
 });

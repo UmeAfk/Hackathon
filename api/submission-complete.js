@@ -33,7 +33,7 @@ export default async function handler(request, response) {
     const uploadedObject = objects?.find(object => object.name === filename);
     if (!uploadedObject) return json(response, 409, { error: 'The archive has not finished uploading. Please wait and try again.' });
     const storedSize = Number(uploadedObject.metadata?.size);
-    if (Number.isFinite(storedSize) && storedSize !== Number(submission.file_size)) {
+    if (!Number.isSafeInteger(storedSize) || storedSize <= 0 || storedSize !== Number(submission.file_size)) {
       return json(response, 409, { error: 'The stored archive size does not match the selected file. Please retry the upload.' });
     }
 

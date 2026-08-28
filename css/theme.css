@@ -2,8 +2,14 @@
    THEME — Retro print palettes & floating theme switcher
    ========================================================================== */
 
+[data-theme="light"] {
+  color-scheme: only light;
+  background-color: #F1E6D0;
+}
+
 [data-theme="dark"] {
   color-scheme: dark;
+  background-color: #11100E;
   --bg: #11100E;
   --surface: #24201A;
   --text: #FFF3DC;

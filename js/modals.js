@@ -188,13 +188,23 @@ export function initModals() {
       btn.textContent = 'Preparing…';
       try {
         const result = await getAssetDownload(filename);
+        const fileResponse = await fetch(result.url, {
+          cache: 'no-store',
+          credentials: 'omit',
+          referrerPolicy: 'no-referrer'
+        });
+        if (!fileResponse.ok) throw new Error('The secure download could not be completed. Please try again.');
+        const fileBlob = await fileResponse.blob();
+        const localDownloadUrl = URL.createObjectURL(fileBlob);
         const link = document.createElement('a');
-        link.href = result.url;
+        link.href = localDownloadUrl;
+        link.download = result.filename || filename;
         link.rel = 'noopener';
         link.style.display = 'none';
         document.body.appendChild(link);
         link.click();
         link.remove();
+        setTimeout(() => URL.revokeObjectURL(localDownloadUrl), 60_000);
         btn.textContent = 'Downloaded';
         showToast(`${filename} is downloading.`);
         setTimeout(() => {
