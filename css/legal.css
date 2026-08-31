@@ -47,11 +47,10 @@
 }
 
 .legal-bar-inner {
-  position: relative;
   min-height: 74px;
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: center;
-  justify-content: flex-end;
   gap: 24px;
   padding-block: 18px;
 }
@@ -67,25 +66,14 @@
 }
 
 .legal-copyright {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  width: max-content;
-  max-width: 34%;
+  justify-self: center;
   text-align: center;
-}
-
-.legal-bar-right {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  align-items: flex-end;
-  gap: 9px;
-  margin-left: auto;
+  white-space: nowrap;
 }
 
 .legal-credit {
-  text-align: right;
+  justify-self: start;
+  text-align: left;
   text-transform: none !important;
   white-space: nowrap;
 }
@@ -106,6 +94,7 @@
 .legal-links {
   display: flex;
   align-items: center;
+  justify-self: end;
   gap: 22px;
 }
 
@@ -269,33 +258,25 @@
 
   .legal-bar-inner {
     min-height: 92px;
-    flex-direction: column;
-    justify-content: center;
+    grid-template-columns: 1fr;
     gap: 12px;
     text-align: center;
   }
 
   .legal-copyright {
-    position: static;
-    order: 1;
-    width: auto;
-    max-width: none;
-    transform: none;
-  }
-
-  .legal-bar-right {
     order: 2;
-    flex-direction: column;
-    justify-content: center;
-    gap: 12px;
-    margin-left: 0;
+    justify-self: center;
   }
 
   .legal-credit {
+    order: 1;
+    justify-self: center;
     text-align: center;
   }
 
   .legal-links {
+    order: 3;
+    justify-self: center;
     gap: 18px;
   }
 

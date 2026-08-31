@@ -48,7 +48,7 @@ test('the main page exposes legal links in the footer and registration consent',
   assert.equal((home.match(/href="privacy\.html"/g) || []).length, 2);
 });
 
-test('every public footer keeps the copyright centered and credits Veil', async () => {
+test('every public footer uses the requested three-column attribution', async () => {
   const pages = await Promise.all([
     readFile(new URL('../index.html', import.meta.url), 'utf8'),
     readFile(new URL('../terms.html', import.meta.url), 'utf8'),
@@ -56,10 +56,10 @@ test('every public footer keeps the copyright centered and credits Veil', async 
   ]);
 
   for (const page of pages) {
-    assert.match(page, /class="legal-copyright">© 2026 Vastuchitra · Entangle 2K26/);
-    assert.match(page, /class="legal-bar-right"/);
-    assert.match(page, /Made with love 💙[\s\S]*?Veil \(venusapp\.in\)/);
-    assert.match(page, /href="https:\/\/venusapp\.in\/"/);
+    assert.match(page, /class="legal-credit">Made with 💙 by <a href="https:\/\/venusapp\.in\/"[\s\S]*?>Veil<\/a>/);
+    assert.match(page, /class="legal-copyright">© 2026 Vastuchitra<\/p>/);
+    assert.doesNotMatch(page, /Veil \(venusapp\.in\)/);
+    assert.doesNotMatch(page, /legal-bar-right/);
   }
 });
 
