@@ -4,7 +4,7 @@
 
 import { buildFlipUnit, setFlipValue } from './flipClock.js?v=20260826g';
 import { showToast } from './utils.js?v=20260826g';
-import { fetchEventConfig } from './api.js?v=20260826g';
+import { fetchEventConfig } from './api.js?v=20260831a';
 
 const DAY = 24 * 60 * 60 * 1000;
 
@@ -254,12 +254,12 @@ function cycleDebugPhase() {
 
 export function initPhaseEngine() {
   const debugPill = document.getElementById('debugPill');
-  if (debugPill) debugPill.style.display = debugAllowed ? 'flex' : 'none';
+  if (debugPill) debugPill.hidden = !debugAllowed;
   syncPhase();
   fetchEventConfig().then(config => {
     timeline = { ...timeline, ...config };
     syncPhase();
-  }).catch(() => showToast('Using the published event schedule. Live schedule sync is temporarily unavailable.'));
+  }).catch(() => showToast('The live schedule could not refresh. Please reload the page. If this continues, contact entangle2k26@vkarch.com.'));
   if (!debugAllowed) return;
   window.addEventListener('keydown', event => {
     if (event.key !== 'q' && event.key !== 'Q' && event.code !== 'KeyQ') return;

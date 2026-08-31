@@ -79,6 +79,6 @@ export default async function handler(request, response) {
     return json(response, 200, { ok: true });
   } catch (error) {
     console.error('Submission finalization failed:', error.message);
-    return json(response, 500, { error: 'Your upload finished, but the receipt could not be finalized. Please retry.' });
+    return json(response, 500, { error: 'Your upload finished, but the confirmation could not be completed. Please retry. If the problem continues, contact entangle2k26@vkarch.com.' });
   }
 }

@@ -34,7 +34,7 @@
   <link rel="icon" type="image/png" href="public/icon.png">
   <link rel="apple-touch-icon" href="public/icon.png">
   <script src="js/theme-bootstrap.js?v=20260828d"></script>
-  <link rel="stylesheet" href="css/style.css?v=20260828c">
+  <link rel="stylesheet" href="css/style.css?v=20260831a">
 </head>
 
 <body>
@@ -357,11 +357,15 @@
   </footer> -->
   <footer class="legal-bar" aria-label="Legal information">
     <div class="wrap legal-bar-inner">
-      <p>© 2026 Vastuchitra · Entangle 2K26</p>
-      <nav class="legal-links" aria-label="Legal links">
-        <a href="terms.html">Terms &amp; Conditions</a>
-        <a href="privacy.html">Privacy Policy</a>
-      </nav>
+      <p class="legal-copyright">© 2026 Vastuchitra · Entangle 2K26</p>
+      <div class="legal-bar-right">
+        <nav class="legal-links" aria-label="Legal links">
+          <a href="terms.html">Terms &amp; Conditions</a>
+          <a href="privacy.html">Privacy Policy</a>
+        </nav>
+        <p class="legal-credit">Made with love 💙 <a href="https://venusapp.in/" target="_blank"
+            rel="noopener noreferrer">Veil (venusapp.in)</a></p>
+      </div>
     </div>
   </footer>
   <!-- MODAL: REGISTER -->
@@ -702,12 +706,12 @@
     </div>
   </div>
   <!-- DEBUG -->
-  <div class="debug-pill" id="debugPill" title="Press Q or click to cycle phase"><span
+  <div class="debug-pill" id="debugPill" title="Press Q or click to cycle phase" hidden><span
       class="debug-pill-key">Q</span><span id="debugPillText">Phase 0: Register</span></div>
-  <div class="debug-toast" id="debugToast" role="status" aria-live="polite"></div>
+  <div class="status-toast" id="statusToast" role="status" aria-live="polite"></div>
   <!-- JS Modules -->
   <script src="public/vendor/anime.min.js"></script>
-  <script type="module" src="js/main.js?v=20260828c"></script>
+  <script type="module" src="js/main.js?v=20260831a"></script>
 </body>
 
 </html>

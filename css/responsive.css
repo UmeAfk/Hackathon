@@ -366,7 +366,7 @@
     font-size: 14.5px;
   }
 
-  .debug-toast {
+  .status-toast {
     left: 14px;
     right: 14px;
     bottom: calc(68px + env(safe-area-inset-bottom));

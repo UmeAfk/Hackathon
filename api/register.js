@@ -102,6 +102,6 @@ export default async function handler(request, response) {
     });
   } catch (error) {
     console.error('Registration failed:', error.message);
-    return json(response, 500, { error: 'Registration could not be completed right now. Please try again shortly.' });
+    return json(response, 500, { error: 'Registration could not be completed right now. Please try again. If the problem continues, contact entangle2k26@vkarch.com.' });
   }
 }

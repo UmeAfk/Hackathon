@@ -85,6 +85,6 @@ export default async function handler(request, response) {
     });
   } catch (error) {
     console.error('Submission initialization failed:', error.message);
-    return json(response, 500, { error: 'The secure upload could not be started. Please try again.' });
+    return json(response, 500, { error: 'The upload could not be started. Please try again. If the problem continues, contact entangle2k26@vkarch.com.' });
   }
 }

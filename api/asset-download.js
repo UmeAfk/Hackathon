@@ -66,6 +66,6 @@ export default async function handler(request, response) {
     }
   } catch (error) {
     console.error('Asset download failed:', error.message);
-    return json(response, 500, { error: 'The model download could not be prepared. Please try again shortly.' });
+    return json(response, 500, { error: 'The download could not be prepared. Please try again. If the problem continues, contact entangle2k26@vkarch.com.' });
   }
 }

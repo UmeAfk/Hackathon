@@ -1,8 +1,8 @@
 /* ==========================================================================
-   DEBUG WIDGETS & TOAST
+   LOCAL DEBUG WIDGET & PUBLIC STATUS TOAST
    ========================================================================== */
 
-.debug-toast {
+.status-toast {
   position: fixed;
   bottom: 24px;
   right: 24px;
@@ -22,7 +22,7 @@
   transition: opacity 0.25s var(--ease-out), transform 0.25s var(--ease-out);
 }
 
-.debug-toast.show {
+.status-toast.show {
   opacity: 1;
   transform: translateY(0);
 }
@@ -47,6 +47,10 @@
   gap: 8px;
   transition: transform 0.15s var(--ease-out), box-shadow 0.15s var(--ease-out);
   user-select: none;
+}
+
+.debug-pill[hidden] {
+  display: none !important;
 }
 
 .debug-pill:hover {

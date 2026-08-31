@@ -48,6 +48,21 @@ test('the main page exposes legal links in the footer and registration consent',
   assert.equal((home.match(/href="privacy\.html"/g) || []).length, 2);
 });
 
+test('every public footer keeps the copyright centered and credits Veil', async () => {
+  const pages = await Promise.all([
+    readFile(new URL('../index.html', import.meta.url), 'utf8'),
+    readFile(new URL('../terms.html', import.meta.url), 'utf8'),
+    readFile(new URL('../privacy.html', import.meta.url), 'utf8')
+  ]);
+
+  for (const page of pages) {
+    assert.match(page, /class="legal-copyright">© 2026 Vastuchitra · Entangle 2K26/);
+    assert.match(page, /class="legal-bar-right"/);
+    assert.match(page, /Made with love 💙[\s\S]*?Veil \(venusapp\.in\)/);
+    assert.match(page, /href="https:\/\/venusapp\.in\/"/);
+  }
+});
+
 test('the production page exposes a complete social sharing preview', async () => {
   const home = await readFile(new URL('../index.html', import.meta.url), 'utf8');
   assert.match(home, /<meta property="og:title" content="Entangle 2K26/);

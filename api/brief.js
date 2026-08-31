@@ -20,6 +20,6 @@ export default async function handler(request, response) {
     return json(response, 200, { ok: true });
   } catch (error) {
     console.error('Brief failed:', error.message);
-    return json(response, 500, { error: 'Your design brief could not be saved. Please try again.' });
+    return json(response, 500, { error: 'Your design brief could not be saved. Please try again. If the problem continues, contact entangle2k26@vkarch.com.' });
   }
 }

@@ -37,6 +37,26 @@ test('production page uses local vendored scripts instead of a remote script CDN
   assert.match(html, /js\/theme-bootstrap\.js/);
 });
 
+test('local phase controls are hard-hidden outside localhost', async () => {
+  const [html, phaseEngine, debugStyles] = await Promise.all([
+    readFile(new URL('../index.html', import.meta.url), 'utf8'),
+    readFile(new URL('../js/phaseEngine.js', import.meta.url), 'utf8'),
+    readFile(new URL('../css/debug.css', import.meta.url), 'utf8')
+  ]);
+
+  assert.match(html, /id="debugPill"[^>]*hidden/);
+  assert.match(phaseEngine, /debugAllowed = \['localhost', '127\.0\.0\.1'\]/);
+  assert.match(phaseEngine, /debugPill\.hidden = !debugAllowed/);
+  assert.match(debugStyles, /\.debug-pill\[hidden\][\s\S]*?display:\s*none\s*!important/);
+});
+
+test('unexpected browser errors stay friendly and include event support', async () => {
+  const client = await readFile(new URL('../js/api.js', import.meta.url), 'utf8');
+  assert.match(client, /contact entangle2k26@vkarch\.com/);
+  assert.doesNotMatch(client, /new Error\(error\?\.message/);
+  assert.doesNotMatch(client, /catch\(error => finish\(reject, error\)\)/);
+});
+
 test('rate limiting fails closed when its database guard is unavailable', async () => {
   const source = await readFile(new URL('../api/_lib/rate-limit.js', import.meta.url), 'utf8');
   assert.match(source, /Fail closed/);

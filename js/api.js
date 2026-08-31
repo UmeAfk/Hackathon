@@ -1,6 +1,7 @@
 import { Upload } from '../public/vendor/tus.esm.js';
 
 const TOKEN_KEY = 'av-participant-token';
+const SUPPORT_MESSAGE = 'Please try again. If the problem continues, contact entangle2k26@vkarch.com.';
 
 function captureParticipantToken() {
   ['av-registered-name', 'av-registered-email', 'av-registered-phone'].forEach(key => localStorage.removeItem(key));
@@ -25,10 +26,15 @@ async function apiRequest(path, options = {}) {
     const token = participantToken();
     if (token) headers.Authorization = `Bearer ${token}`;
   }
-  const response = await fetch(path, { ...options, headers });
+  let response;
+  try {
+    response = await fetch(path, { ...options, headers });
+  } catch {
+    throw new Error(`We could not connect right now. ${SUPPORT_MESSAGE}`);
+  }
   const data = await response.json().catch(() => ({}));
   if (!response.ok) {
-    const error = new Error(data.error || 'Something went wrong. Please try again.');
+    const error = new Error(data.error || `Something went wrong. ${SUPPORT_MESSAGE}`);
     error.status = response.status;
     error.code = data.code || '';
     error.field = data.field || '';
@@ -101,8 +107,8 @@ function runResumableUpload(intent, file, onProgress, signal) {
         contentType: file.type || 'application/octet-stream',
         cacheControl: '3600'
       },
-      onError(error) {
-        finish(reject, new Error(error?.message || 'The resumable upload failed. Check your connection and retry.'));
+      onError() {
+        finish(reject, new Error(`The upload was interrupted. Check your connection and retry. If it still fails, contact entangle2k26@vkarch.com.`));
       },
       onProgress(bytesUploaded, bytesTotal) {
         if (onProgress) onProgress(bytesUploaded, bytesTotal);
@@ -129,7 +135,7 @@ function runResumableUpload(intent, file, onProgress, signal) {
         if (previousUploads.length) upload.resumeFromPreviousUpload(previousUploads[0]);
         upload.start();
       })
-      .catch(error => finish(reject, error));
+      .catch(() => finish(reject, new Error(`The upload could not resume. ${SUPPORT_MESSAGE}`)));
   });
 }
 

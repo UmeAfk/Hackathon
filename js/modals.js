@@ -5,7 +5,7 @@
 import { showToast } from './utils.js?v=20260826g';
 import { syncPhase, syncBriefState } from './phaseEngine.js?v=20260826g';
 import { openModal, closeModal, spawnConfetti } from './modalCore.js?v=20260826g';
-import { getAssetDownload, registerParticipant, saveDesignBrief } from './api.js?v=20260826g';
+import { getAssetDownload, registerParticipant, saveDesignBrief } from './api.js?v=20260831a';
 
 export function initModals() {
   // 1. Register modal

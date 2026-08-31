@@ -15,6 +15,6 @@ export default async function handler(request, response) {
     });
   } catch (error) {
     console.error('Participant lookup failed:', error.message);
-    return json(response, 500, { error: 'Participant details could not be loaded.' });
+    return json(response, 500, { error: 'Your participant details could not be loaded. Please try again. If the problem continues, contact entangle2k26@vkarch.com.' });
   }
 }

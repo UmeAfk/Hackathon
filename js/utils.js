@@ -5,13 +5,13 @@
 let toastTimer = null;
 
 export function showToast(msg) {
-  const debugToast = document.getElementById('debugToast');
-  if (!debugToast) return;
-  debugToast.textContent = msg;
-  debugToast.classList.add('show');
+  const statusToast = document.getElementById('statusToast');
+  if (!statusToast) return;
+  statusToast.textContent = msg;
+  statusToast.classList.add('show');
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => {
-    debugToast.classList.remove('show');
+    statusToast.classList.remove('show');
   }, 2800);
 }
 
