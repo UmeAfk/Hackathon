@@ -9,7 +9,7 @@ import { fetchEventConfig } from './api.js?v=20260831a';
 const DAY = 24 * 60 * 60 * 1000;
 
 let timeline = {
-  registrationOpensAt: '2026-08-31T11:00:00+05:30',
+  registrationOpensAt: '2026-08-31T11:59:00+05:30',
   registrationClosesAt: '2026-09-04T11:59:00+05:30',
   taskDropsAt: '2026-09-04T11:59:00+05:30',
   submissionDeadlineAt: '2026-09-09T11:59:00+05:30'
@@ -75,9 +75,11 @@ function getAnchors() {
 function computePhase() {
   if (debugPhase !== null) return debugPhase;
   const now = Date.now();
+  const registrationOpens = new Date(timeline.registrationOpensAt).getTime();
   const registrationCloses = new Date(timeline.registrationClosesAt).getTime();
   const { taskRevealTime, submissionDeadline } = getAnchors();
   const isRegistered = localStorage.getItem('av-registered') === '1';
+  if (now < registrationOpens) return 0;
   if (now < registrationCloses && !isRegistered) return 0;
   if (now < taskRevealTime) return 1;
   if (now < submissionDeadline) return 2;
@@ -109,12 +111,12 @@ function syncRegistrationButton(mode) {
     if (icon?.closest('svg')) icon.closest('svg').hidden = true;
     if (wrapper) delete wrapper.dataset.tooltip;
   } else if (mode === 'upcoming') {
-    const openingMessage = 'Registration opens on 31 August at 11:00 AM IST.';
+    const openingMessage = 'Registration opens on 31 August at 11:59 AM IST.';
     label.textContent = 'Register';
     button.title = openingMessage;
     button.setAttribute('aria-label', openingMessage);
     if (icon?.closest('svg')) icon.closest('svg').hidden = true;
-    if (wrapper) wrapper.dataset.tooltip = 'Opens 31 August · 11:00 AM IST';
+    if (wrapper) wrapper.dataset.tooltip = 'Opens 31 August · 11:59 AM IST';
   } else {
     label.textContent = 'Register';
     button.removeAttribute('title');

@@ -39,7 +39,7 @@ Resend may display a local timezone or accept a UTC timestamp. Confirm every sch
 
 | Event | India time (Asia/Kolkata) | UTC |
 | --- | --- | --- |
-| Registration opens | 31 Aug 2026, 11:00 AM IST | 31 Aug 2026, 05:30 UTC |
+| Registration opens | 31 Aug 2026, 11:59 AM IST | 31 Aug 2026, 06:29 UTC |
 | Registration closes / task drops | 4 Sep 2026, 11:59 AM IST | 4 Sep 2026, 06:29 UTC |
 | 24-hour reminder | 8 Sep 2026, 11:59 AM IST | 8 Sep 2026, 06:29 UTC |
 | One-hour reminder | 9 Sep 2026, 10:59 AM IST | 9 Sep 2026, 05:29 UTC |
