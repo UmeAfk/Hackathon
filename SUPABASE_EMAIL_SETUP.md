@@ -218,7 +218,7 @@ The final state must contain two **private** buckets:
 
 Upload the final challenge PDF inside `challenge-assets/brief/` with this exact path:
 
-- `brief/Entangle_2K26_Challenge_Brief_v1.pdf`
+- `brief/Entangle_2K26_Challenge_Task.pdf`
 
 Keep the bucket private. The website creates a short-lived download URL only after it verifies the participant's challenge link. Replacing the PDF while keeping the same filename updates what future downloads receive; for clearer version history, change `v1` to `v2` in both Storage and the website allow-list.
 

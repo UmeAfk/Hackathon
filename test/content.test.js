@@ -57,7 +57,7 @@ test('every public footer uses the requested three-column attribution', async ()
 
   for (const page of pages) {
     assert.match(page, /class="legal-credit">Made with 💙 by <a href="https:\/\/venusapp\.in\/"[\s\S]*?>Veil<\/a>/);
-    assert.match(page, /class="legal-copyright">© 2026 Vastuchitra<\/p>/);
+    assert.match(page, /class="legal-copyright">© 2026 Vastuchitra interactive • Entangle 2K26<\/p>/);
     assert.doesNotMatch(page, /Veil \(venusapp\.in\)/);
     assert.doesNotMatch(page, /legal-bar-right/);
   }

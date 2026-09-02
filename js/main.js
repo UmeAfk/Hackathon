@@ -8,6 +8,7 @@ import { initPhaseEngine } from './phaseEngine.js?v=20260831b';
 import { initModals } from './modals.js?v=20260831a';
 import { initSubmitModal } from './submitModal.js?v=20260831a';
 import { initScrollReveal, initAccordion } from './scrollReveal.js?v=20260831a';
+import { initRewardCards } from './rewardCards.js?v=20260902b';
 
 function bootstrap() {
   initMarquee();
@@ -17,6 +18,7 @@ function bootstrap() {
   initSubmitModal();
   initScrollReveal();
   initAccordion();
+  initRewardCards();
 }
 
 if (document.readyState === 'loading') {

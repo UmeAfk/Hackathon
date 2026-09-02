@@ -42,7 +42,7 @@ if (!selected.length) {
 }
 
 async function challengeBriefAttachment() {
-  const filename = 'Entangle_2K26_Challenge_Brief_v1.pdf';
+  const filename = 'Entangle_2K26_Challenge_Task.pdf';
   const { data, error } = await getSupabase().storage
     .from('challenge-assets')
     .createSignedUrl(`brief/${filename}`, 10 * 60, { download: filename });

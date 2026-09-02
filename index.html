@@ -34,7 +34,7 @@
   <link rel="icon" type="image/png" href="public/icon.png">
   <link rel="apple-touch-icon" href="public/icon.png">
   <script src="js/theme-bootstrap.js?v=20260828d"></script>
-  <link rel="stylesheet" href="css/style.css?v=20260831c">
+  <link rel="stylesheet" href="css/style.css?v=20260902i">
 </head>
 
 <body>
@@ -184,6 +184,65 @@
     <div class="marquee">
       <div class="marquee-track" id="marqueeTrack"></div>
     </div>
+    <!-- WINNERS & REWARDS -->
+    <section class="section rewards-section" id="rewards">
+      <div class="wrap">
+        <p class="eyebrow">[ WINNERS &amp; REWARDS ]</p>
+        <div class="rewards-heading">
+          <h2 class="h2">Meet the rewards.</h2>
+        </div>
+        <div class="rewards-grid">
+          <div class="reward-card-stage reward-card-stage-first">
+            <article class="reward-card reward-card-first">
+              <div class="reward-visual">
+                <picture>
+                  <source srcset="public/trophy/Gold.webp" type="image/webp">
+                  <img src="public/trophy/Gold.png" alt="Gold trophy" loading="lazy" decoding="async">
+                </picture>
+                <div class="reward-rank"><strong>01</strong><span>First place</span></div>
+              </div>
+              <div class="reward-copy">
+                <p class="reward-label">Gold / Winner reward</p>
+                <h3>Smart Band</h3>
+                <p class="reward-extras">Certificate · Event goodies · Internship</p>
+              </div>
+            </article>
+          </div>
+          <div class="reward-card-stage reward-card-stage-second">
+            <article class="reward-card reward-card-second">
+              <div class="reward-visual">
+                <picture>
+                  <source srcset="public/trophy/Silver.webp" type="image/webp">
+                  <img src="public/trophy/Silver.png" alt="Silver trophy" loading="lazy" decoding="async">
+                </picture>
+                <div class="reward-rank"><strong>02</strong><span>Second place</span></div>
+              </div>
+              <div class="reward-copy">
+                <p class="reward-label">Silver / Runner-up reward</p>
+                <h3>1-Year Creative Subscription</h3>
+                <p class="reward-extras">Certificate · Event goodies · Internship</p>
+              </div>
+            </article>
+          </div>
+          <div class="reward-card-stage reward-card-stage-third">
+            <article class="reward-card reward-card-third">
+              <div class="reward-visual">
+                <picture>
+                  <source srcset="public/trophy/Bronze.webp" type="image/webp">
+                  <img src="public/trophy/Bronze.png" alt="Bronze trophy" loading="lazy" decoding="async">
+                </picture>
+                <div class="reward-rank"><strong>03</strong><span>Third place</span></div>
+              </div>
+              <div class="reward-copy">
+                <p class="reward-label">Bronze / Finalist reward</p>
+                <h3>Amazon Gift Voucher</h3>
+                <p class="reward-extras">Certificate · Event goodies</p>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
     <!-- FAQ -->
     <section class="section" id="faq">
       <div class="wrap">
@@ -256,9 +315,11 @@
                   <use href="#i-plus" xlink:href="#i-plus" />
                 </svg></button>
               <div class="acc-panel">
-                <p>Yes, provided you have the right to use them. Third-party vegetation, people, furniture, HDRIs,
-                  textures, and plugins are allowed. Disclose any AI tools you use, and make sure the final creative
-                  direction, scene composition, and Unreal Engine work are your own.</p>
+                <p>Yes, provided you have the right to use them. Third-party assets and plugins are allowed. AI may
+                  support ideation, research, planning, workflow documentation, and code or Blueprint troubleshooting,
+                  and all AI use must be disclosed. AI may not generate, replace, enhance, upscale, retouch, inpaint,
+                  outpaint, colour-grade, or post-process a submitted final image. Final images must be raw Unreal
+                  Engine 5 exports.</p>
               </div>
             </div>
             <div class="acc-item">
@@ -451,10 +512,10 @@
           <div class="format-info">
             <div class="format-title"><svg style="width:18px;height:18px;color:var(--tomato);">
                 <use href="#i-download" />
-              </svg> Challenge Brief</div><span class="format-sub">Complete task and rules · PDF</span>
+              </svg> Challenge Task</div><span class="format-sub">Complete task and rules · PDF</span>
           </div>
           <button type="button" class="btn btn-primary btn-sm js-trigger-download"
-            data-filename="Entangle_2K26_Challenge_Brief_v1.pdf">Download PDF</button>
+            data-filename="Entangle_2K26_Challenge_Task.pdf">Download PDF</button>
         </div>
         <div class="format-card">
           <div class="format-info">
@@ -711,7 +772,7 @@
   <div class="status-toast" id="statusToast" role="status" aria-live="polite"></div>
   <!-- JS Modules -->
   <script src="public/vendor/anime.min.js"></script>
-  <script type="module" src="js/main.js?v=20260831b"></script>
+  <script type="module" src="js/main.js?v=20260902d"></script>
 </body>
 
 </html>

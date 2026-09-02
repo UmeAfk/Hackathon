@@ -85,7 +85,7 @@ for (const table of ['participants', 'participant_tokens', 'submissions', 'email
 }
 
 const publicAssetProbe = await fetch(
-  `${process.env.SUPABASE_URL}/storage/v1/object/public/challenge-assets/brief/Entangle_2K26_Challenge_Brief_v1.pdf`,
+  `${process.env.SUPABASE_URL}/storage/v1/object/public/challenge-assets/brief/Entangle_2K26_Challenge_Task.pdf`,
   {
     headers: { apikey: getSupabasePublishableKey(), Range: 'bytes=0-0' },
     redirect: 'manual',

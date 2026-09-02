@@ -48,6 +48,24 @@
   .rules-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .rewards-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-areas:
+      "first first"
+      "second third";
+    padding-top: 0;
+  }
+
+  .reward-card-stage-first {
+    grid-column: 1 / -1;
+  }
+
+  .reward-card-stage-first,
+  .reward-card-stage-second,
+  .reward-card-stage-third {
+    --podium-y: 0px;
+  }
 }
 
 @media (max-width: 760px) {
@@ -95,6 +113,18 @@
 
   .rules-grid {
     grid-template-columns: 1fr;
+  }
+
+  .rewards-grid {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "first"
+      "second"
+      "third";
+  }
+
+  .reward-card-stage-first {
+    grid-column: auto;
   }
 
   .modal-backdrop {
@@ -176,6 +206,39 @@
 
   .h2 br {
     display: none;
+  }
+
+  .rewards-heading .h2 br {
+    display: block;
+  }
+
+  .rewards-section {
+    padding-bottom: 60px;
+  }
+
+  .rewards-heading {
+    margin-bottom: 30px;
+  }
+
+  .rewards-grid {
+    gap: 16px;
+  }
+
+  .reward-card {
+    min-height: 500px;
+  }
+
+  .reward-rank {
+    top: 19px;
+    left: 19px;
+  }
+
+  .reward-rank strong {
+    font-size: 43px;
+  }
+
+  .reward-copy {
+    padding: 25px 21px 27px;
   }
 
   .faq-layout {

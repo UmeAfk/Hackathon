@@ -5,7 +5,7 @@ import { getSupabase } from './_lib/supabase.js';
 import { consumeRateLimit, rateLimitResponse } from './_lib/rate-limit.js';
 
 const assets = {
-  'Entangle_2K26_Challenge_Brief_v1.pdf': { folder: 'brief', extension: '.pdf' },
+  'Entangle_2K26_Challenge_Task.pdf': { folder: 'brief', extension: '.pdf' },
   'ArchViz_Base_Building_v1.0.fbx': { folder: 'models', extension: '.fbx' },
   'ArchViz_Base_Building_v1.0.obj': { folder: 'models', extension: '.obj' },
   'ArchViz_Base_Building_v1.0.glb': { folder: 'models', extension: '.glb' }

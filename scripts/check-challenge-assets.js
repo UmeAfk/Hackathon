@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { getSupabase } from '../api/_lib/supabase.js';
 
 const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const expectedBrief = 'Entangle_2K26_Challenge_Brief_v1.pdf';
+const expectedBrief = 'Entangle_2K26_Challenge_Task.pdf';
 
 function unquote(value) {
   const trimmed = value.trim();
