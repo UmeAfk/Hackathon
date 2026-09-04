@@ -179,6 +179,23 @@ export function briefReminderEmail(participant, token) {
   };
 }
 
+export function submissionReminderEmail(participant, token) {
+  const config = getEventConfig();
+  const pageUrl = accessUrl(token);
+  return {
+    subject: `One day remaining — ${config.eventName}`,
+    html: layout({
+      preheader: 'Finish strong and prepare your Entangle 2K26 project archive.',
+      eyebrow: 'FINAL DAY / REMINDER', counter: '04 / SUBMIT',
+      title: 'One day.<br>Finish strong.',
+      intro: `Hi ${firstName(participant.name)}, one day remains before the Entangle 2K26 submission deadline. Give your scene a careful final review, render your strongest images in Unreal Engine 5, and prepare the project archive exactly as shown below.`,
+      body: `${informationCard('Final submission deadline', formatIstHtml(config.submissionDeadlineAt), colors.mustard, calendarIcon(dayIst(config.submissionDeadlineAt)))}<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin:18px 0 0;border:2px dashed ${colors.ink}"><tr><td style="padding:16px;font-size:14px;line-height:1.75;color:${colors.ink}"><strong>Final archive check:</strong><br>01 — <strong>Images/</strong> — polished JPG or PNG renders captured from Unreal Engine 5<br>02 — <strong>Video/</strong> — optional MP4 walkthrough or cinematic<br>03 — <strong>Executable/</strong> — packaged EXE with every required support file<br>04 — Place all three folders inside <strong>YOUR_FULL_NAME/</strong><br>05 — Upload one clearly named archive such as <strong>YOUR_FULL_NAME.zip</strong></td></tr></table><p style="margin:18px 0 0;font-size:14px;line-height:1.65;color:${colors.muted}">Check the camera composition, materials, lighting, image resolution, executable, and archive structure before uploading. Final images must be clean Unreal Engine renders without AI enhancement or post-processing.</p><p style="margin:14px 0 0;font-size:14px;line-height:1.65;color:${colors.muted}">If you encounter any issue, email <a href="mailto:entangle2k26@vkarch.com" style="color:${colors.ink};font-weight:700;text-decoration:underline;text-decoration-color:${colors.tomato};text-underline-offset:3px">entangle2k26@vkarch.com</a>. If you have already submitted successfully, no further action is needed.</p>`,
+      buttonLabel: 'Submit Project', buttonUrl: pageUrl
+    }),
+    text: `One day remaining — ${config.eventName}\n\nHi ${firstNameRaw(participant.name)},\n\nOne day remains before the Entangle 2K26 submission deadline. Give your scene a careful final review, render your strongest images in Unreal Engine 5, and prepare the project archive correctly.\n\nFinal submission deadline: ${formatIst(config.submissionDeadlineAt)}\n\nFinal archive check:\n- Images/ — polished JPG or PNG renders captured from Unreal Engine 5\n- Video/ — optional MP4 walkthrough or cinematic\n- Executable/ — packaged EXE with every required support file\n- Place all three folders inside YOUR_FULL_NAME/\n- Upload one clearly named archive such as YOUR_FULL_NAME.zip\n\nCheck the camera composition, materials, lighting, image resolution, executable, and archive structure before uploading. Final images must be clean Unreal Engine renders without AI enhancement or post-processing.\n\nIf you encounter any issue, email entangle2k26@vkarch.com. If you have already submitted successfully, no further action is needed.\n\nSubmit Project: ${pageUrl}`
+  };
+}
+
 export function evaluationUpdateBroadcast() {
   const config = getEventConfig();
   return {

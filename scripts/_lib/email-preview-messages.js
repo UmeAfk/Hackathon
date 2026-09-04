@@ -5,6 +5,7 @@ import {
   notSelectedEmail,
   registrationEmail,
   shortlistedEmail,
+  submissionReminderEmail,
   submissionReceiptEmail
 } from '../../api/_lib/email-templates.js';
 
@@ -36,6 +37,11 @@ export function emailPreviewMessages() {
       slug: 'brief-reminder',
       label: 'Design brief reminder',
       message: briefReminderEmail(sampleParticipant, 'preview-token-not-valid-' + 'y'.repeat(24))
+    },
+    {
+      slug: 'submission-reminder',
+      label: 'One-day submission reminder',
+      message: submissionReminderEmail(sampleParticipant, 'preview-token-not-valid-' + 'z'.repeat(24))
     },
     {
       slug: 'submission-receipt',

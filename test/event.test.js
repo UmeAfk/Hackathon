@@ -9,6 +9,7 @@ import {
   notSelectedEmail,
   registrationEmail,
   shortlistedEmail,
+  submissionReminderEmail,
   submissionReceiptEmail
 } from '../api/_lib/email-templates.js';
 
@@ -80,6 +81,12 @@ test('transactional email templates escape participant and file content', () => 
   assert.doesNotMatch(reminder.html, /<img src=x/);
   assert.match(reminder.html, /Share Design Brief/);
   assert.match(reminder.text, /submitted once/);
+  const submissionReminder = submissionReminderEmail(participant, 'e'.repeat(43));
+  assert.match(submissionReminder.html, /Images\//);
+  assert.match(submissionReminder.html, /Video\//);
+  assert.match(submissionReminder.html, /Executable\//);
+  assert.match(submissionReminder.html, /entangle2k26@vkarch\.com/);
+  assert.match(submissionReminder.html, /Submit Project/);
 });
 
 test('the complete participant email set renders shared branded HTML', () => {
@@ -89,7 +96,8 @@ test('the complete participant email set renders shared branded HTML', () => {
     briefReminderEmail(participant, 'd'.repeat(43)),
     evaluationUpdateBroadcast(),
     shortlistedEmail(participant, { venue: '<script>bad</script>', venueUrl: 'https://maps.example/test' }),
-    notSelectedEmail(participant)
+    notSelectedEmail(participant),
+    submissionReminderEmail(participant, 'f'.repeat(43))
   ];
   for (const message of messages) {
     assert.match(message.html, /\[ ENTANGLE 2K26 \]/);
