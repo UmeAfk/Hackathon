@@ -132,3 +132,21 @@ test('challenge downloads use short-lived signed links and local browser blobs',
   assert.match(modalClient, /URL\.createObjectURL\(await fileResponse\.blob\(\)\)/);
   assert.match(modalClient, /link\.download = file\.filename/);
 });
+
+test('design briefs are one-time and inherit verified participant identity', async () => {
+  const [briefApi, modalClient, home] = await Promise.all([
+    readFile(new URL('../api/brief.js', import.meta.url), 'utf8'),
+    readFile(new URL('../js/modals.js', import.meta.url), 'utf8'),
+    readFile(new URL('../index.html', import.meta.url), 'utf8')
+  ]);
+
+  assert.match(briefApi, /uploader_name:\s*participant\.name/);
+  assert.match(briefApi, /uploader_email:\s*participant\.email/);
+  assert.match(briefApi, /\.is\('design_brief', null\)/);
+  assert.match(briefApi, /brief_already_submitted/);
+  assert.doesNotMatch(briefApi, /\.upsert\(/);
+  assert.match(modalClient, /briefText\.readOnly = isSubmitted/);
+  assert.match(modalClient, /btnSubmitBrief\.hidden = isSubmitted/);
+  assert.match(home, /id="submitUploaderName"[^>]*readonly/);
+  assert.match(home, /id="submitUploaderEmail"[^>]*readonly/);
+});

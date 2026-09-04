@@ -251,24 +251,50 @@ export function initModals() {
   const briefIdentity = document.getElementById('briefIdentity');
   const briefParticipantName = document.getElementById('briefParticipantName');
   const briefParticipantContact = document.getElementById('briefParticipantContact');
+  const briefModalTitle = document.getElementById('briefModalTitle');
+  const briefModalCopy = document.getElementById('briefModalCopy');
+  const briefRequiredMark = document.getElementById('briefRequiredMark');
+  const briefStatusText = document.getElementById('briefStatusText');
+
+  function setBriefReadOnly(designBrief = '') {
+    const isSubmitted = Boolean(designBrief.trim());
+    if (briefText) {
+      briefText.value = designBrief;
+      briefText.disabled = false;
+      briefText.readOnly = isSubmitted;
+    }
+    if (btnSubmitBrief) btnSubmitBrief.hidden = isSubmitted;
+    if (briefRequiredMark) briefRequiredMark.hidden = isSubmitted;
+    if (briefModalTitle) briefModalTitle.childNodes[0].nodeValue = isSubmitted ? 'Your Design Brief ' : 'Share Your Design Brief ';
+    if (briefModalCopy) {
+      briefModalCopy.textContent = isSubmitted
+        ? 'This is the creative direction you submitted. It is now locked so your original response remains unchanged.'
+        : 'After reviewing the task and files, share a short brief explaining how you plan to approach the project—your concept, mood, materials, lighting, and intended experience.';
+    }
+    if (briefStatusText) briefStatusText.textContent = isSubmitted ? 'Submitted — view only' : 'One submission only';
+    if (isSubmitted) sessionStorage.setItem('av-brief-submitted', '1');
+    else sessionStorage.removeItem('av-brief-submitted');
+  }
 
   async function loadBriefParticipant() {
     if (briefParticipantName) briefParticipantName.textContent = 'Checking your secure link…';
     if (briefParticipantContact) briefParticipantContact.textContent = 'Your brief will be saved with your registration.';
     if (briefIdentity) briefIdentity.removeAttribute('data-error');
+    if (briefText) briefText.disabled = true;
+    if (btnSubmitBrief) btnSubmitBrief.disabled = true;
     try {
       const { participant, designBrief } = await fetchParticipant();
       if (briefParticipantName) briefParticipantName.textContent = participant.name;
       if (briefParticipantContact) briefParticipantContact.textContent = `${participant.email} · ${participant.phone}`;
-      if (designBrief && briefText && !briefText.value.trim()) briefText.value = designBrief;
-      if (designBrief) sessionStorage.setItem('av-brief-submitted', '1');
-      else sessionStorage.removeItem('av-brief-submitted');
+      setBriefReadOnly(designBrief || '');
       updateBriefWordCount();
       syncBriefState();
     } catch (error) {
       if (briefIdentity) briefIdentity.setAttribute('data-error', 'true');
       if (briefParticipantName) briefParticipantName.textContent = 'Secure participant link required';
       if (briefParticipantContact) briefParticipantContact.textContent = error.message;
+      if (briefText) briefText.disabled = true;
+      if (btnSubmitBrief) btnSubmitBrief.disabled = true;
     }
   }
 
@@ -280,18 +306,21 @@ export function initModals() {
 
     if (btnSubmitBrief) {
       const isAlreadySubmitted = sessionStorage.getItem('av-brief-submitted') === '1';
-      btnSubmitBrief.disabled = text.length < 5;
-      if (isAlreadySubmitted) {
-        btnSubmitBrief.innerHTML = 'Update Design Brief <svg class="action-arrow"><use href="#i-arrow"/></svg>';
-      } else {
-        btnSubmitBrief.innerHTML = 'Send Brief <svg class="action-arrow"><use href="#i-arrow"/></svg>';
-      }
+      btnSubmitBrief.hidden = isAlreadySubmitted;
+      btnSubmitBrief.disabled = isAlreadySubmitted || briefText.disabled || text.length < 5;
+      btnSubmitBrief.innerHTML = 'Send Brief <svg class="action-arrow"><use href="#i-arrow"/></svg>';
     }
   }
 
   function openBriefEditor() {
     if (briefFormView) briefFormView.hidden = false;
     if (briefSuccessView) briefSuccessView.hidden = true;
+    if (briefFormError) briefFormError.textContent = '';
+    if (briefText) briefText.disabled = true;
+    if (btnSubmitBrief) {
+      btnSubmitBrief.hidden = false;
+      btnSubmitBrief.disabled = true;
+    }
     updateBriefWordCount();
     openModal(briefModalBackdrop, briefModal);
     loadBriefParticipant();
@@ -343,6 +372,9 @@ export function initModals() {
           spawnConfetti(briefModal);
         }
       } catch (error) {
+        if (error.code === 'brief_already_submitted') {
+          await loadBriefParticipant();
+        }
         if (briefFormError) briefFormError.textContent = error.message;
         btnSubmitBrief.innerHTML = previousLabel;
         updateBriefWordCount();

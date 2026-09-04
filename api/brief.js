@@ -15,8 +15,55 @@ export default async function handler(request, response) {
     }
     const brief = cleanText(bodyOf(request).brief, 2000);
     if (brief.length < 5) return json(response, 400, { error: 'Please write a few thoughts about what you plan to build.' });
-    const { error } = await getSupabase().from('submissions').upsert({ participant_id: participant.id, design_brief: brief }, { onConflict: 'participant_id' });
-    if (error) throw error;
+
+    const supabase = getSupabase();
+    const { data: existing, error: existingError } = await supabase.from('submissions')
+      .select('id,design_brief')
+      .eq('participant_id', participant.id)
+      .maybeSingle();
+    if (existingError) throw existingError;
+    if (existing?.design_brief) {
+      return json(response, 409, {
+        code: 'brief_already_submitted',
+        error: 'Your design brief has already been submitted. You can view it, but it cannot be changed.'
+      });
+    }
+
+    const row = {
+      participant_id: participant.id,
+      uploader_name: participant.name,
+      uploader_email: participant.email,
+      design_brief: brief,
+      updated_at: new Date().toISOString()
+    };
+    let saved;
+    let saveError;
+    if (existing) {
+      ({ data: saved, error: saveError } = await supabase.from('submissions')
+        .update(row)
+        .eq('id', existing.id)
+        .is('design_brief', null)
+        .select('id')
+        .maybeSingle());
+    } else {
+      ({ data: saved, error: saveError } = await supabase.from('submissions')
+        .insert({ ...row, status: 'draft' })
+        .select('id')
+        .single());
+    }
+    if (saveError?.code === '23505') {
+      return json(response, 409, {
+        code: 'brief_already_submitted',
+        error: 'Your design brief has already been submitted. You can view it, but it cannot be changed.'
+      });
+    }
+    if (saveError) throw saveError;
+    if (!saved) {
+      return json(response, 409, {
+        code: 'brief_already_submitted',
+        error: 'Your design brief has already been submitted. You can view it, but it cannot be changed.'
+      });
+    }
     return json(response, 200, { ok: true });
   } catch (error) {
     console.error('Brief failed:', error.message);

@@ -34,7 +34,7 @@
   <link rel="icon" type="image/png" href="public/icon.png">
   <link rel="apple-touch-icon" href="public/icon.png">
   <script src="js/theme-bootstrap.js?v=20260828d"></script>
-  <link rel="stylesheet" href="css/style.css?v=20260904b">
+  <link rel="stylesheet" href="css/style.css?v=20260904c">
 </head>
 
 <body>
@@ -587,8 +587,8 @@
         </svg></button>
       <div class="modal-view" id="briefFormView">
         <p class="tag">[ CREATIVE DIRECTION ]</p>
-        <h3 id="briefModalTitle" class="h3">Share Your Design Brief <span style="color: var(--tomato);">*</span></h3>
-        <p class="modal-sub">After reviewing the task and files, share a short brief explaining how you plan to
+        <h3 id="briefModalTitle" class="h3">Share Your Design Brief <span id="briefRequiredMark" style="color: var(--tomato);">*</span></h3>
+        <p class="modal-sub" id="briefModalCopy">After reviewing the task and files, share a short brief explaining how you plan to
           approach the project—your concept, mood, materials, lighting, and intended experience.</p>
         <div class="brief-identity" id="briefIdentity" aria-live="polite">
           <span class="brief-identity-label">Linked participant</span>
@@ -600,7 +600,7 @@
             <textarea id="briefText" name="briefText" required rows="5"
               placeholder="e.g. A moody dusk scene during rain with warm interior lighting contrasting wet asphalt reflections..."></textarea>
             <div class="field-meta">
-              <span>You can update this later</span><span id="briefWordCount">0 / ~100 words</span>
+              <span id="briefStatusText">One submission only</span><span id="briefWordCount">0 / ~100 words</span>
             </div>
           </div>
           <button type="submit" class="btn btn-primary btn-wide btn-lg" id="btnSubmitBrief" disabled>Send Brief <svg
@@ -711,11 +711,13 @@
         <p class="tag">[ STEP 2 OF 2 — UPLOAD ]</p>
         <h3 class="h3">Upload your archive</h3>
         <form id="quickSubmitForm" novalidate>
-          <div class="field"><label for="submitUploaderName">Your Full Name *</label><input type="text"
-              id="submitUploaderName" name="submitUploaderName" required placeholder="Jordan Vega" autocomplete="name">
+          <div class="field"><label for="submitUploaderName">Registered Name</label><input type="text"
+              id="submitUploaderName" name="submitUploaderName" required readonly placeholder="Loading from your secure link…" autocomplete="name">
           </div>
-          <div class="field"><label for="submitUploaderEmail">Email Address *</label><input type="email"
-              id="submitUploaderEmail" name="submitUploaderEmail" required placeholder="jordan@studio.com"></div>
+          <div class="field"><label for="submitUploaderEmail">Registered Email</label><input type="email"
+              id="submitUploaderEmail" name="submitUploaderEmail" required readonly placeholder="Loading from your secure link…">
+            <small class="linked-field-note">Verified from your secure participant link. Your upload is saved to the same entry.</small>
+          </div>
           <div class="field">
             <label id="submitAiUsageLabel">Generative AI Pipeline Disclosure *</label>
             <div class="retro-select" data-custom-select>
@@ -808,7 +810,7 @@
   <div class="status-toast" id="statusToast" role="status" aria-live="polite"></div>
   <!-- JS Modules -->
   <script src="public/vendor/anime.min.js"></script>
-  <script type="module" src="js/main.js?v=20260904c"></script>
+  <script type="module" src="js/main.js?v=20260904d"></script>
 </body>
 
 </html>
