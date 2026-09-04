@@ -2,7 +2,7 @@ import crypto from 'node:crypto';
 import { allowMethods, bearerToken, bodyOf, cleanText, json } from './_lib/http.js';
 import { findParticipantByToken } from './_lib/tokens.js';
 import { getSupabase, getSupabasePublishableKey } from './_lib/supabase.js';
-import { eventState, getEventConfig, windowOverrideEnabled } from './_lib/event.js';
+import { getEventConfig, submissionsAreOpen, windowOverrideEnabled } from './_lib/event.js';
 import { consumeRateLimit, rateLimitResponse } from './_lib/rate-limit.js';
 
 const allowedExtensions = new Set(['zip', 'rar', '7z', 'tar', 'gz']);
@@ -22,7 +22,11 @@ function resumableEndpoint() {
 export default async function handler(request, response) {
   if (!allowMethods(request, response, ['POST'])) return;
   try {
-    if (!windowOverrideEnabled(request) && eventState() !== 'live') return json(response, 403, { error: 'Submissions are not open.' });
+    if (!windowOverrideEnabled(request) && !submissionsAreOpen()) {
+      const config = getEventConfig();
+      const beforeOpening = Date.now() < new Date(config.submissionOpensAt).getTime();
+      return json(response, 403, { error: beforeOpening ? 'Submissions open on 6 September 2026 at 11:59 AM IST.' : 'The submission deadline has passed.' });
+    }
     const participant = await findParticipantByToken(bearerToken(request));
     if (!participant) return json(response, 401, { error: 'Only registered participants can submit. Open the secure link in your challenge email.' });
     if (!await consumeRateLimit(request, 'submission-start', 20, 60 * 60, participant.id)) {

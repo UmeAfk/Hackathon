@@ -8,15 +8,15 @@
     "dev:vercel": "npx vercel@59.5.0 dev",
     "emails:preview": "node scripts/preview-emails.js",
     "emails:test": "node scripts/send-email-previews.js",
+    "emails:launch": "node scripts/send-challenge-launch.js",
     "assets:check": "node scripts/check-challenge-assets.js",
     "release:audit": "node scripts/release-audit.js",
     "build:vendor": "esbuild node_modules/tus-js-client/lib.esm/browser/index.js --bundle --format=esm --minify --outfile=public/vendor/tus.esm.js",
-    "check": "node --check scripts/dev-server.js && node --check scripts/preview-emails.js && node --check scripts/send-email-previews.js && node --check scripts/check-challenge-assets.js && node --check scripts/release-audit.js && node --check scripts/_lib/email-preview-messages.js && node --check api/register.js && node --check api/submission.js && node --check api/submission-complete.js && node --check api/brief.js && node --check api/asset-download.js && node --check api/event-config.js && node --check api/participant.js && node --check api/_lib/http.js && node --check api/_lib/event.js && node --check api/_lib/email-templates.js && node --check api/_lib/mailer.js && node --check api/_lib/rate-limit.js && node --check api/_lib/resend-contacts.js && node --check api/_lib/supabase.js && node --check api/_lib/tokens.js && node --check js/api.js && node --check js/archiveStructure.js && node --check js/customSelect.js && node --check js/flipClock.js && node --check js/legal.js && node --check js/main.js && node --check js/rewardCards.js && node --check js/marquee.js && node --check js/modalCore.js && node --check js/modals.js && node --check js/phaseEngine.js && node --check js/scrollReveal.js && node --check js/submitModal.js && node --check js/theme-bootstrap.js && node --check js/theme.js && node --check js/utils.js",
+    "check": "node --check scripts/dev-server.js && node --check scripts/preview-emails.js && node --check scripts/send-email-previews.js && node --check scripts/send-challenge-launch.js && node --check scripts/check-challenge-assets.js && node --check scripts/release-audit.js && node --check scripts/_lib/email-preview-messages.js && node --check api/register.js && node --check api/submission.js && node --check api/submission-complete.js && node --check api/brief.js && node --check api/asset-download.js && node --check api/event-config.js && node --check api/participant.js && node --check api/_lib/http.js && node --check api/_lib/event.js && node --check api/_lib/email-templates.js && node --check api/_lib/mailer.js && node --check api/_lib/rate-limit.js && node --check api/_lib/resend-contacts.js && node --check api/_lib/supabase.js && node --check api/_lib/tokens.js && node --check js/api.js && node --check js/archiveStructure.js && node --check js/customSelect.js && node --check js/flipClock.js && node --check js/legal.js && node --check js/main.js && node --check js/rewardCards.js && node --check js/marquee.js && node --check js/modalCore.js && node --check js/modals.js && node --check js/phaseEngine.js && node --check js/scrollReveal.js && node --check js/submitModal.js && node --check js/theme-bootstrap.js && node --check js/theme.js && node --check js/utils.js",
     "test": "node --test"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.112.3",
-    "animejs": "^3.2.2",
     "tus-js-client": "^4.3.1"
   },
   "engines": {

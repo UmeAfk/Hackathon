@@ -4,37 +4,47 @@ import { eventState, windowOverrideEnabled } from './_lib/event.js';
 import { getSupabase } from './_lib/supabase.js';
 import { consumeRateLimit, rateLimitResponse } from './_lib/rate-limit.js';
 
-const assets = {
-  'Entangle_2K26_Challenge_Task.pdf': { folder: 'brief', extension: '.pdf' },
-  'ArchViz_Base_Building_v1.0.fbx': { folder: 'models', extension: '.fbx' },
-  'ArchViz_Base_Building_v1.0.obj': { folder: 'models', extension: '.obj' },
-  'ArchViz_Base_Building_v1.0.glb': { folder: 'models', extension: '.glb' }
+const assetGroups = {
+  task: [{ folder: 'brief', filename: 'Entangle_2K26_Challenge_Task.pdf' }],
+  blend: [{ folder: 'models', filename: 'Entangle Blender File.blend' }],
+  fbx: [{ folder: 'models', filename: 'Entangle FBX.fbx' }],
+  glb: [{ folder: 'models', filename: 'Entangle GLB.glb' }],
+  gltf: [
+    { folder: 'models', filename: 'Entangle GLTF.gltf' },
+    { folder: 'models', filename: 'Entangle GLTF.bin' }
+  ],
+  obj: [
+    { folder: 'models', filename: 'Entangle OBJ.obj' },
+    { folder: 'models', filename: 'Entangle OBJ.mtl' }
+  ],
+  reference: [{ folder: 'models', filename: 'Entangle Reference Image.jpg' }]
 };
 
-const resolvedPaths = new Map();
+// Keep cached pages working during a deployment without accepting arbitrary paths.
+const legacyFilenames = {
+  'Entangle_2K26_Challenge_Task.pdf': 'task',
+  'ArchViz_Base_Building_v1.0.fbx': 'fbx',
+  'ArchViz_Base_Building_v1.0.obj': 'obj',
+  'ArchViz_Base_Building_v1.0.glb': 'glb'
+};
 
-async function resolveAssetPath(storage, requestedFilename, asset) {
-  const cached = resolvedPaths.get(requestedFilename);
-  if (cached) return cached;
-
-  const { data: files, error } = await storage.list(asset.folder, { limit: 100, sortBy: { column: 'name', order: 'asc' } });
-  if (error) throw error;
-  const preferred = files?.find(file => file.name === requestedFilename);
-  const fallback = files?.find(file => file.name.toLowerCase().endsWith(asset.extension));
-  const selected = preferred || fallback;
-  if (!selected) return null;
-
-  const path = `${asset.folder}/${selected.name}`;
-  resolvedPaths.set(requestedFilename, path);
-  return path;
+async function assertFilesExist(storage, files) {
+  const folders = [...new Set(files.map(file => file.folder))];
+  const listings = await Promise.all(folders.map(async folder => {
+    const { data, error } = await storage.list(folder, { limit: 100, sortBy: { column: 'name', order: 'asc' } });
+    if (error) throw error;
+    return [folder, new Set((data || []).map(file => file.name))];
+  }));
+  const availableByFolder = new Map(listings);
+  return files.find(file => !availableByFolder.get(file.folder)?.has(file.filename)) || null;
 }
 
-async function createDownloadUrl(storage, path) {
-  const filename = path.slice(path.lastIndexOf('/') + 1);
-  let signed = await storage.createSignedUrl(path, 5 * 60, { download: filename });
-  if (signed.error) signed = await storage.createSignedUrl(path, 5 * 60, { download: filename });
+async function createDownload(storage, file) {
+  const path = `${file.folder}/${file.filename}`;
+  let signed = await storage.createSignedUrl(path, 5 * 60, { download: file.filename });
+  if (signed.error) signed = await storage.createSignedUrl(path, 5 * 60, { download: file.filename });
   if (signed.error) throw signed.error;
-  return { url: signed.data.signedUrl, filename };
+  return { url: signed.data.signedUrl, filename: file.filename };
 }
 
 export default async function handler(request, response) {
@@ -46,24 +56,21 @@ export default async function handler(request, response) {
     if (!await consumeRateLimit(request, 'asset-download', 60, 60 * 60, participant.id)) {
       return rateLimitResponse(response, 60 * 60);
     }
-    const requestedFilename = String(bodyOf(request).filename || '');
-    const asset = assets[requestedFilename];
-    if (!asset) return json(response, 404, { error: 'That challenge file is not available.' });
+    const body = bodyOf(request);
+    const requestedAsset = String(body.asset || legacyFilenames[String(body.filename || '')] || '');
+    const files = assetGroups[requestedAsset];
+    if (!files) return json(response, 404, { error: 'That challenge file is not available.' });
 
     const storage = getSupabase().storage.from('challenge-assets');
-    const path = await resolveAssetPath(storage, requestedFilename, asset);
-    if (!path) return json(response, 404, { error: `${requestedFilename} is not available yet.` });
+    const missing = await assertFilesExist(storage, files);
+    if (missing) return json(response, 404, { error: `${missing.filename} is not available yet.` });
 
-    try {
-      const download = await createDownloadUrl(storage, path);
-      return json(response, 200, { ok: true, ...download });
-    } catch (signError) {
-      resolvedPaths.delete(requestedFilename);
-      const refreshedPath = await resolveAssetPath(storage, requestedFilename, asset);
-      if (!refreshedPath) return json(response, 404, { error: `${requestedFilename} is not available yet.` });
-      const download = await createDownloadUrl(storage, refreshedPath);
-      return json(response, 200, { ok: true, ...download });
-    }
+    const downloads = await Promise.all(files.map(file => createDownload(storage, file)));
+    return json(response, 200, {
+      ok: true,
+      files: downloads,
+      ...(downloads.length === 1 ? downloads[0] : {})
+    });
   } catch (error) {
     console.error('Asset download failed:', error.message);
     return json(response, 500, { error: 'The download could not be prepared. Please try again. If the problem continues, contact entangle2k26@vkarch.com.' });

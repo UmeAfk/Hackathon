@@ -4,7 +4,7 @@
 
 import { buildFlipUnit, setFlipValue } from './flipClock.js?v=20260826g';
 import { showToast } from './utils.js?v=20260826g';
-import { fetchEventConfig } from './api.js?v=20260831a';
+import { fetchEventConfig } from './api.js?v=20260904c';
 
 const DAY = 24 * 60 * 60 * 1000;
 
@@ -12,6 +12,7 @@ let timeline = {
   registrationOpensAt: '2026-08-31T11:59:00+05:30',
   registrationClosesAt: '2026-09-04T11:59:00+05:30',
   taskDropsAt: '2026-09-04T11:59:00+05:30',
+  submissionOpensAt: '2026-09-06T11:59:00+05:30',
   submissionDeadlineAt: '2026-09-09T11:59:00+05:30'
 };
 
@@ -68,6 +69,7 @@ function getAnchors() {
   return {
     registrationOpens: new Date(timeline.registrationOpensAt).getTime(),
     taskRevealTime: new Date(timeline.taskDropsAt).getTime(),
+    submissionOpens: new Date(timeline.submissionOpensAt).getTime(),
     submissionDeadline: new Date(timeline.submissionDeadlineAt).getTime()
   };
 }
@@ -137,6 +139,25 @@ function clearTimers() {
   }
 }
 
+function syncSubmissionButton(phase) {
+  const button = document.getElementById('cardEarlySubmitBtn');
+  const label = document.getElementById('cardEarlySubmitLabel');
+  if (!button || !label) return;
+  const opensAt = new Date(timeline.submissionOpensAt).getTime();
+  const isOpen = phase === 2 && Date.now() >= opensAt;
+  button.disabled = !isOpen;
+  button.setAttribute('aria-disabled', String(!isOpen));
+  if (phase === 2 && !isOpen) {
+    label.textContent = 'Submit · Opens 6 Sep';
+    button.title = 'Submissions open on 6 September 2026 at 11:59 AM IST.';
+    button.setAttribute('aria-label', button.title);
+  } else {
+    label.textContent = 'Submit';
+    button.removeAttribute('title');
+    button.setAttribute('aria-label', 'Submit your Entangle 2K26 entry');
+  }
+}
+
 function startCountdown(targetTime, ids, onComplete) {
   const el = {
     d: document.getElementById(ids.d), h: document.getElementById(ids.h),
@@ -169,7 +190,7 @@ function startCountdown(targetTime, ids, onComplete) {
 }
 
 export function syncBriefState() {
-  const isBriefSubmitted = localStorage.getItem('av-brief-submitted') === '1';
+  const isBriefSubmitted = sessionStorage.getItem('av-brief-submitted') === '1';
   const button = document.getElementById('btnOpenBriefModal');
   if (!button) return;
   if (isBriefSubmitted) {
@@ -245,6 +266,7 @@ export function syncPhase() {
   }
   if (liveCtaRow) liveCtaRow.style.display = phase === 2 ? '' : 'none';
   if (rulesSection) rulesSection.style.display = phase === 2 ? 'block' : 'none';
+  syncSubmissionButton(phase);
   syncBriefState();
 }
 

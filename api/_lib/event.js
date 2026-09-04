@@ -2,6 +2,7 @@ const defaults = {
   registrationOpensAt: '2026-08-31T11:59:00+05:30',
   registrationClosesAt: '2026-09-04T11:59:00+05:30',
   taskDropsAt: '2026-09-04T11:59:00+05:30',
+  submissionOpensAt: '2026-09-06T11:59:00+05:30',
   submissionDeadlineAt: '2026-09-09T11:59:00+05:30',
   thankYouAt: '2026-09-10T12:00:00+05:30'
 };
@@ -19,22 +20,33 @@ export function getEventConfig() {
     registrationOpensAt: process.env.ENTANGLE_REGISTRATION_OPENS_AT || defaults.registrationOpensAt,
     registrationClosesAt: process.env.ENTANGLE_REGISTRATION_CLOSES_AT || defaults.registrationClosesAt,
     taskDropsAt: process.env.ENTANGLE_TASK_DROPS_AT || defaults.taskDropsAt,
+    submissionOpensAt: process.env.ENTANGLE_SUBMISSION_OPENS_AT || defaults.submissionOpensAt,
     submissionDeadlineAt: process.env.ENTANGLE_SUBMISSION_DEADLINE_AT || defaults.submissionDeadlineAt,
     thankYouAt: process.env.ENTANGLE_THANK_YOU_AT || defaults.thankYouAt,
     eventName: 'Entangle ArchViz Challenge',
-    siteUrl: automaticSiteUrl.replace(/\/$/, ''),
+    siteUrl: (process.env.ENTANGLE_SITE_URL || automaticSiteUrl).replace(/\/$/, ''),
     maxUploadBytes: 5 * 1024 * 1024 * 1024
   };
 
   validDate(config.registrationOpensAt, 'registration opening');
   validDate(config.registrationClosesAt, 'registration closing');
   validDate(config.taskDropsAt, 'task drop');
+  validDate(config.submissionOpensAt, 'submission opening');
   validDate(config.submissionDeadlineAt, 'submission deadline');
   validDate(config.thankYouAt, 'thank-you');
   if (new Date(config.registrationOpensAt) >= new Date(config.registrationClosesAt)) throw new Error('Registration must close after it opens');
   if (new Date(config.registrationClosesAt) > new Date(config.taskDropsAt)) throw new Error('The task cannot drop before registration closes');
+  if (new Date(config.taskDropsAt) > new Date(config.submissionOpensAt)) throw new Error('Submissions cannot open before the task drops');
+  if (new Date(config.submissionOpensAt) >= new Date(config.submissionDeadlineAt)) throw new Error('The submission deadline must be after submissions open');
   if (new Date(config.taskDropsAt) >= new Date(config.submissionDeadlineAt)) throw new Error('The submission deadline must be after the task drop');
   return config;
+}
+
+export function submissionsAreOpen(now = new Date()) {
+  const config = getEventConfig();
+  const time = now.getTime();
+  return time >= new Date(config.submissionOpensAt).getTime()
+    && time < new Date(config.submissionDeadlineAt).getTime();
 }
 
 export function windowOverrideEnabled(request) {

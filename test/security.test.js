@@ -124,7 +124,11 @@ test('challenge downloads use short-lived signed links and local browser blobs',
   assert.match(downloadApi, /createSignedUrl\(path, 5 \* 60/);
   assert.doesNotMatch(downloadApi, /createSignedUrl\(path, 15 \* 60/);
   assert.doesNotMatch(downloadApi, /has not been uploaded to challenge-assets/);
-  assert.match(modalClient, /fetch\(result\.url/);
-  assert.match(modalClient, /URL\.createObjectURL\(fileBlob\)/);
-  assert.match(modalClient, /link\.download = result\.filename \|\| filename/);
+  assert.match(downloadApi, /'Entangle GLTF\.gltf'/);
+  assert.match(downloadApi, /'Entangle GLTF\.bin'/);
+  assert.match(downloadApi, /'Entangle OBJ\.obj'/);
+  assert.match(downloadApi, /'Entangle OBJ\.mtl'/);
+  assert.match(modalClient, /fetch\(download\.url/);
+  assert.match(modalClient, /URL\.createObjectURL\(await fileResponse\.blob\(\)\)/);
+  assert.match(modalClient, /link\.download = file\.filename/);
 });

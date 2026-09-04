@@ -4,7 +4,7 @@
 
 import { formatSize, showToast } from './utils.js?v=20260826g';
 import { openModal, closeModal, spawnConfetti } from './modalCore.js?v=20260826g';
-import { fetchParticipant, uploadSubmission } from './api.js?v=20260831a';
+import { fetchParticipant, uploadSubmission } from './api.js?v=20260904c';
 import { animateArchiveStructure } from './archiveStructure.js?v=20260826g';
 import { initCustomSelect } from './customSelect.js?v=20260826g';
 

@@ -1,8 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { eventState, getEventConfig, windowOverrideEnabled } from '../api/_lib/event.js';
+import { eventState, getEventConfig, submissionsAreOpen, windowOverrideEnabled } from '../api/_lib/event.js';
 import {
   challengeLaunchBroadcast,
+  challengeLaunchEmail,
   evaluationUpdateBroadcast,
   notSelectedEmail,
   registrationEmail,
@@ -15,6 +16,9 @@ test('default event timeline moves through every public state', () => {
   assert.equal(eventState(new Date('2026-08-31T06:29:00Z')), 'registration');
   assert.equal(eventState(new Date('2026-09-04T06:29:00Z')), 'live');
   assert.equal(eventState(new Date('2026-09-09T06:29:00Z')), 'closed');
+  assert.equal(submissionsAreOpen(new Date('2026-09-06T06:28:59Z')), false);
+  assert.equal(submissionsAreOpen(new Date('2026-09-06T06:29:00Z')), true);
+  assert.equal(submissionsAreOpen(new Date('2026-09-09T06:29:00Z')), false);
 });
 
 test('event configuration uses explicit ISO dates and a five GiB upload ceiling', () => {
@@ -22,6 +26,7 @@ test('event configuration uses explicit ISO dates and a five GiB upload ceiling'
   assert.equal(config.maxUploadBytes, 5 * 1024 * 1024 * 1024);
   assert.equal(new Date(config.registrationOpensAt).toISOString(), '2026-08-31T06:29:00.000Z');
   assert.equal(new Date(config.taskDropsAt).toISOString(), '2026-09-04T06:29:00.000Z');
+  assert.equal(new Date(config.submissionOpensAt).toISOString(), '2026-09-06T06:29:00.000Z');
   assert.equal(new Date(config.submissionDeadlineAt).toISOString(), '2026-09-09T06:29:00.000Z');
 });
 
@@ -57,6 +62,9 @@ test('transactional email templates escape participant and file content', () => 
   assert.doesNotMatch(registration.text, /private challenge|Submission deadline/);
   assert.match(receipt.text, /ready for evaluation/);
   assert.doesNotMatch(receipt.text, /receipt|Receipt ID/);
+  const launch = challengeLaunchEmail(participant, 'b'.repeat(43));
+  assert.doesNotMatch(launch.html, /\{\{\{/);
+  assert.doesNotMatch(launch.html, /<img src=x/);
 });
 
 test('the complete participant email set renders shared branded HTML', () => {
@@ -79,7 +87,7 @@ test('the complete participant email set renders shared branded HTML', () => {
   assert.doesNotMatch(messages[1].html, /Button not working|RESEND_UNSUBSCRIBE_URL/);
   assert.match(messages[1].html, /Keep an eye on your inbox\.<\/p>/);
   assert.doesNotMatch(messages[1].html, /next Entangle update/);
-  assert.match(messages[0].html, /Visit Website/);
+  assert.match(messages[0].html, /Download Challenge Files/);
   assert.doesNotMatch(messages[2].html, /<script>bad<\/script>/);
   assert.match(messages[2].html, /aria-label="Presentation"/);
   assert.match(messages[2].html, /aria-label="Location"/);

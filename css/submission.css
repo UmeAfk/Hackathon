@@ -9,7 +9,7 @@
 .format-options {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
   margin-bottom: 24px;
 }
 
@@ -21,7 +21,7 @@
   background: var(--bg);
   border: 2.5px solid var(--border);
   border-radius: var(--radius);
-  padding: 16px 18px;
+  padding: 14px 16px;
   transition: transform 0.15s var(--ease-out), box-shadow 0.15s var(--ease-out);
 }
 
@@ -34,6 +34,7 @@
   display: flex;
   flex-direction: column;
   gap: 3px;
+  min-width: 0;
 }
 
 .format-title {
@@ -49,6 +50,63 @@
 .format-sub {
   font-size: 12.5px;
   color: var(--text-soft);
+}
+
+.format-badge {
+  padding: 3px 6px;
+  border: 1.5px solid currentColor;
+  border-radius: 999px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 8.5px;
+  letter-spacing: 0.06em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.format-card .btn {
+  flex: 0 0 auto;
+  min-width: 150px;
+}
+
+.format-note {
+  margin: -10px 0 0;
+  color: var(--text-soft);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10.5px;
+  line-height: 1.5;
+}
+
+.brief-identity {
+  display: grid;
+  gap: 3px;
+  margin: -5px 0 18px;
+  padding: 12px 14px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+}
+
+.brief-identity-label {
+  color: var(--tomato-ink);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.brief-identity strong {
+  font-size: 14px;
+}
+
+.brief-identity > span:last-child {
+  overflow-wrap: anywhere;
+  color: var(--text-soft);
+  font-size: 11.5px;
+}
+
+.brief-identity[data-error="true"] {
+  border-color: var(--tomato);
 }
 
 .archive-structure {

@@ -3,14 +3,18 @@ import { findParticipantByToken } from './_lib/tokens.js';
 import { getSupabase } from './_lib/supabase.js';
 import { accessUrl, submissionReceiptEmail } from './_lib/email-templates.js';
 import { sendEmail } from './_lib/mailer.js';
-import { eventState, windowOverrideEnabled } from './_lib/event.js';
+import { getEventConfig, submissionsAreOpen, windowOverrideEnabled } from './_lib/event.js';
 import { syncResendContact } from './_lib/resend-contacts.js';
 import { consumeRateLimit, rateLimitResponse } from './_lib/rate-limit.js';
 
 export default async function handler(request, response) {
   if (!allowMethods(request, response, ['POST'])) return;
   try {
-    if (!windowOverrideEnabled(request) && eventState() !== 'live') return json(response, 403, { error: 'The submission deadline has passed.' });
+    if (!windowOverrideEnabled(request) && !submissionsAreOpen()) {
+      const config = getEventConfig();
+      const beforeOpening = Date.now() < new Date(config.submissionOpensAt).getTime();
+      return json(response, 403, { error: beforeOpening ? 'Submissions open on 6 September 2026 at 11:59 AM IST.' : 'The submission deadline has passed.' });
+    }
     const participantToken = bearerToken(request);
     const participant = await findParticipantByToken(participantToken);
     if (!participant) return json(response, 401, { error: 'Your participant link is invalid or expired.' });

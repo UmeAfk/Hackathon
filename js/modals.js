@@ -5,7 +5,7 @@
 import { showToast } from './utils.js?v=20260826g';
 import { syncPhase, syncBriefState } from './phaseEngine.js?v=20260826g';
 import { openModal, closeModal, spawnConfetti } from './modalCore.js?v=20260826g';
-import { getAssetDownload, registerParticipant, saveDesignBrief } from './api.js?v=20260831a';
+import { fetchParticipant, getAssetDownload, registerParticipant, saveDesignBrief } from './api.js?v=20260904c';
 
 export function initModals() {
   // 1. Register modal
@@ -182,31 +182,44 @@ export function initModals() {
 
   document.querySelectorAll('.js-trigger-download').forEach(btn => {
     btn.addEventListener('click', async () => {
-      const filename = btn.getAttribute('data-filename') || 'ArchViz_Base_Building.fbx';
+      const asset = btn.getAttribute('data-asset') || '';
       const originalLabel = btn.innerHTML;
       btn.disabled = true;
       btn.textContent = 'Preparing…';
       try {
-        const result = await getAssetDownload(filename);
-        const fileResponse = await fetch(result.url, {
-          cache: 'no-store',
-          credentials: 'omit',
-          referrerPolicy: 'no-referrer'
+        const result = await getAssetDownload(asset);
+        const downloads = Array.isArray(result.files) && result.files.length
+          ? result.files
+          : [{ url: result.url, filename: result.filename }];
+        const preparedFiles = await Promise.all(downloads.map(async download => {
+          const fileResponse = await fetch(download.url, {
+            cache: 'no-store',
+            credentials: 'omit',
+            referrerPolicy: 'no-referrer'
+          });
+          if (!fileResponse.ok) throw new Error('The secure download could not be completed. Please try again.');
+          return {
+            filename: download.filename,
+            localUrl: URL.createObjectURL(await fileResponse.blob())
+          };
+        }));
+
+        preparedFiles.forEach(file => {
+          const link = document.createElement('a');
+          link.href = file.localUrl;
+          link.download = file.filename;
+          link.rel = 'noopener';
+          link.style.display = 'none';
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+          setTimeout(() => URL.revokeObjectURL(file.localUrl), 60_000);
         });
-        if (!fileResponse.ok) throw new Error('The secure download could not be completed. Please try again.');
-        const fileBlob = await fileResponse.blob();
-        const localDownloadUrl = URL.createObjectURL(fileBlob);
-        const link = document.createElement('a');
-        link.href = localDownloadUrl;
-        link.download = result.filename || filename;
-        link.rel = 'noopener';
-        link.style.display = 'none';
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
-        setTimeout(() => URL.revokeObjectURL(localDownloadUrl), 60_000);
+
         btn.textContent = 'Downloaded';
-        showToast(`${filename} is downloading.`);
+        showToast(preparedFiles.length > 1
+          ? `${preparedFiles.length} companion files are downloading. Keep them together in the same folder.`
+          : `${preparedFiles[0].filename} is downloading.`);
         setTimeout(() => {
           closeModal(modelBackdrop, modelModal);
           openBriefEditor();
@@ -235,6 +248,29 @@ export function initModals() {
   const btnSubmitBrief = document.getElementById('btnSubmitBrief');
   const briefFormError = document.getElementById('briefFormError');
   const briefDoneBtn = document.getElementById('briefDoneBtn');
+  const briefIdentity = document.getElementById('briefIdentity');
+  const briefParticipantName = document.getElementById('briefParticipantName');
+  const briefParticipantContact = document.getElementById('briefParticipantContact');
+
+  async function loadBriefParticipant() {
+    if (briefParticipantName) briefParticipantName.textContent = 'Checking your secure link…';
+    if (briefParticipantContact) briefParticipantContact.textContent = 'Your brief will be saved with your registration.';
+    if (briefIdentity) briefIdentity.removeAttribute('data-error');
+    try {
+      const { participant, designBrief } = await fetchParticipant();
+      if (briefParticipantName) briefParticipantName.textContent = participant.name;
+      if (briefParticipantContact) briefParticipantContact.textContent = `${participant.email} · ${participant.phone}`;
+      if (designBrief && briefText && !briefText.value.trim()) briefText.value = designBrief;
+      if (designBrief) sessionStorage.setItem('av-brief-submitted', '1');
+      else sessionStorage.removeItem('av-brief-submitted');
+      updateBriefWordCount();
+      syncBriefState();
+    } catch (error) {
+      if (briefIdentity) briefIdentity.setAttribute('data-error', 'true');
+      if (briefParticipantName) briefParticipantName.textContent = 'Secure participant link required';
+      if (briefParticipantContact) briefParticipantContact.textContent = error.message;
+    }
+  }
 
   function updateBriefWordCount() {
     if (!briefText || !briefWordCount) return;
@@ -243,7 +279,7 @@ export function initModals() {
     briefWordCount.textContent = `${words} / ~100 words`;
 
     if (btnSubmitBrief) {
-      const isAlreadySubmitted = localStorage.getItem('av-brief-submitted') === '1';
+      const isAlreadySubmitted = sessionStorage.getItem('av-brief-submitted') === '1';
       btnSubmitBrief.disabled = text.length < 5;
       if (isAlreadySubmitted) {
         btnSubmitBrief.innerHTML = 'Update Design Brief <svg class="action-arrow"><use href="#i-arrow"/></svg>';
@@ -254,12 +290,11 @@ export function initModals() {
   }
 
   function openBriefEditor() {
-    const savedBrief = localStorage.getItem('av-design-brief');
-    if (savedBrief && briefText) briefText.value = savedBrief;
     if (briefFormView) briefFormView.hidden = false;
     if (briefSuccessView) briefSuccessView.hidden = true;
     updateBriefWordCount();
     openModal(briefModalBackdrop, briefModal);
+    loadBriefParticipant();
   }
 
   document.querySelectorAll('.js-open-brief-modal').forEach(btn => {
@@ -296,8 +331,7 @@ export function initModals() {
       btnSubmitBrief.textContent = 'Saving…';
       try {
         await saveDesignBrief(text);
-        localStorage.setItem('av-design-brief', text);
-        localStorage.setItem('av-brief-submitted', '1');
+        sessionStorage.setItem('av-brief-submitted', '1');
         syncBriefState();
 
         if (briefFormView) briefFormView.hidden = true;

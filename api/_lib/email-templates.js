@@ -135,9 +135,23 @@ export function challengeLaunchBroadcast() {
       title: 'The brief<br>has dropped.',
       intro: 'Hi {{{contact.first_name|there}}}, the Entangle 2K26 challenge is now live. Create a compelling real-time architectural experience through materials, lighting, environment design, camera composition, and visual storytelling. Interactivity is optional.',
       body: `${informationCard('Final submission deadline', formatIstHtml(config.submissionDeadlineAt), colors.mustard, calendarIcon(dayIst(config.submissionDeadlineAt)))}<p style="margin:18px 0;font-size:15px;line-height:1.65;color:${colors.ink}">Use any supporting software in your workflow. Complete the final environment, materials, scene, camera setup, and renders in <strong>Unreal Engine 5</strong>. Any interactive elements you choose to include must also be built there.</p><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin:18px 0 0;border:2px dashed ${colors.ink}"><tr><td style="padding:16px;font-size:14px;line-height:1.75"><strong>Start here:</strong><br>01 — Visit the website and download the challenge PDF and files<br>02 — Read the complete task and supporting references<br>03 — Share a short creative brief after downloading<br>04 — Build, package, and upload before the deadline</td></tr></table><p style="margin:18px 0 0;font-size:14px;line-height:1.6;color:${colors.muted}">Your creative brief helps us understand the concept, mood, and experience you intended before we see the finished project.</p>`,
-      buttonLabel: 'Visit Website', buttonUrl: pageUrl
+      buttonLabel: 'Download Challenge Files', buttonUrl: pageUrl
     }),
-    text: `The challenge is live — Entangle 2K26\n\nHi {{{contact.first_name|there}}},\n\nThe challenge PDF, supporting references, and project files are ready on the website. Use any supporting software in your workflow, but complete and submit the final Unreal Engine 5 project.\n\nSubmission deadline: ${deadline}\n\nVisit Website: ${pageUrl}`
+    text: `The challenge is live — Entangle 2K26\n\nHi {{{contact.first_name|there}}},\n\nThe challenge PDF, supporting references, and project files are ready on the website. Use any supporting software in your workflow, but complete and submit the final Unreal Engine 5 project.\n\nSubmission deadline: ${deadline}\n\nDownload Challenge Files: ${pageUrl}`
+  };
+}
+
+export function challengeLaunchEmail(participant, token) {
+  const message = challengeLaunchBroadcast();
+  const pageUrl = accessUrl(token);
+  return {
+    ...message,
+    html: message.html
+      .replaceAll('{{{contact.first_name|there}}}', firstName(participant.name))
+      .replaceAll('{{{contact.access_url}}}', escapeHtml(pageUrl)),
+    text: message.text
+      .replaceAll('{{{contact.first_name|there}}}', firstNameRaw(participant.name))
+      .replaceAll('{{{contact.access_url}}}', pageUrl)
   };
 }
 

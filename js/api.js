@@ -4,7 +4,7 @@ const TOKEN_KEY = 'av-participant-token';
 const SUPPORT_MESSAGE = 'Please try again. If the problem continues, contact entangle2k26@vkarch.com.';
 
 function captureParticipantToken() {
-  ['av-registered-name', 'av-registered-email', 'av-registered-phone'].forEach(key => localStorage.removeItem(key));
+  ['av-registered-name', 'av-registered-email', 'av-registered-phone', 'av-design-brief', 'av-brief-submitted'].forEach(key => localStorage.removeItem(key));
   const hash = window.location.hash.startsWith('#') ? window.location.hash.slice(1) : '';
   const token = new URLSearchParams(hash).get('entry');
   if (token) {
@@ -57,7 +57,10 @@ export async function registerParticipant(details) {
     auth: false,
     body: JSON.stringify(details)
   });
-  if (data.token) sessionStorage.setItem(TOKEN_KEY, data.token);
+  if (data.token) {
+    sessionStorage.setItem(TOKEN_KEY, data.token);
+    sessionStorage.removeItem('av-brief-submitted');
+  }
   return data;
 }
 
@@ -65,10 +68,10 @@ export async function saveDesignBrief(brief) {
   return apiRequest('/api/brief', { method: 'POST', body: JSON.stringify({ brief }) });
 }
 
-export async function getAssetDownload(filename) {
+export async function getAssetDownload(asset) {
   return apiRequest('/api/asset-download', {
     method: 'POST',
-    body: JSON.stringify({ filename })
+    body: JSON.stringify({ asset })
   });
 }
 

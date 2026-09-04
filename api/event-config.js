@@ -8,6 +8,7 @@ export default function handler(request, response) {
     registrationOpensAt: config.registrationOpensAt,
     registrationClosesAt: config.registrationClosesAt,
     taskDropsAt: config.taskDropsAt,
+    submissionOpensAt: config.submissionOpensAt,
     submissionDeadlineAt: config.submissionDeadlineAt,
     thankYouAt: config.thankYouAt,
     maxUploadBytes: config.maxUploadBytes,

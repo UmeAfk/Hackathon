@@ -34,7 +34,7 @@
   <link rel="icon" type="image/png" href="public/icon.png">
   <link rel="apple-touch-icon" href="public/icon.png">
   <script src="js/theme-bootstrap.js?v=20260828d"></script>
-  <link rel="stylesheet" href="css/style.css?v=20260902i">
+  <link rel="stylesheet" href="css/style.css?v=20260904b">
 </head>
 
 <body>
@@ -161,7 +161,8 @@
               <svg>
                 <use href="#i-download" xlink:href="#i-download" />
               </svg></button>
-            <button type="button" class="btn btn-primary btn-lg js-open-submit-modal" id="cardEarlySubmitBtn">Submit
+            <button type="button" class="btn btn-primary btn-lg js-open-submit-modal" id="cardEarlySubmitBtn"><span
+                id="cardEarlySubmitLabel">Submit</span>
               <svg>
                 <use href="#i-upload" xlink:href="#i-upload" />
               </svg></button>
@@ -291,7 +292,7 @@
                   <use href="#i-plus" xlink:href="#i-plus" />
                 </svg></button>
               <div class="acc-panel">
-                <p>The submission window runs from 4 September 2026 at 11:59 AM IST until 9 September 2026 at 11:59
+                <p>The submission window runs from 6 September 2026 at 11:59 AM IST until 9 September 2026 at 11:59
                   AM IST. Upload and verify your final archive before the closing time.</p>
               </div>
             </div>
@@ -329,7 +330,7 @@
                 </svg></button>
               <div class="acc-panel">
                 <p>In roughly 100 words, describe your central idea, intended mood or story, material and lighting
-                  direction, and the interaction you plan to build. This helps the jury understand your intention
+                  direction, and any optional interaction you may choose to build. This helps the jury understand your intention
                   before reviewing the finished work.</p>
               </div>
             </div>
@@ -515,37 +516,67 @@
               </svg> Challenge Task</div><span class="format-sub">Complete task and rules · PDF</span>
           </div>
           <button type="button" class="btn btn-primary btn-sm js-trigger-download"
-            data-filename="Entangle_2K26_Challenge_Task.pdf">Download PDF</button>
-        </div>
-        <div class="format-card">
-          <div class="format-info">
-            <div class="format-title"><svg style="width:18px;height:18px;color:var(--tomato);">
-                <use href="#i-cube" />
-              </svg> .FBX Format</div><span class="format-sub">Autodesk Filmbox with hierarchies · 48 MB</span>
-          </div>
-          <button type="button" class="btn btn-primary btn-sm js-trigger-download"
-            data-filename="ArchViz_Base_Building_v1.0.fbx">Download .fbx</button>
+            data-asset="task">Download PDF</button>
         </div>
         <div class="format-card">
           <div class="format-info">
             <div class="format-title"><svg style="width:18px;height:18px;color:var(--mustard);">
                 <use href="#i-cube" />
-              </svg> .OBJ Format</div><span class="format-sub">Wavefront Quad mesh · 52 MB</span>
+              </svg> Blender Format</div><span class="format-sub">Editable Blender source · 122 MB</span>
           </div>
           <button type="button" class="btn btn-outline btn-sm js-trigger-download"
-            data-filename="ArchViz_Base_Building_v1.0.obj">Download .obj</button>
+            data-asset="blend">Download .blend</button>
+        </div>
+        <div class="format-card">
+          <div class="format-info">
+            <div class="format-title"><svg style="width:18px;height:18px;color:var(--tomato);">
+                <use href="#i-cube" />
+              </svg> FBX Format</div><span class="format-sub">Broad 3D software compatibility · 47 MB</span>
+          </div>
+          <button type="button" class="btn btn-primary btn-sm js-trigger-download"
+            data-asset="fbx">Download .fbx</button>
+        </div>
+        <div class="format-card">
+          <div class="format-info">
+            <div class="format-title"><svg style="width:18px;height:18px;color:var(--mustard);">
+                <use href="#i-cube" />
+              </svg> OBJ Package <span class="format-badge">2 files</span></div>
+            <span class="format-sub">Wavefront model with its .mtl material file · 138 MB</span>
+          </div>
+          <button type="button" class="btn btn-outline btn-sm js-trigger-download"
+            data-asset="obj">Download .obj + .mtl</button>
         </div>
         <div class="format-card">
           <div class="format-info">
             <div class="format-title"><svg style="width:18px;height:18px;color:var(--rust);">
                 <use href="#i-cube" />
-              </svg> .GLTF / .GLB Format
-            </div><span class="format-sub">Binary glTF · 36 MB</span>
+              </svg> GLB Format
+            </div><span class="format-sub">Self-contained binary glTF · 65 MB</span>
           </div>
           <button type="button" class="btn btn-outline btn-sm js-trigger-download"
-            data-filename="ArchViz_Base_Building_v1.0.glb">Download .glb</button>
+            data-asset="glb">Download .glb</button>
+        </div>
+        <div class="format-card">
+          <div class="format-info">
+            <div class="format-title"><svg style="width:18px;height:18px;color:var(--olive);">
+                <use href="#i-cube" />
+              </svg> GLTF Package <span class="format-badge">2 files</span></div>
+            <span class="format-sub">glTF scene with its required .bin data file · 66 MB</span>
+          </div>
+          <button type="button" class="btn btn-outline btn-sm js-trigger-download"
+            data-asset="gltf">Download .gltf + .bin</button>
+        </div>
+        <div class="format-card">
+          <div class="format-info">
+            <div class="format-title"><svg style="width:18px;height:18px;color:var(--tomato);">
+                <use href="#i-image" />
+              </svg> Reference Image</div><span class="format-sub">Visual reference · JPG · 1.9 MB</span>
+          </div>
+          <button type="button" class="btn btn-primary btn-sm js-trigger-download"
+            data-asset="reference">Download image</button>
         </div>
       </div>
+      <p class="format-note">OBJ and glTF download as two-file packages. Keep each pair together in the same folder.</p>
     </div>
   </div>
   <!-- MODAL: DESIGN BRIEF -->
@@ -557,8 +588,13 @@
       <div class="modal-view" id="briefFormView">
         <p class="tag">[ CREATIVE DIRECTION ]</p>
         <h3 id="briefModalTitle" class="h3">Share Your Design Brief <span style="color: var(--tomato);">*</span></h3>
-        <p class="modal-sub">In about 100 words, tell us the concept, mood, and experience you plan to create. This
-          helps us understand your creative direction before we see the finished work.</p>
+        <p class="modal-sub">After reviewing the task and files, share a short brief explaining how you plan to
+          approach the project—your concept, mood, materials, lighting, and intended experience.</p>
+        <div class="brief-identity" id="briefIdentity" aria-live="polite">
+          <span class="brief-identity-label">Linked participant</span>
+          <strong id="briefParticipantName">Checking your secure link…</strong>
+          <span id="briefParticipantContact">Your brief will be saved with your registration.</span>
+        </div>
         <form id="briefForm" novalidate>
           <div class="field">
             <textarea id="briefText" name="briefText" required rows="5"
@@ -772,7 +808,7 @@
   <div class="status-toast" id="statusToast" role="status" aria-live="polite"></div>
   <!-- JS Modules -->
   <script src="public/vendor/anime.min.js"></script>
-  <script type="module" src="js/main.js?v=20260902d"></script>
+  <script type="module" src="js/main.js?v=20260904c"></script>
 </body>
 
 </html>

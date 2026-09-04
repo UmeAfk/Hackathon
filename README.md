@@ -35,7 +35,7 @@ npm run emails:test -- --to organizer@vkarch.com --template all
 
 Use a template slug instead of `all` to send one test: `registration`, `challenge-launch`, `submission-receipt`, `evaluation-update`, `shortlisted`, or `not-selected`. Test sends are prefixed with `[TEST]` and never send to a Segment.
 
-See [SUPABASE_EMAIL_SETUP.md](SUPABASE_EMAIL_SETUP.md) for the production checklist, DNS guidance, SQL setup, Broadcast schedule, and organizer queries.
+See [docs/supabase-email-setup.md](docs/supabase-email-setup.md) for the production checklist, DNS guidance, SQL setup, Broadcast schedule, and organizer queries.
 
 ## Local development
 
