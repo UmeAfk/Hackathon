@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { eventState, getEventConfig, submissionsAreOpen, windowOverrideEnabled } from '../api/_lib/event.js';
+import { eventState, getEventConfig, registrationIsOpen, submissionsAreOpen, windowOverrideEnabled } from '../api/_lib/event.js';
 import {
   briefReminderEmail,
   challengeLaunchBroadcast,
@@ -51,9 +51,19 @@ test('event-window overrides are limited to local Vercel development', () => {
   else process.env.ENTANGLE_PREVIEW_TEST_MODE = previousPreviewMode;
 });
 
+test('a late-registration window can reopen registration without changing the live challenge phase', () => {
+  const previous = process.env.ENTANGLE_LATE_REGISTRATION_CLOSES_AT;
+  process.env.ENTANGLE_LATE_REGISTRATION_CLOSES_AT = '2026-09-04T15:01:45+05:30';
+  assert.equal(registrationIsOpen(new Date('2026-09-04T09:00:00Z')), true);
+  assert.equal(eventState(new Date('2026-09-04T09:00:00Z')), 'live');
+  assert.equal(registrationIsOpen(new Date('2026-09-04T09:32:00Z')), false);
+  if (previous === undefined) delete process.env.ENTANGLE_LATE_REGISTRATION_CLOSES_AT;
+  else process.env.ENTANGLE_LATE_REGISTRATION_CLOSES_AT = previous;
+});
+
 test('transactional email templates escape participant and file content', () => {
   const participant = { name: '<img src=x onerror=alert(1)>', email: 'safe@example.com' };
-  const registration = registrationEmail(participant, 'a'.repeat(43));
+  const registration = registrationEmail(participant, 'a'.repeat(43), new Date('2026-09-01T00:00:00Z'));
   const receipt = submissionReceiptEmail(participant, { id: 'receipt-1', original_filename: '<script>alert(1)</script>.zip' });
   assert.doesNotMatch(registration.html, /<img src=x/);
   assert.match(registration.html, /&lt;img/);

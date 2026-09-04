@@ -711,12 +711,16 @@
         <p class="tag">[ STEP 2 OF 2 — UPLOAD ]</p>
         <h3 class="h3">Upload your archive</h3>
         <form id="quickSubmitForm" novalidate>
-          <div class="field"><label for="submitUploaderName">Registered Name</label><input type="text"
-              id="submitUploaderName" name="submitUploaderName" required readonly placeholder="Loading from your secure link…" autocomplete="name">
+          <div class="field"><label for="submitUploaderName">Registered Name *</label><input type="text"
+              id="submitUploaderName" name="submitUploaderName" required placeholder="Enter exactly as registered" autocomplete="name">
           </div>
-          <div class="field"><label for="submitUploaderEmail">Registered Email</label><input type="email"
-              id="submitUploaderEmail" name="submitUploaderEmail" required readonly placeholder="Loading from your secure link…">
-            <small class="linked-field-note">Verified from your secure participant link. Your upload is saved to the same entry.</small>
+          <div class="field"><label for="submitUploaderEmail">Registered Email *</label><input type="email"
+              id="submitUploaderEmail" name="submitUploaderEmail" required placeholder="Enter your registered email" autocomplete="email">
+          </div>
+          <div class="field"><label for="submitUploaderPhone">Registered Mobile Number *</label>
+            <div class="phone-wrap"><span class="phone-prefix">+91</span><input type="tel" id="submitUploaderPhone"
+                name="submitUploaderPhone" required inputmode="numeric" maxlength="10" placeholder="98765 43210" autocomplete="tel"></div>
+            <small class="linked-field-note">All three details must match your registration. One completed upload is allowed per participant.</small>
           </div>
           <div class="field">
             <label id="submitAiUsageLabel">Generative AI Pipeline Disclosure *</label>
@@ -810,7 +814,7 @@
   <div class="status-toast" id="statusToast" role="status" aria-live="polite"></div>
   <!-- JS Modules -->
   <script src="public/vendor/anime.min.js"></script>
-  <script type="module" src="js/main.js?v=20260904d"></script>
+  <script type="module" src="js/main.js?v=20260904e"></script>
 </body>
 
 </html>

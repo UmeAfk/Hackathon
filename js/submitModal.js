@@ -4,7 +4,7 @@
 
 import { formatSize, showToast } from './utils.js?v=20260826g';
 import { openModal, closeModal, spawnConfetti } from './modalCore.js?v=20260826g';
-import { fetchParticipant, uploadSubmission } from './api.js?v=20260904c';
+import { fetchParticipant, uploadSubmission } from './api.js?v=20260904e';
 import { animateArchiveStructure } from './archiveStructure.js?v=20260826g';
 import { initCustomSelect } from './customSelect.js?v=20260826g';
 
@@ -26,6 +26,7 @@ export function initSubmitModal() {
   const quickSubmitForm = document.getElementById('quickSubmitForm');
   const submitUploaderName = document.getElementById('submitUploaderName');
   const submitUploaderEmail = document.getElementById('submitUploaderEmail');
+  const submitUploaderPhone = document.getElementById('submitUploaderPhone');
   const zipDropzone = document.getElementById('zipDropzone');
   const zipFileInput = document.getElementById('zipFileInput');
   const zipFileCard = document.getElementById('zipFileCard');
@@ -53,9 +54,10 @@ export function initSubmitModal() {
   function updateQuickSubmitButtonState() {
     const hasName = submitUploaderName && submitUploaderName.value.trim().length > 0;
     const hasEmail = submitUploaderEmail && submitUploaderEmail.value.trim().length > 0;
+    const hasPhone = submitUploaderPhone && /^[6-9]\d{9}$/.test(submitUploaderPhone.value.replace(/\D/g, ''));
     const hasFile = !!uploadedZipFile;
     if (btnQuickSubmit) {
-      btnQuickSubmit.disabled = !(hasName && hasEmail && hasFile);
+      btnQuickSubmit.disabled = !(hasName && hasEmail && hasPhone && hasFile);
     }
   }
 
@@ -132,9 +134,8 @@ export function initSubmitModal() {
         const { participant } = await fetchParticipant();
         if (submitUploaderName) submitUploaderName.value = participant.name;
         if (submitUploaderEmail) submitUploaderEmail.value = participant.email;
-      } catch (error) {
-        if (quickSubmitError) quickSubmitError.textContent = error.message;
-      }
+        if (submitUploaderPhone) submitUploaderPhone.value = String(participant.phone || '').replace(/^\+91/, '');
+      } catch {}
 
       updateQuickSubmitButtonState();
     });
@@ -164,6 +165,10 @@ export function initSubmitModal() {
 
   if (submitUploaderName) submitUploaderName.addEventListener('input', updateQuickSubmitButtonState);
   if (submitUploaderEmail) submitUploaderEmail.addEventListener('input', updateQuickSubmitButtonState);
+  if (submitUploaderPhone) submitUploaderPhone.addEventListener('input', () => {
+    submitUploaderPhone.value = submitUploaderPhone.value.replace(/\D/g, '').replace(/^91(?=\d{10}$)/, '').slice(0, 10);
+    updateQuickSubmitButtonState();
+  });
 
   if (zipDropzone && zipFileInput) {
     zipDropzone.addEventListener('click', () => zipFileInput.click());
@@ -230,6 +235,11 @@ export function initSubmitModal() {
         await uploadSubmission({
           file: uploadedZipFile,
           aiUsage: document.getElementById('submitAiUsage')?.value || 'none',
+          participant: {
+            name: submitUploaderName?.value.trim() || '',
+            email: submitUploaderEmail?.value.trim() || '',
+            phone: `+91${submitUploaderPhone?.value.replace(/\D/g, '') || ''}`
+          },
           onProgress: showUploadProgress,
           signal: uploadController.signal
         });

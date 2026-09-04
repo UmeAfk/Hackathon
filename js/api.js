@@ -158,7 +158,7 @@ async function finalizeSubmission(submissionId) {
   throw latestError;
 }
 
-export async function uploadSubmission({ file, aiUsage, onProgress, signal }) {
+export async function uploadSubmission({ file, aiUsage, participant, onProgress, signal }) {
   const intent = await apiRequest('/api/submission', {
     method: 'POST',
     signal,
@@ -166,9 +166,14 @@ export async function uploadSubmission({ file, aiUsage, onProgress, signal }) {
       filename: file.name,
       fileSize: file.size,
       mimeType: file.type || 'application/octet-stream',
-      aiUsage
+      aiUsage,
+      participantName: participant?.name || '',
+      participantEmail: participant?.email || '',
+      participantPhone: participant?.phone || ''
     })
   });
+
+  if (intent.accessToken) sessionStorage.setItem(TOKEN_KEY, intent.accessToken);
 
   await runResumableUpload(intent, file, onProgress, signal);
   await finalizeSubmission(intent.submissionId);

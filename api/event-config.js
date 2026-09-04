@@ -1,5 +1,5 @@
 import { allowMethods, json } from './_lib/http.js';
-import { eventState, getEventConfig } from './_lib/event.js';
+import { eventState, getEventConfig, registrationIsOpen } from './_lib/event.js';
 
 export default function handler(request, response) {
   if (!allowMethods(request, response, ['GET'])) return;
@@ -7,6 +7,8 @@ export default function handler(request, response) {
   return json(response, 200, {
     registrationOpensAt: config.registrationOpensAt,
     registrationClosesAt: config.registrationClosesAt,
+    lateRegistrationClosesAt: config.lateRegistrationClosesAt,
+    registrationOpen: registrationIsOpen(),
     taskDropsAt: config.taskDropsAt,
     submissionOpensAt: config.submissionOpensAt,
     submissionDeadlineAt: config.submissionDeadlineAt,

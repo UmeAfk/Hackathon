@@ -147,6 +147,20 @@ test('design briefs are one-time and inherit verified participant identity', asy
   assert.doesNotMatch(briefApi, /\.upsert\(/);
   assert.match(modalClient, /briefText\.readOnly = isSubmitted/);
   assert.match(modalClient, /btnSubmitBrief\.hidden = isSubmitted/);
-  assert.match(home, /id="submitUploaderName"[^>]*readonly/);
-  assert.match(home, /id="submitUploaderEmail"[^>]*readonly/);
+  assert.match(home, /id="submitUploaderName"[^>]*required/);
+  assert.match(home, /id="submitUploaderEmail"[^>]*required/);
+  assert.match(home, /id="submitUploaderPhone"[^>]*required/);
+});
+
+test('downloads are public during the live phase while submissions verify registration identity', async () => {
+  const [downloadApi, submissionApi] = await Promise.all([
+    readFile(new URL('../api/asset-download.js', import.meta.url), 'utf8'),
+    readFile(new URL('../api/submission.js', import.meta.url), 'utf8')
+  ]);
+  assert.doesNotMatch(downloadApi, /findParticipantByToken|bearerToken/);
+  assert.match(downloadApi, /consumeRateLimit\(request, 'asset-download'/);
+  assert.match(submissionApi, /\.eq\('email', email\)/);
+  assert.match(submissionApi, /\.eq\('phone', phone\)/);
+  assert.match(submissionApi, /sameName/);
+  assert.match(submissionApi, /issueParticipantToken\(participant\.id, 'submission-identity'\)/);
 });

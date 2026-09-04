@@ -88,20 +88,27 @@ export function accessUrl(token) {
   return `${siteUrl}/#entry=${encodeURIComponent(token)}`;
 }
 
-export function registrationEmail(participant, token) {
+export function registrationEmail(participant, token, now = new Date()) {
   const config = getEventConfig();
   const pageUrl = accessUrl(token);
+  const challengeIsLive = now.getTime() >= new Date(config.taskDropsAt).getTime();
+  const intro = challengeIsLive
+    ? 'Congratulations! Your registration for Entangle 2K26 is confirmed. The challenge is live, and the task PDF, reference image, and model files are ready on the website.'
+    : 'Congratulations! Your registration for Entangle 2K26 is confirmed. Watch your inbox on 4 September at 11:59 AM IST. We have a surprise waiting for you.';
+  const body = challengeIsLive
+    ? 'Visit the website, review the task and model, then share your short creative brief before you begin building.'
+    : 'Until then, get ready to Imagine. Build. Entangle.';
   return {
     subject: `Registration confirmed — ${config.eventName}`,
     html: layout({
       preheader: 'You’re officially on the Entangle 2K26 list.',
       eyebrow: 'REGISTRATION / CONFIRMED', counter: '01 / ENTRY',
       title: `You’re on the list,<br>${firstName(participant.name)}.`,
-      intro: 'Congratulations! Your registration for Entangle 2K26 is confirmed. Watch your inbox on 4 September at 11:59 AM IST. We have a surprise waiting for you.',
-      body: `<p style="margin:0;font-size:16px;line-height:1.6;color:${colors.muted}">Until then, get ready to Imagine. Build. Entangle.</p>`,
+      intro,
+      body: `<p style="margin:0;font-size:16px;line-height:1.6;color:${colors.muted}">${body}</p>`,
       buttonLabel: 'Visit Website', buttonUrl: pageUrl
     }),
-    text: `Registration confirmed — ${config.eventName}\n\nYou’re on the list, ${firstNameRaw(participant.name)}.\n\nCongratulations! Your registration for Entangle 2K26 is confirmed. Watch your inbox on 4 September at 11:59 AM IST. We have a surprise waiting for you.\n\nUntil then, get ready to Imagine. Build. Entangle.\n\nVisit Website: ${pageUrl}`
+    text: `Registration confirmed — ${config.eventName}\n\nYou’re on the list, ${firstNameRaw(participant.name)}.\n\n${intro}\n\n${body}\n\nVisit Website: ${pageUrl}`
   };
 }
 

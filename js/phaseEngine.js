@@ -11,6 +11,7 @@ const DAY = 24 * 60 * 60 * 1000;
 let timeline = {
   registrationOpensAt: '2026-08-31T11:59:00+05:30',
   registrationClosesAt: '2026-09-04T11:59:00+05:30',
+  lateRegistrationClosesAt: '',
   taskDropsAt: '2026-09-04T11:59:00+05:30',
   submissionOpensAt: '2026-09-06T11:59:00+05:30',
   submissionDeadlineAt: '2026-09-09T11:59:00+05:30'
@@ -22,6 +23,7 @@ const forcedPhaseParam = debugAllowed ? urlParams.get('phase') : null;
 const debugRegistered = debugAllowed && urlParams.get('registered') === '1';
 let debugPhase = parseForcedPhase(forcedPhaseParam);
 let activeTimer = null;
+let registrationCloseTimer = null;
 
 const phaseCopy = [
   {
@@ -96,6 +98,16 @@ function registeredOnThisDevice() {
   return debugRegistered || localStorage.getItem('av-registered') === '1';
 }
 
+function registrationOpenNow() {
+  const now = Date.now();
+  const regular = now >= new Date(timeline.registrationOpensAt).getTime()
+    && now < new Date(timeline.registrationClosesAt).getTime();
+  const lateClose = timeline.lateRegistrationClosesAt
+    ? new Date(timeline.lateRegistrationClosesAt).getTime()
+    : 0;
+  return regular || (lateClose > now && now >= new Date(timeline.taskDropsAt).getTime());
+}
+
 function syncRegistrationButton(mode) {
   const button = document.getElementById('heroRegisterBtn');
   const wrapper = document.getElementById('heroRegisterWrap');
@@ -155,6 +167,10 @@ function syncSubmissionButton(phase) {
     label.textContent = 'Submit';
     button.removeAttribute('title');
     button.setAttribute('aria-label', 'Submit your Entangle 2K26 entry');
+  }
+  if (registrationCloseTimer) {
+    clearTimeout(registrationCloseTimer);
+    registrationCloseTimer = null;
   }
 }
 
@@ -253,7 +269,13 @@ export function syncPhase() {
     if (countdownEl) countdownEl.style.display = 'flex';
     activeTimer = startCountdown(taskRevealTime, { d: 'cd-d', h: 'cd-h', m: 'cd-m', s: 'cd-s' }, syncPhase);
   } else if (phase === 2) {
-    if (heroCtas) heroCtas.style.display = 'none';
+    const lateRegistrationOpen = registrationOpenNow() && !isRegistered;
+    if (heroCtas) heroCtas.style.display = lateRegistrationOpen ? 'flex' : 'none';
+    if (lateRegistrationOpen) {
+      syncRegistrationButton('open');
+      const closesIn = new Date(timeline.lateRegistrationClosesAt).getTime() - Date.now();
+      if (closesIn > 0) registrationCloseTimer = setTimeout(syncPhase, Math.min(closesIn + 250, 2147483647));
+    }
     if (heroClosedCard) heroClosedCard.style.display = 'none';
     if (countdownBlock) countdownBlock.style.display = 'inline-flex';
     if (countdownLabel) countdownLabel.textContent = '[ CHALLENGE IS LIVE — SUBMISSIONS CLOSE IN ]';

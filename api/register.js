@@ -1,6 +1,6 @@
 import { allowMethods, bodyOf, cleanText, json, normalizeEmail, normalizePhone, validEmail, validPhone } from './_lib/http.js';
 import { getSupabase } from './_lib/supabase.js';
-import { getEventConfig, windowOverrideEnabled } from './_lib/event.js';
+import { getEventConfig, registrationIsOpen, windowOverrideEnabled } from './_lib/event.js';
 import { issueParticipantToken } from './_lib/tokens.js';
 import { accessUrl, registrationEmail } from './_lib/email-templates.js';
 import { sendEmail } from './_lib/mailer.js';
@@ -28,7 +28,7 @@ export default async function handler(request, response) {
     if (!windowOverrideEnabled(request) && now < new Date(config.registrationOpensAt)) {
       return json(response, 403, { error: 'Registration has not opened yet.' });
     }
-    if (!windowOverrideEnabled(request) && now >= new Date(config.registrationClosesAt)) {
+    if (!windowOverrideEnabled(request) && !registrationIsOpen(now)) {
       return json(response, 403, { error: 'Registration is closed.' });
     }
 

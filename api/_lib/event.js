@@ -19,6 +19,7 @@ export function getEventConfig() {
   const config = {
     registrationOpensAt: process.env.ENTANGLE_REGISTRATION_OPENS_AT || defaults.registrationOpensAt,
     registrationClosesAt: process.env.ENTANGLE_REGISTRATION_CLOSES_AT || defaults.registrationClosesAt,
+    lateRegistrationClosesAt: process.env.ENTANGLE_LATE_REGISTRATION_CLOSES_AT || '',
     taskDropsAt: process.env.ENTANGLE_TASK_DROPS_AT || defaults.taskDropsAt,
     submissionOpensAt: process.env.ENTANGLE_SUBMISSION_OPENS_AT || defaults.submissionOpensAt,
     submissionDeadlineAt: process.env.ENTANGLE_SUBMISSION_DEADLINE_AT || defaults.submissionDeadlineAt,
@@ -30,6 +31,7 @@ export function getEventConfig() {
 
   validDate(config.registrationOpensAt, 'registration opening');
   validDate(config.registrationClosesAt, 'registration closing');
+  if (config.lateRegistrationClosesAt) validDate(config.lateRegistrationClosesAt, 'late registration closing');
   validDate(config.taskDropsAt, 'task drop');
   validDate(config.submissionOpensAt, 'submission opening');
   validDate(config.submissionDeadlineAt, 'submission deadline');
@@ -40,6 +42,17 @@ export function getEventConfig() {
   if (new Date(config.submissionOpensAt) >= new Date(config.submissionDeadlineAt)) throw new Error('The submission deadline must be after submissions open');
   if (new Date(config.taskDropsAt) >= new Date(config.submissionDeadlineAt)) throw new Error('The submission deadline must be after the task drop');
   return config;
+}
+
+export function registrationIsOpen(now = new Date()) {
+  const config = getEventConfig();
+  const time = now.getTime();
+  const regularWindow = time >= new Date(config.registrationOpensAt).getTime()
+    && time < new Date(config.registrationClosesAt).getTime();
+  const lateWindow = config.lateRegistrationClosesAt
+    && time >= new Date(config.taskDropsAt).getTime()
+    && time < new Date(config.lateRegistrationClosesAt).getTime();
+  return Boolean(regularWindow || lateWindow);
 }
 
 export function submissionsAreOpen(now = new Date()) {

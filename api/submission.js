@@ -1,6 +1,6 @@
 import crypto from 'node:crypto';
-import { allowMethods, bearerToken, bodyOf, cleanText, json } from './_lib/http.js';
-import { findParticipantByToken } from './_lib/tokens.js';
+import { allowMethods, bearerToken, bodyOf, cleanText, json, normalizeEmail, normalizePhone, validEmail, validPhone } from './_lib/http.js';
+import { findParticipantByToken, issueParticipantToken } from './_lib/tokens.js';
 import { getSupabase, getSupabasePublishableKey } from './_lib/supabase.js';
 import { getEventConfig, submissionsAreOpen, windowOverrideEnabled } from './_lib/event.js';
 import { consumeRateLimit, rateLimitResponse } from './_lib/rate-limit.js';
@@ -27,13 +27,39 @@ export default async function handler(request, response) {
       const beforeOpening = Date.now() < new Date(config.submissionOpensAt).getTime();
       return json(response, 403, { error: beforeOpening ? 'Submissions open on 6 September 2026 at 11:59 AM IST.' : 'The submission deadline has passed.' });
     }
-    const participant = await findParticipantByToken(bearerToken(request));
-    if (!participant) return json(response, 401, { error: 'Only registered participants can submit. Open the secure link in your challenge email.' });
+    const body = bodyOf(request);
+    let participant = await findParticipantByToken(bearerToken(request));
+    let accessToken = '';
+    if (!participant) {
+      const name = cleanText(body.participantName, 120);
+      const email = normalizeEmail(body.participantEmail);
+      const phone = normalizePhone(body.participantPhone);
+      const [ipAllowed, identityAllowed] = await Promise.all([
+        consumeRateLimit(request, 'submission-identity-ip', 30, 60 * 60),
+        consumeRateLimit(request, 'submission-identity', 12, 60 * 60, email || undefined)
+      ]);
+      if (!ipAllowed || !identityAllowed) return rateLimitResponse(response, 60 * 60);
+      if (name.length < 2 || !validEmail(email) || !validPhone(phone)) {
+        return json(response, 401, { error: 'Enter the same name, email address, and mobile number used during registration.' });
+      }
+      const { data: matched, error: matchError } = await getSupabase().from('participants')
+        .select('id,name,email,phone')
+        .eq('email', email)
+        .eq('phone', phone)
+        .is('email_opt_out_at', null)
+        .maybeSingle();
+      if (matchError) throw matchError;
+      const sameName = cleanText(matched?.name, 120).toLocaleLowerCase('en-IN') === name.toLocaleLowerCase('en-IN');
+      if (!matched || !sameName) {
+        return json(response, 401, { error: 'Enter the same name, email address, and mobile number used during registration.' });
+      }
+      participant = matched;
+      accessToken = await issueParticipantToken(participant.id, 'submission-identity');
+    }
     if (!await consumeRateLimit(request, 'submission-start', 20, 60 * 60, participant.id)) {
       return rateLimitResponse(response, 60 * 60);
     }
 
-    const body = bodyOf(request);
     const originalFilename = cleanText(body.filename, 255);
     const extension = originalFilename.split('.').pop().toLowerCase();
     const fileSize = Number(body.fileSize);
@@ -85,7 +111,8 @@ export default async function handler(request, response) {
       bucketName: 'challenge-submissions',
       uploadToken: signed.token,
       apiKey: getSupabasePublishableKey(),
-      resumableEndpoint: resumableEndpoint()
+      resumableEndpoint: resumableEndpoint(),
+      ...(accessToken ? { accessToken } : {})
     });
   } catch (error) {
     console.error('Submission initialization failed:', error.message);
