@@ -1,4 +1,5 @@
 import {
+  briefReminderEmail,
   challengeLaunchBroadcast,
   evaluationUpdateBroadcast,
   notSelectedEmail,
@@ -30,6 +31,11 @@ export function emailPreviewMessages() {
       slug: 'challenge-launch',
       label: 'Challenge task and brief',
       message: personalizePreview(challengeLaunchBroadcast())
+    },
+    {
+      slug: 'brief-reminder',
+      label: 'Design brief reminder',
+      message: briefReminderEmail(sampleParticipant, 'preview-token-not-valid-' + 'y'.repeat(24))
     },
     {
       slug: 'submission-receipt',

@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { eventState, getEventConfig, submissionsAreOpen, windowOverrideEnabled } from '../api/_lib/event.js';
 import {
+  briefReminderEmail,
   challengeLaunchBroadcast,
   challengeLaunchEmail,
   evaluationUpdateBroadcast,
@@ -65,12 +66,17 @@ test('transactional email templates escape participant and file content', () => 
   const launch = challengeLaunchEmail(participant, 'b'.repeat(43));
   assert.doesNotMatch(launch.html, /\{\{\{/);
   assert.doesNotMatch(launch.html, /<img src=x/);
+  const reminder = briefReminderEmail(participant, 'c'.repeat(43));
+  assert.doesNotMatch(reminder.html, /<img src=x/);
+  assert.match(reminder.html, /Share Design Brief/);
+  assert.match(reminder.text, /submitted once/);
 });
 
 test('the complete participant email set renders shared branded HTML', () => {
   const participant = { name: 'Aarav Sharma', email: 'aarav@example.com' };
   const messages = [
     challengeLaunchBroadcast(),
+    briefReminderEmail(participant, 'd'.repeat(43)),
     evaluationUpdateBroadcast(),
     shortlistedEmail(participant, { venue: '<script>bad</script>', venueUrl: 'https://maps.example/test' }),
     notSelectedEmail(participant)
@@ -84,17 +90,17 @@ test('the complete participant email set renders shared branded HTML', () => {
   assert.match(messages[0].html, />09<\/td>/);
   assert.match(messages[0].html, /@media only screen and \(max-width:600px\)/);
   assert.doesNotMatch(messages[0].html, /Button not working|RESEND_UNSUBSCRIBE_URL/);
-  assert.doesNotMatch(messages[1].html, /Button not working|RESEND_UNSUBSCRIBE_URL/);
-  assert.match(messages[1].html, /Keep an eye on your inbox\.<\/p>/);
-  assert.doesNotMatch(messages[1].html, /next Entangle update/);
+  assert.doesNotMatch(messages[2].html, /Button not working|RESEND_UNSUBSCRIBE_URL/);
+  assert.match(messages[2].html, /Keep an eye on your inbox\.<\/p>/);
+  assert.doesNotMatch(messages[2].html, /next Entangle update/);
   assert.match(messages[0].html, /Download Challenge Files/);
-  assert.doesNotMatch(messages[2].html, /<script>bad<\/script>/);
-  assert.match(messages[2].html, /aria-label="Presentation"/);
-  assert.match(messages[2].html, /aria-label="Location"/);
-  assert.match(messages[2].html, /https:\/\/maps\.example\/test/);
-  assert.doesNotMatch(messages[2].html, /Presentation duration|Confirm by/);
+  assert.doesNotMatch(messages[3].html, /<script>bad<\/script>/);
+  assert.match(messages[3].html, /aria-label="Presentation"/);
+  assert.match(messages[3].html, /aria-label="Location"/);
+  assert.match(messages[3].html, /https:\/\/maps\.example\/test/);
+  assert.doesNotMatch(messages[3].html, /Presentation duration|Confirm by/);
   assert.match(submissionReceiptEmail(participant, { original_filename: 'Aarav.zip' }).html, /aria-label="Upload"/);
-  assert.match(messages[3].html, /not selected to advance/);
+  assert.match(messages[4].html, /not selected to advance/);
 });
 
 test('event schedule can be extended through environment configuration', () => {

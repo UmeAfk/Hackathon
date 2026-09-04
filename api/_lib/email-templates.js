@@ -155,6 +155,23 @@ export function challengeLaunchEmail(participant, token) {
   };
 }
 
+export function briefReminderEmail(participant, token) {
+  const config = getEventConfig();
+  const pageUrl = accessUrl(token);
+  return {
+    subject: `A quick reminder: share your design brief — ${config.eventName}`,
+    html: layout({
+      preheader: 'Review the model, then tell us how you plan to bring it to life.',
+      eyebrow: 'CREATIVE BRIEF / REMINDER', counter: '03 / PLAN',
+      title: 'Tell us how<br>you’ll shape it.',
+      intro: `Hi ${firstName(participant.name)}, after exploring the model and reading the task, please submit a short design brief explaining how you plan to transform the base model into your final Unreal Engine 5 experience.`,
+      body: `<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin:0;border:2px dashed ${colors.ink}"><tr><td style="padding:16px;font-size:14px;line-height:1.75;color:${colors.ink}"><strong>Your brief can cover:</strong><br>01 — Your central idea or design story<br>02 — Your material, lighting, environment, and camera direction<br>03 — How you plan to work with the supplied model<br>04 — Any optional walkthrough or Blueprint interaction you want to explore</td></tr></table><p style="margin:18px 0 0;font-size:14px;line-height:1.65;color:${colors.muted}">A clear paragraph is enough. The brief can be submitted once, so please review it before sending. If you have already submitted yours, no further action is needed.</p>`,
+      buttonLabel: 'Share Design Brief', buttonUrl: pageUrl
+    }),
+    text: `A quick reminder: share your design brief — ${config.eventName}\n\nHi ${firstNameRaw(participant.name)},\n\nAfter exploring the model and reading the task, please submit a short design brief explaining how you plan to transform the base model into your final Unreal Engine 5 experience.\n\nYour brief can cover:\n- Your central idea or design story\n- Your material, lighting, environment, and camera direction\n- How you plan to work with the supplied model\n- Any optional walkthrough or Blueprint interaction you want to explore\n\nA clear paragraph is enough. The brief can be submitted once, so please review it before sending. If you have already submitted yours, no further action is needed.\n\nShare Design Brief: ${pageUrl}`
+  };
+}
+
 export function evaluationUpdateBroadcast() {
   const config = getEventConfig();
   return {
