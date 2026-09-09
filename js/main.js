@@ -4,9 +4,9 @@
 
 import { initMarquee } from './marquee.js?v=20260831a';
 import { initTheme } from './theme.js?v=20260831a';
-import { initPhaseEngine } from './phaseEngine.js?v=20260909b';
+import { initPhaseEngine } from './phaseEngine.js?v=20260909c';
 import { initModals } from './modals.js?v=20260904d';
-import { initSubmitModal } from './submitModal.js?v=20260909b';
+import { initSubmitModal } from './submitModal.js?v=20260909c';
 import { initScrollReveal, initAccordion } from './scrollReveal.js?v=20260831a';
 import { initRewardCards } from './rewardCards.js?v=20260902b';
 

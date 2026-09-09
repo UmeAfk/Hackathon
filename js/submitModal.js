@@ -7,7 +7,7 @@ import { openModal, closeModal, spawnConfetti } from './modalCore.js?v=20260826g
 import { fetchParticipant, uploadSubmission } from './api.js?v=20260904e';
 import { animateArchiveStructure } from './archiveStructure.js?v=20260826g';
 import { initCustomSelect } from './customSelect.js?v=20260826g';
-import { markSubmissionComplete } from './phaseEngine.js?v=20260909b';
+import { markSubmissionComplete } from './phaseEngine.js?v=20260909c';
 
 const MAX_SUBMISSION_BYTES = 5 * 1024 * 1024 * 1024;
 

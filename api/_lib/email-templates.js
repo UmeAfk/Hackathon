@@ -230,6 +230,40 @@ export function deadlineExtendedEmail(participant, token) {
   };
 }
 
+export function nineHoursRemainingEmail(participant, token) {
+  const config = getEventConfig();
+  const pageUrl = accessUrl(token);
+  return {
+    subject: `Deadline extended — about 9 hours remaining — ${config.eventName}`,
+    html: layout({
+      preheader: 'The Entangle 2K26 deadline is now 11:59 PM IST tonight.',
+      eyebrow: 'DEADLINE / EXTENDED', counter: '07 / UPDATE',
+      title: 'More time.<br>Keep building.',
+      intro: `Hi ${firstName(participant.name)}, the submission deadline has been extended to <strong>11:59 PM IST tonight</strong>. You now have about nine more hours to finish, review, and upload your Entangle 2K26 project.`,
+      body: `${informationCard('Extended submission deadline', formatIstHtml(config.submissionDeadlineAt), colors.mustard, calendarIcon(dayIst(config.submissionDeadlineAt)))}<p style="margin:18px 0 0;font-size:15px;line-height:1.65;color:${colors.muted}">Use the extra time well, but begin uploading early enough to let your archive finish and confirm that it was received.</p><p style="margin:14px 0 0;font-size:14px;line-height:1.65;color:${colors.muted}">If you run into any problem, contact <a href="mailto:entangle2k26@vkarch.com" style="color:${colors.ink};font-weight:700;text-decoration:underline;text-decoration-color:${colors.tomato};text-underline-offset:3px">entangle2k26@vkarch.com</a>. If you have already submitted successfully, no further action is needed.</p>`,
+      buttonLabel: 'Submit Project', buttonUrl: pageUrl
+    }),
+    text: `Deadline extended — about 9 hours remaining — ${config.eventName}\n\nHi ${firstNameRaw(participant.name)},\n\nThe submission deadline has been extended to 11:59 PM IST tonight. You now have about nine more hours to finish, review, and upload your Entangle 2K26 project.\n\nExtended submission deadline: ${formatIst(config.submissionDeadlineAt)}\n\nUse the extra time well, but begin uploading early enough to let your archive finish and confirm that it was received.\n\nIf you run into any problem, contact entangle2k26@vkarch.com. If you have already submitted successfully, no further action is needed.\n\nSubmit Project: ${pageUrl}`
+  };
+}
+
+export function threeHoursRemainingEmail(participant, token) {
+  const config = getEventConfig();
+  const pageUrl = accessUrl(token);
+  return {
+    subject: '3 hours remaining — submit your Entangle 2K26 project',
+    html: layout({
+      preheader: 'Three hours remain before submissions close at 11:59 PM IST.',
+      eyebrow: 'FINAL HOURS / REMINDER', counter: '08 / SUBMIT',
+      title: 'Three hours.<br>Finish strong.',
+      intro: `Hi ${firstName(participant.name)}, three hours remain before Entangle 2K26 submissions close at <strong>11:59 PM IST tonight</strong>. Complete your final checks and begin uploading now.`,
+      body: `${informationCard('Final submission deadline', formatIstHtml(config.submissionDeadlineAt), colors.mustard, calendarIcon(dayIst(config.submissionDeadlineAt)))}<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin:18px 0 0;border:2px dashed ${colors.ink}"><tr><td style="padding:16px;font-size:14px;line-height:1.75;color:${colors.ink}"><strong>Quick archive check:</strong><br>01 — Final renders in <strong>Images/</strong><br>02 — Optional MP4 in <strong>Video/</strong><br>03 — Packaged build in <strong>Executable/</strong><br>04 — Everything inside <strong>YOUR_FULL_NAME/</strong><br>05 — Upload one <strong>YOUR_FULL_NAME.zip</strong> archive</td></tr></table><p style="margin:16px 0 0;font-size:14px;line-height:1.65;color:${colors.muted}">If you encounter any issue, contact <a href="mailto:entangle2k26@vkarch.com" style="color:${colors.ink};font-weight:700;text-decoration:underline;text-decoration-color:${colors.tomato};text-underline-offset:3px">entangle2k26@vkarch.com</a> immediately. If your submission has already completed, no further action is needed.</p>`,
+      buttonLabel: 'Submit Project', buttonUrl: pageUrl
+    }),
+    text: `3 hours remaining — ${config.eventName}\n\nHi ${firstNameRaw(participant.name)},\n\nThree hours remain before Entangle 2K26 submissions close at 11:59 PM IST tonight. Complete your final checks and begin uploading now.\n\nFinal submission deadline: ${formatIst(config.submissionDeadlineAt)}\n\nQuick archive check:\n- Final renders in Images/\n- Optional MP4 in Video/\n- Packaged build in Executable/\n- Everything inside YOUR_FULL_NAME/\n- Upload one YOUR_FULL_NAME.zip archive\n\nIf you encounter any issue, contact entangle2k26@vkarch.com immediately. If your submission has already completed, no further action is needed.\n\nSubmit Project: ${pageUrl}`
+  };
+}
+
 export function evaluationUpdateBroadcast() {
   const config = getEventConfig();
   return {

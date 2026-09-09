@@ -3,7 +3,7 @@ const defaults = {
   registrationClosesAt: '2026-09-04T11:59:00+05:30',
   taskDropsAt: '2026-09-04T11:59:00+05:30',
   submissionOpensAt: '2026-09-06T11:59:00+05:30',
-  submissionDeadlineAt: '2026-09-09T23:59:00+05:30',
+  submissionDeadlineAt: '2026-09-09T23:59:59+05:30',
   thankYouAt: '2026-09-10T12:00:00+05:30'
 };
 
