@@ -4,7 +4,7 @@
 
 import { buildFlipUnit, setFlipValue } from './flipClock.js?v=20260826g';
 import { showToast } from './utils.js?v=20260826g';
-import { fetchEventConfig } from './api.js?v=20260904c';
+import { fetchEventConfig, fetchParticipant } from './api.js?v=20260909a';
 
 const DAY = 24 * 60 * 60 * 1000;
 
@@ -24,6 +24,7 @@ const debugRegistered = debugAllowed && urlParams.get('registered') === '1';
 let debugPhase = parseForcedPhase(forcedPhaseParam);
 let activeTimer = null;
 let registrationCloseTimer = null;
+let participantHasSubmitted = localStorage.getItem('av-submission-complete') === '1';
 
 const phaseCopy = [
   {
@@ -78,6 +79,7 @@ function getAnchors() {
 
 function computePhase() {
   if (debugPhase !== null) return debugPhase;
+  if (participantHasSubmitted) return 3;
   const now = Date.now();
   const registrationOpens = new Date(timeline.registrationOpensAt).getTime();
   const registrationCloses = new Date(timeline.registrationClosesAt).getTime();
@@ -306,6 +308,13 @@ export function initPhaseEngine() {
     timeline = { ...timeline, ...config };
     syncPhase();
   }).catch(() => showToast('The live schedule could not refresh. Please reload the page. If this continues, contact entangle2k26@vkarch.com.'));
+  fetchParticipant().then(participant => {
+    if (participant.submissionStatus === 'uploaded') {
+      participantHasSubmitted = true;
+      localStorage.setItem('av-submission-complete', '1');
+      syncPhase();
+    }
+  }).catch(() => {});
   if (!debugAllowed) return;
   window.addEventListener('keydown', event => {
     if (event.key !== 'q' && event.key !== 'Q' && event.code !== 'KeyQ') return;
@@ -315,4 +324,10 @@ export function initPhaseEngine() {
     cycleDebugPhase();
   }, true);
   if (debugPill) debugPill.addEventListener('click', cycleDebugPhase);
+}
+
+export function markSubmissionComplete() {
+  participantHasSubmitted = true;
+  localStorage.setItem('av-submission-complete', '1');
+  syncPhase();
 }

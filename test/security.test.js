@@ -50,6 +50,13 @@ test('local phase controls are hard-hidden outside localhost', async () => {
   assert.match(debugStyles, /\.debug-pill\[hidden\][\s\S]*?display:\s*none\s*!important/);
 });
 
+test('verified completed submissions switch participants to the jury-review state', async () => {
+  const phaseEngine = await readFile(new URL('../js/phaseEngine.js', import.meta.url), 'utf8');
+  assert.match(phaseEngine, /participant\.submissionStatus === 'uploaded'/);
+  assert.match(phaseEngine, /participantHasSubmitted = true/);
+  assert.match(phaseEngine, /localStorage\.setItem\('av-submission-complete', '1'\)/);
+});
+
 test('unexpected browser errors stay friendly and include event support', async () => {
   const client = await readFile(new URL('../js/api.js', import.meta.url), 'utf8');
   assert.match(client, /contact entangle2k26@vkarch\.com/);

@@ -7,6 +7,7 @@ import { openModal, closeModal, spawnConfetti } from './modalCore.js?v=20260826g
 import { fetchParticipant, uploadSubmission } from './api.js?v=20260904e';
 import { animateArchiveStructure } from './archiveStructure.js?v=20260826g';
 import { initCustomSelect } from './customSelect.js?v=20260826g';
+import { markSubmissionComplete } from './phaseEngine.js?v=20260909a';
 
 const MAX_SUBMISSION_BYTES = 5 * 1024 * 1024 * 1024;
 
@@ -247,6 +248,7 @@ export function initSubmitModal() {
         if (submitSuccessAuthor) submitSuccessAuthor.textContent = authorName.split(' ')[0];
         if (submitModalFormView) submitModalFormView.hidden = true;
         if (submitModalSuccessView) submitModalSuccessView.hidden = false;
+        markSubmissionComplete();
 
         if (window.anime) {
           window.anime({ targets: '#submitSuccessBadge', scale: [0, 1], duration: 500, easing: 'easeOutBack' });

@@ -196,6 +196,23 @@ export function submissionReminderEmail(participant, token) {
   };
 }
 
+export function finalHoursReminderEmail(participant, token) {
+  const config = getEventConfig();
+  const pageUrl = accessUrl(token);
+  return {
+    subject: `2 hours 30 minutes remaining — ${config.eventName}`,
+    html: layout({
+      preheader: 'The Entangle 2K26 deadline is close. Finish and submit your project now.',
+      eyebrow: 'FINAL HOURS / SUBMIT NOW', counter: '05 / FINAL',
+      title: 'Final hours.<br>Submit now.',
+      intro: `Hi ${firstName(participant.name)}, only 2 hours and 30 minutes remain before the Entangle 2K26 submission deadline. Finish your final checks and start uploading as soon as possible—please do not wait until the last few minutes.`,
+      body: `${informationCard('Final submission deadline', formatIstHtml(config.submissionDeadlineAt), colors.mustard, calendarIcon(dayIst(config.submissionDeadlineAt)))}<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin:18px 0 0;border:2px dashed ${colors.ink}"><tr><td style="padding:16px;font-size:14px;line-height:1.75;color:${colors.ink}"><strong>Before you upload:</strong><br>01 — Put final JPG or PNG renders in <strong>Images/</strong><br>02 — Put any optional MP4 walkthrough in <strong>Video/</strong><br>03 — Put the packaged EXE and every support file in <strong>Executable/</strong><br>04 — Keep all three folders inside <strong>YOUR_FULL_NAME/</strong><br>05 — Upload one clearly named archive such as <strong>YOUR_FULL_NAME.zip</strong></td></tr></table><p style="margin:18px 0 0;font-size:14px;line-height:1.65;color:${colors.muted}">If you encounter any issue while preparing or uploading your work, contact <a href="mailto:entangle2k26@vkarch.com" style="color:${colors.ink};font-weight:700;text-decoration:underline;text-decoration-color:${colors.tomato};text-underline-offset:3px">entangle2k26@vkarch.com</a> immediately. If your upload has already completed successfully, no further action is needed.</p>`,
+      buttonLabel: 'Submit Project', buttonUrl: pageUrl
+    }),
+    text: `2 hours 30 minutes remaining — ${config.eventName}\n\nHi ${firstNameRaw(participant.name)},\n\nOnly 2 hours and 30 minutes remain before the Entangle 2K26 submission deadline. Finish your final checks and start uploading as soon as possible—please do not wait until the last few minutes.\n\nFinal submission deadline: ${formatIst(config.submissionDeadlineAt)}\n\nBefore you upload:\n- Put final JPG or PNG renders in Images/\n- Put any optional MP4 walkthrough in Video/\n- Put the packaged EXE and every support file in Executable/\n- Keep all three folders inside YOUR_FULL_NAME/\n- Upload one clearly named archive such as YOUR_FULL_NAME.zip\n\nIf you encounter any issue while preparing or uploading your work, contact entangle2k26@vkarch.com immediately. If your upload has already completed successfully, no further action is needed.\n\nSubmit Project: ${pageUrl}`
+  };
+}
+
 export function evaluationUpdateBroadcast() {
   const config = getEventConfig();
   return {

@@ -6,6 +6,7 @@ import {
   challengeLaunchBroadcast,
   challengeLaunchEmail,
   evaluationUpdateBroadcast,
+  finalHoursReminderEmail,
   notSelectedEmail,
   registrationEmail,
   shortlistedEmail,
@@ -87,6 +88,11 @@ test('transactional email templates escape participant and file content', () => 
   assert.match(submissionReminder.html, /Executable\//);
   assert.match(submissionReminder.html, /entangle2k26@vkarch\.com/);
   assert.match(submissionReminder.html, /Submit Project/);
+  const finalHoursReminder = finalHoursReminderEmail(participant, 'g'.repeat(43));
+  assert.match(finalHoursReminder.html, /2 hours and 30 minutes/);
+  assert.match(finalHoursReminder.html, /entangle2k26@vkarch\.com/);
+  assert.match(finalHoursReminder.html, /Submit Project/);
+  assert.doesNotMatch(finalHoursReminder.html, /<img src=x/);
 });
 
 test('the complete participant email set renders shared branded HTML', () => {
@@ -97,7 +103,8 @@ test('the complete participant email set renders shared branded HTML', () => {
     evaluationUpdateBroadcast(),
     shortlistedEmail(participant, { venue: '<script>bad</script>', venueUrl: 'https://maps.example/test' }),
     notSelectedEmail(participant),
-    submissionReminderEmail(participant, 'f'.repeat(43))
+    submissionReminderEmail(participant, 'f'.repeat(43)),
+    finalHoursReminderEmail(participant, 'g'.repeat(43))
   ];
   for (const message of messages) {
     assert.match(message.html, /\[ ENTANGLE 2K26 \]/);
