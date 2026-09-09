@@ -14,7 +14,7 @@ let timeline = {
   lateRegistrationClosesAt: '',
   taskDropsAt: '2026-09-04T11:59:00+05:30',
   submissionOpensAt: '2026-09-06T11:59:00+05:30',
-  submissionDeadlineAt: '2026-09-09T11:59:00+05:30'
+  submissionDeadlineAt: '2026-09-09T23:59:00+05:30'
 };
 
 const urlParams = new URLSearchParams(window.location.search);

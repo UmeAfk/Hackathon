@@ -3,7 +3,7 @@ const defaults = {
   registrationClosesAt: '2026-09-04T11:59:00+05:30',
   taskDropsAt: '2026-09-04T11:59:00+05:30',
   submissionOpensAt: '2026-09-06T11:59:00+05:30',
-  submissionDeadlineAt: '2026-09-09T11:59:00+05:30',
+  submissionDeadlineAt: '2026-09-09T23:59:00+05:30',
   thankYouAt: '2026-09-10T12:00:00+05:30'
 };
 
@@ -22,7 +22,7 @@ export function getEventConfig() {
     lateRegistrationClosesAt: process.env.ENTANGLE_LATE_REGISTRATION_CLOSES_AT || '',
     taskDropsAt: process.env.ENTANGLE_TASK_DROPS_AT || defaults.taskDropsAt,
     submissionOpensAt: process.env.ENTANGLE_SUBMISSION_OPENS_AT || defaults.submissionOpensAt,
-    submissionDeadlineAt: process.env.ENTANGLE_SUBMISSION_DEADLINE_AT || defaults.submissionDeadlineAt,
+    submissionDeadlineAt: laterDate(process.env.ENTANGLE_SUBMISSION_DEADLINE_AT, defaults.submissionDeadlineAt),
     thankYouAt: process.env.ENTANGLE_THANK_YOU_AT || defaults.thankYouAt,
     eventName: 'Entangle ArchViz Challenge',
     siteUrl: (process.env.ENTANGLE_SITE_URL || automaticSiteUrl).replace(/\/$/, ''),
@@ -42,6 +42,11 @@ export function getEventConfig() {
   if (new Date(config.submissionOpensAt) >= new Date(config.submissionDeadlineAt)) throw new Error('The submission deadline must be after submissions open');
   if (new Date(config.taskDropsAt) >= new Date(config.submissionDeadlineAt)) throw new Error('The submission deadline must be after the task drop');
   return config;
+}
+
+function laterDate(configured, minimum) {
+  if (!configured) return minimum;
+  return new Date(configured).getTime() > new Date(minimum).getTime() ? configured : minimum;
 }
 
 export function registrationIsOpen(now = new Date()) {

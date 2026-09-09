@@ -494,7 +494,7 @@ def build_story():
         Spacer(1, 6 * mm),
         full_card(
             "Deadline",
-            "<b>09 September 2026 at 11:59 AM IST.</b> Upload early enough to verify completion. Late, incomplete, inaccessible, or corrupted submissions may not be evaluated.",
+            "<b>09 September 2026 at 11:59 PM IST.</b> Upload early enough to verify completion. Late, incomplete, inaccessible, or corrupted submissions may not be evaluated.",
             TOMATO,
         ),
         Spacer(1, 6 * mm),

@@ -213,6 +213,23 @@ export function finalHoursReminderEmail(participant, token) {
   };
 }
 
+export function deadlineExtendedEmail(participant, token) {
+  const config = getEventConfig();
+  const pageUrl = accessUrl(token);
+  return {
+    subject: `Submission deadline extended to 11:59 PM — ${config.eventName}`,
+    html: layout({
+      preheader: 'You now have until 11:59 PM IST tonight to submit your Entangle 2K26 project.',
+      eyebrow: 'DEADLINE / EXTENDED', counter: '06 / UPDATE',
+      title: 'More time.<br>Finish strong.',
+      intro: `Hi ${firstName(participant.name)}, the Entangle 2K26 submission deadline has been extended. You now have until <strong>11:59 PM IST tonight</strong> to complete and upload your work.`,
+      body: `${informationCard('Updated submission deadline', formatIstHtml(config.submissionDeadlineAt), colors.mustard, calendarIcon(dayIst(config.submissionDeadlineAt)))}<p style="margin:18px 0 0;font-size:15px;line-height:1.65;color:${colors.muted}">Use the additional time for final checks, but please begin uploading well before the deadline so the archive has time to complete.</p><p style="margin:14px 0 0;font-size:14px;line-height:1.65;color:${colors.muted}">If you encounter any issue while preparing or uploading your work, contact <a href="mailto:entangle2k26@vkarch.com" style="color:${colors.ink};font-weight:700;text-decoration:underline;text-decoration-color:${colors.tomato};text-underline-offset:3px">entangle2k26@vkarch.com</a> immediately.</p>`,
+      buttonLabel: 'Submit Project', buttonUrl: pageUrl
+    }),
+    text: `Submission deadline extended to 11:59 PM — ${config.eventName}\n\nHi ${firstNameRaw(participant.name)},\n\nThe Entangle 2K26 submission deadline has been extended. You now have until 11:59 PM IST tonight to complete and upload your work.\n\nUpdated submission deadline: ${formatIst(config.submissionDeadlineAt)}\n\nUse the additional time for final checks, but please begin uploading well before the deadline so the archive has time to complete.\n\nIf you encounter any issue while preparing or uploading your work, contact entangle2k26@vkarch.com immediately.\n\nSubmit Project: ${pageUrl}`
+  };
+}
+
 export function evaluationUpdateBroadcast() {
   const config = getEventConfig();
   return {

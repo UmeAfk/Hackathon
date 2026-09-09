@@ -6,6 +6,7 @@ import {
   challengeLaunchBroadcast,
   challengeLaunchEmail,
   evaluationUpdateBroadcast,
+  deadlineExtendedEmail,
   finalHoursReminderEmail,
   notSelectedEmail,
   registrationEmail,
@@ -18,10 +19,12 @@ test('default event timeline moves through every public state', () => {
   assert.equal(eventState(new Date('2026-08-31T06:28:59Z')), 'upcoming');
   assert.equal(eventState(new Date('2026-08-31T06:29:00Z')), 'registration');
   assert.equal(eventState(new Date('2026-09-04T06:29:00Z')), 'live');
-  assert.equal(eventState(new Date('2026-09-09T06:29:00Z')), 'closed');
+  assert.equal(eventState(new Date('2026-09-09T06:29:00Z')), 'live');
+  assert.equal(eventState(new Date('2026-09-09T18:29:00Z')), 'closed');
   assert.equal(submissionsAreOpen(new Date('2026-09-06T06:28:59Z')), false);
   assert.equal(submissionsAreOpen(new Date('2026-09-06T06:29:00Z')), true);
-  assert.equal(submissionsAreOpen(new Date('2026-09-09T06:29:00Z')), false);
+  assert.equal(submissionsAreOpen(new Date('2026-09-09T06:29:00Z')), true);
+  assert.equal(submissionsAreOpen(new Date('2026-09-09T18:29:00Z')), false);
 });
 
 test('event configuration uses explicit ISO dates and a five GiB upload ceiling', () => {
@@ -30,7 +33,7 @@ test('event configuration uses explicit ISO dates and a five GiB upload ceiling'
   assert.equal(new Date(config.registrationOpensAt).toISOString(), '2026-08-31T06:29:00.000Z');
   assert.equal(new Date(config.taskDropsAt).toISOString(), '2026-09-04T06:29:00.000Z');
   assert.equal(new Date(config.submissionOpensAt).toISOString(), '2026-09-06T06:29:00.000Z');
-  assert.equal(new Date(config.submissionDeadlineAt).toISOString(), '2026-09-09T06:29:00.000Z');
+  assert.equal(new Date(config.submissionDeadlineAt).toISOString(), '2026-09-09T18:29:00.000Z');
 });
 
 test('event-window overrides are limited to local Vercel development', () => {
@@ -93,6 +96,9 @@ test('transactional email templates escape participant and file content', () => 
   assert.match(finalHoursReminder.html, /entangle2k26@vkarch\.com/);
   assert.match(finalHoursReminder.html, /Submit Project/);
   assert.doesNotMatch(finalHoursReminder.html, /<img src=x/);
+  const extension = deadlineExtendedEmail(participant, 'h'.repeat(43));
+  assert.match(extension.html, /11:59 PM IST/);
+  assert.match(extension.html, /Submit Project/);
 });
 
 test('the complete participant email set renders shared branded HTML', () => {
@@ -104,14 +110,15 @@ test('the complete participant email set renders shared branded HTML', () => {
     shortlistedEmail(participant, { venue: '<script>bad</script>', venueUrl: 'https://maps.example/test' }),
     notSelectedEmail(participant),
     submissionReminderEmail(participant, 'f'.repeat(43)),
-    finalHoursReminderEmail(participant, 'g'.repeat(43))
+    finalHoursReminderEmail(participant, 'g'.repeat(43)),
+    deadlineExtendedEmail(participant, 'h'.repeat(43))
   ];
   for (const message of messages) {
     assert.match(message.html, /\[ ENTANGLE 2K26 \]/);
     assert.ok(message.subject);
   }
   assert.match(messages[0].html, /Unreal Engine 5/);
-  assert.match(messages[0].html, /9 September 2026.*at 11:59 am/);
+  assert.match(messages[0].html, /9 September 2026.*at 11:59 pm/);
   assert.match(messages[0].html, />09<\/td>/);
   assert.match(messages[0].html, /@media only screen and \(max-width:600px\)/);
   assert.doesNotMatch(messages[0].html, /Button not working|RESEND_UNSUBSCRIBE_URL/);
