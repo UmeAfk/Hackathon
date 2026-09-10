@@ -264,6 +264,22 @@ export function threeHoursRemainingEmail(participant, token) {
   };
 }
 
+export function challengeFinishedEmail(participant) {
+  const config = getEventConfig();
+  return {
+    subject: `Entangle 2K26 has finished — jury review is underway`,
+    html: layout({
+      preheader: 'The challenge has finished and the Entangle 2K26 jury is now reviewing eligible submissions.',
+      eyebrow: 'CHALLENGE / COMPLETE', counter: '09 / REVIEW',
+      title: 'Challenge complete.<br>Jury review begins.',
+      intro: `Hi ${firstName(participant.name)}, Entangle 2K26 has now finished. Thank you for being part of the challenge and for the time, energy, and creativity you brought to it.`,
+      body: `<p style="margin:0;font-size:16px;line-height:1.65;color:${colors.muted}">Our jury is now carefully reviewing every eligible submitted project. We will get back to participants with the next update as soon as possible.</p><p style="margin:16px 0 0;font-size:14px;line-height:1.65;color:${colors.muted}">Thank you again for being part of Entangle 2K26.</p>`,
+      buttonLabel: 'Visit Website', buttonUrl: config.siteUrl
+    }),
+    text: `Entangle 2K26 has finished — jury review is underway\n\nHi ${firstNameRaw(participant.name)},\n\nEntangle 2K26 has now finished. Thank you for being part of the challenge and for the time, energy, and creativity you brought to it.\n\nOur jury is now carefully reviewing every eligible submitted project. We will get back to participants with the next update as soon as possible.\n\nThank you again for being part of Entangle 2K26.\n\nVisit Website: ${config.siteUrl}`
+  };
+}
+
 export function evaluationUpdateBroadcast() {
   const config = getEventConfig();
   return {

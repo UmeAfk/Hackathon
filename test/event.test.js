@@ -5,6 +5,7 @@ import {
   briefReminderEmail,
   challengeLaunchBroadcast,
   challengeLaunchEmail,
+  challengeFinishedEmail,
   evaluationUpdateBroadcast,
   deadlineExtendedEmail,
   finalHoursReminderEmail,
@@ -109,6 +110,9 @@ test('transactional email templates escape participant and file content', () => 
   const threeHours = threeHoursRemainingEmail(participant, 'j'.repeat(43));
   assert.match(threeHours.html, /three hours remain/i);
   assert.match(threeHours.html, /Submit Project/);
+  const finished = challengeFinishedEmail(participant);
+  assert.match(finished.html, /jury is now carefully reviewing/i);
+  assert.match(finished.html, /Visit Website/);
 });
 
 test('the complete participant email set renders shared branded HTML', () => {
@@ -123,7 +127,8 @@ test('the complete participant email set renders shared branded HTML', () => {
     finalHoursReminderEmail(participant, 'g'.repeat(43)),
     deadlineExtendedEmail(participant, 'h'.repeat(43)),
     nineHoursRemainingEmail(participant, 'i'.repeat(43)),
-    threeHoursRemainingEmail(participant, 'j'.repeat(43))
+    threeHoursRemainingEmail(participant, 'j'.repeat(43)),
+    challengeFinishedEmail(participant)
   ];
   for (const message of messages) {
     assert.match(message.html, /\[ ENTANGLE 2K26 \]/);
