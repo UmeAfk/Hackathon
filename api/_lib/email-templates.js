@@ -318,6 +318,22 @@ export function shortlistedEmail(participant, details = {}) {
   };
 }
 
+export function shortlistAnnouncementEmail(participant) {
+  const config = getEventConfig();
+  return {
+    subject: 'Congratulations! You’re Shortlisted | Entangle Hackathon 2K26',
+    html: layout({
+      preheader: 'Your Entangle Hackathon 2K26 submission has been shortlisted for the next stage.',
+      eyebrow: 'SELECTION / SHORTLISTED', counter: '10 / NEXT',
+      title: 'You’re<br>shortlisted.',
+      intro: 'Hello Visualizer,<br><br>Congratulations! Your submission has been shortlisted for the next stage of Entangle Hackathon 2K26.',
+      body: `<p style="margin:0;font-size:16px;line-height:1.65;color:${colors.muted}">The jury appreciated the effort and creative direction behind your work. Further details about the next stage will be shared with you shortly.</p><p style="margin:16px 0 0;font-size:14px;line-height:1.65;color:${colors.muted}">If you have any questions in the meantime, please contact <a href="mailto:entangle2k26@vkarch.com" style="color:${colors.ink};font-weight:700;text-decoration:underline;text-decoration-color:${colors.tomato};text-underline-offset:3px">entangle2k26@vkarch.com</a>.</p><p style="margin:18px 0 0;font-size:14px;line-height:1.65;color:${colors.ink};font-weight:700">Imagine. Build. Entangle.</p><p style="margin:0;font-size:14px;line-height:1.65;color:${colors.muted}">Regards,<br>Team Entangle</p>`,
+      buttonLabel: 'Visit Website', buttonUrl: config.siteUrl
+    }),
+    text: `Congratulations! You’re Shortlisted | Entangle Hackathon 2K26\n\nHello Visualizer,\n\nCongratulations! Your submission has been shortlisted for the next stage of Entangle Hackathon 2K26.\n\nThe jury appreciated the effort and creative direction behind your work. Further details about the next stage will be shared with you shortly.\n\nIf you have any questions in the meantime, please contact us at entangle2k26@vkarch.com.\n\nImagine. Build. Entangle.\n\nRegards,\nTeam Entangle\n\nVisit Website: ${config.siteUrl}`
+  };
+}
+
 export function notSelectedEmail(participant) {
   const config = getEventConfig();
   return {

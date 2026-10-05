@@ -46,10 +46,10 @@ const phaseCopy = [
     subtitle: ''
   },
   {
-    lead: 'Submissions received.',
-    second: 'Jury is ',
-    accent: 'reviewing.',
-    subtitle: '[ ALL ENTRIES ARE NOW WITH THE JURY ]'
+    lead: 'Thank you',
+    second: 'for taking ',
+    accent: 'part.',
+    subtitle: '[ ENTANGLE HACKATHON 2K26 ]'
   }
 ];
 
